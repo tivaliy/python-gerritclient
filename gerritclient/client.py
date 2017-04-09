@@ -28,7 +28,7 @@ from gerritclient.common import utils
 class APIClient(object):
     """This class handles API requests."""
 
-    def __init__(self, host, port, base_url="/", username=None, password=None):
+    def __init__(self, host, port, base_url="", username=None, password=None):
         self.root = "http://{host}:{port}{base_url}".format(host=host,
                                                             port=port,
                                                             base_url=base_url)
@@ -155,11 +155,11 @@ def get_settings(file_path=None):
     """Gets gerritclient configuration from 'settings.yaml' file.
 
     If path to configuration 'settings.yaml' file not specified then current
-    working directory will be used instead
+    'gerritclient' directory will be used instead
     """
 
     if file_path is None:
-        file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+        file_path = os.path.join(os.path.abspath('gerritclient'),
                                  'settings.yaml')
     try:
         config_data = utils.read_from_file(file_path)
@@ -169,7 +169,7 @@ def get_settings(file_path=None):
     return config_data
 
 
-def connect(host, port, base_url="/", username=None, password=None):
+def connect(host, port, base_url="", username=None, password=None):
     """Creates API connection."""
 
     return APIClient(host, port, base_url=base_url,
