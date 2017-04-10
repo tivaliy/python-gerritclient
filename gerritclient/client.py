@@ -154,15 +154,32 @@ class APIClient(object):
 def get_settings(file_path=None):
     """Gets gerritclient configuration from 'settings.yaml' file.
 
-    If path to configuration 'settings.yaml' file not specified then current
-    'gerritclient' directory will be used instead
+    If path to configuration 'settings.yaml' file not specified (None), then 
+    first try to get it from local directory and then from user .config one
+
+    :param str file_path: string that contains path to configuration file
+    :raises: error.ConfigNotFoundException if configuration not specified
     """
 
-    if file_path is None:
-        file_path = os.path.join(os.path.abspath('gerritclient'),
-                                 'settings.yaml')
+    config = None
+
+    user_config = os.path.join(os.path.expanduser('~'), '.config',
+                               'gerritclient', 'settings.yaml')
+    local_config = os.path.join(os.path.dirname(__file__), 'settings.yaml')
+
+    if file_path is not None:
+        config = file_path
+    else:
+        if os.path.isfile(local_config):
+            config = local_config
+        elif os.path.isfile(user_config):
+            config = user_config
+
+    if config is None:
+        raise error.ConfigNotFoundException("Configuration not found.")
+
     try:
-        config_data = utils.read_from_file(file_path)
+        config_data = utils.read_from_file(config)
     except (OSError, IOError):
         msg = "Could not read settings from {0}".format(file_path)
         raise error.InvalidFileException(msg)

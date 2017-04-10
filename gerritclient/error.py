@@ -34,6 +34,10 @@ class InvalidFileException(GerritClientException):
     """Should be raised when some problems while working with file occurred."""
 
 
+class ConfigNotFoundException(GerritClientException):
+    """Should be raised if configuration for gerritclient was not specified."""
+
+
 class HTTPError(GerritClientException):
     pass
 
