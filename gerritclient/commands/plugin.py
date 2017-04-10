@@ -37,8 +37,16 @@ class PluginList(PluginsMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class PluginShow(PluginsMixIn, base.BaseShowCommand):
+
+    columns = ('id',
+               'version',
+               'index_url',
+               'disabled')
+
+
 def debug(argv=None):
-    """Helper to debug the List command."""
+    """Helper to debug the required command."""
 
     from gerritclient.main import debug
     debug("list", PluginList, argv)

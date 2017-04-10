@@ -67,38 +67,17 @@ class BaseShowCommand(show.ShowOne, BaseCommand):
     def get_parser(self, app_name):
         parser = super(BaseShowCommand, self).get_parser(app_name)
 
-        parser.add_argument('id', type=int,
-                            help='Id of the {0}.'.format(self.entity_name))
+        parser.add_argument(
+            'entity_name',
+            metavar='{0}-name'.format(self.entity_name),
+            type=str,
+            help='{0} name.'.format(self.entity_name.capitalize())
+        )
 
         return parser
 
     def take_action(self, parsed_args):
-        data = self.client.get_by_id(parsed_args.id)
+        data = self.client.get_by_entity(parsed_args.entity_name)
         data = utils.get_display_data_single(self.columns, data)
 
         return self.columns, data
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BaseDeleteCommand(BaseCommand):
-    """Deletes entity with the specified id."""
-
-    def get_parser(self, app_name):
-        parser = super(BaseDeleteCommand, self).get_parser(app_name)
-
-        parser.add_argument(
-            'id',
-            type=int,
-            help='Id of the {0} to delete.'.format(self.entity_name))
-
-        return parser
-
-    def take_action(self, parsed_args):
-        self.client.delete_by_id(parsed_args.id)
-
-        msg = '{ent} with id {ent_id} was deleted\n'
-
-        self.app.stdout.write(
-            msg.format(
-                ent=self.entity_name.capitalize(),
-                ent_id=parsed_args.id))
