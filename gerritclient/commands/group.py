@@ -44,6 +44,19 @@ class GroupList(GroupMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class GroupShow(GroupMixIn, base.BaseShowCommand):
+    """Shows information about specific group in Gerrit Code Review."""
+
+    columns = ('group_id',
+               'name',
+               'id',
+               'url',
+               'options',
+               'description',
+               'owner',
+               'owner_id')
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

@@ -23,6 +23,9 @@ class GroupClient(base.BaseV1Client):
     def get_all(self):
         return self.connection.get_request(self.api_path)
 
+    def get_by_entity(self, entity_name):
+        return self.connection.get_request(self.api_path + entity_name)
+
 
 def get_client(connection):
     return GroupClient(connection)

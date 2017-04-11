@@ -38,6 +38,7 @@ class PluginList(PluginsMixIn, base.BaseListCommand):
 
 
 class PluginShow(PluginsMixIn, base.BaseShowCommand):
+    """Shows information about specific plugin in Gerrit Code Review."""
 
     columns = ('id',
                'version',

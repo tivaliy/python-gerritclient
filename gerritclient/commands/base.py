@@ -69,9 +69,9 @@ class BaseShowCommand(show.ShowOne, BaseCommand):
 
         parser.add_argument(
             'entity_name',
-            metavar='{0}-name'.format(self.entity_name),
+            metavar='{0}-identifier'.format(self.entity_name),
             type=str,
-            help='{0} name.'.format(self.entity_name.capitalize())
+            help='{0} identifier.'.format(self.entity_name.capitalize())
         )
 
         return parser
