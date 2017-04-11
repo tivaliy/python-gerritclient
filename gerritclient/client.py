@@ -147,7 +147,7 @@ class APIClient(object):
             return {}
         if response.status_code == 200:
             # Remove ")]}'" prefix from response, that is used to prevent XSSI
-            return json.loads(response.content.strip(")]}'"))
+            return json.loads(response.text.strip(")]}'"))
         return response.json()
 
 
