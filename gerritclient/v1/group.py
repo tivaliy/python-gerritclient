@@ -23,8 +23,12 @@ class GroupClient(base.BaseV1Client):
     def get_all(self):
         return self.connection.get_request(self.api_path)
 
-    def get_by_entity(self, entity_name):
-        return self.connection.get_request(self.api_path + entity_name)
+    def get_by_entity_id(self, entity_id, detailed=False):
+        request_path = "{api_path}{entity_id}/{detail}".format(
+            api_path=self.api_path,
+            entity_id=entity_id,
+            detail="detail" if detailed else "")
+        return self.connection.get_request(request_path)
 
 
 def get_client(connection):

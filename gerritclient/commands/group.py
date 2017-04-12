@@ -56,6 +56,32 @@ class GroupShow(GroupMixIn, base.BaseShowCommand):
                'owner',
                'owner_id')
 
+    def get_parser(self, prog_name):
+        parser = super(GroupShow, self).get_parser(prog_name)
+        parser.add_argument(
+            '-d',
+            '--detail',
+            action='store_true',
+            help='Show more details about group.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        data = self.client.get_by_entity_id(parsed_args.entity_id,
+                                            detailed=parsed_args.detail)
+        if parsed_args.detail:
+            self.columns += ('members', 'includes')
+            # get only some fields from 'members' and 'includes' dicts
+            # (in detailed mode) to make output more user friendly
+            data['members'] = ', '.join([item['username'] +
+                                         "(" + str(item['_account_id']) + ")"
+                                         for item in data['members']])
+            data['includes'] = ', '.join([item['name'] +
+                                          "(" + str(item['group_id']) + ")"
+                                          for item in data['includes']])
+        data = utils.get_display_data_single(self.columns, data)
+        return self.columns, data
+
 
 def debug(argv=None):
     """Helper to debug the required command."""

@@ -23,10 +23,11 @@ class PluginClient(base.BaseV1Client):
     def get_all(self):
         return self.connection.get_request(self.api_path)
 
-    def get_by_entity(self, entity_name):
-        return self.connection.get_request("{api}{entity_name}/gerrit~status".
-                                           format(api=self.api_path,
-                                                  entity_name=entity_name))
+    def get_by_entity_id(self, entity_id):
+        request_path = "{api_path}{entity_id}/gerrit~status".format(
+            api_path=self.api_path,
+            entity_id=entity_id)
+        return self.connection.get_request(request_path)
 
 
 def get_client(connection):
