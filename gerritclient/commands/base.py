@@ -14,8 +14,8 @@
 #    under the License.
 
 import abc
-
 import six
+
 from cliff import command
 from cliff import lister
 from cliff import show

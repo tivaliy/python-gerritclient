@@ -2,3 +2,5 @@
 *.pyc
 .eggs
 *.egg-info
+.tox
+.testrepository

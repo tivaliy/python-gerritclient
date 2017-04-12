@@ -21,8 +21,8 @@ import gerritclient
 
 from requests import auth
 
-from gerritclient import error
 from gerritclient.common import utils
+from gerritclient import error
 
 
 class APIClient(object):
@@ -154,7 +154,7 @@ class APIClient(object):
 def get_settings(file_path=None):
     """Gets gerritclient configuration from 'settings.yaml' file.
 
-    If path to configuration 'settings.yaml' file not specified (None), then 
+    If path to configuration 'settings.yaml' file not specified (None), then
     first try to get it from local directory and then from user .config one
 
     :param str file_path: string that contains path to configuration file
