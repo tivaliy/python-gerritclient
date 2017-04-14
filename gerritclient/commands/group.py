@@ -34,15 +34,6 @@ class GroupList(GroupMixIn, base.BaseListCommand):
                'owner',
                'owner_id')
 
-    def take_action(self, parsed_args):
-        data = self.client.get_all()
-        # Retrieve group name-key from data and add it as a 'name' column
-        for group_item in data:
-            data[group_item]['name'] = group_item
-        data = utils.get_display_data_multi(self.columns, data.values())
-
-        return self.columns, data
-
 
 class GroupShow(GroupMixIn, base.BaseShowCommand):
     """Shows information about specific group in Gerrit Code Review."""

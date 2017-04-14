@@ -14,7 +14,6 @@
 #    under the License.
 
 from gerritclient.commands import base
-from gerritclient.common import utils
 
 
 class PluginsMixIn(object):
@@ -26,15 +25,10 @@ class PluginList(PluginsMixIn, base.BaseListCommand):
     """Lists all installed plugins in Gerrit Code Review."""
 
     columns = ('id',
+               'name',
                'version',
                'index_url',
                'disabled')
-
-    def take_action(self, parsed_args):
-        data = self.client.get_all()
-        data = utils.get_display_data_multi(self.columns, data.values())
-
-        return self.columns, data
 
 
 class PluginShow(PluginsMixIn, base.BaseShowCommand):
