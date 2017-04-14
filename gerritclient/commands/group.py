@@ -83,6 +83,39 @@ class GroupShow(GroupMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class GroupMemberList(GroupMixIn, base.BaseListCommand):
+    """Lists all members of specific group in Gerrit Code Review."""
+
+    columns = ('_account_id',
+               'username',
+               'name',
+               'email')
+
+    def get_parser(self, app_name):
+        parser = super(GroupMemberList, self).get_parser(app_name)
+
+        parser.add_argument(
+            'entity_id',
+            metavar='group-identifier',
+            help='Group identifier.'
+        )
+        parser.add_argument(
+            '-a',
+            '--all',
+            action="store_true",
+            help='Show members from included groups.'
+        )
+
+        return parser
+
+    def take_action(self, parsed_args):
+        data = self.client.get_group_members(parsed_args.entity_id,
+                                             show_all=parsed_args.all)
+        data = utils.get_display_data_multi(self.columns, data)
+
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

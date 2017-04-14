@@ -16,6 +16,7 @@
 import mock
 
 from gerritclient.tests.unit.cli import clibase
+from gerritclient.tests.utils import fake_account
 from gerritclient.tests.utils import fake_group
 
 
@@ -27,6 +28,8 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.m_client.get_all.return_value = fake_group.get_fake_groups(10)
         get_fake_group = fake_group.get_fake_group()
         self.m_client.get_by_entity_id.return_value = get_fake_group
+        get_fake_accounts = fake_account.get_fake_accounts(10)
+        self.m_client.get_group_members.return_value = get_fake_accounts
 
     def test_group_list(self):
         args = 'group list'
@@ -52,3 +55,21 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('group', mock.ANY)
         self.m_client.get_by_entity_id.assert_called_once_with(group_id,
                                                                detailed=True)
+
+    def test_group_member_list_wo_included_groups(self):
+        group_id = '1'
+        args = 'group member list {group_id}'.format(group_id=group_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.get_group_members.assert_called_once_with(group_id,
+                                                                show_all=False)
+
+    def test_group_member_list_w_included_groups(self):
+        group_id = '1'
+        args = 'group member list {group_id} --all'.format(group_id=group_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.get_group_members.assert_called_once_with(group_id,
+                                                                show_all=True)

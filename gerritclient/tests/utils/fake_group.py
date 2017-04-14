@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from gerritclient.tests.utils import fake_account
+
 
 def get_fake_group(name="fake-group", group_id=1, is_single_item=True):
     """Creates a fake group
@@ -31,21 +33,7 @@ def get_fake_group(name="fake-group", group_id=1, is_single_item=True):
         "group_id": group_id,
         "owner": "Fake Owner",
         "owner_id": "5057f3cbd3519d6ab69364429a89ffdffba50f73",
-        "members":
-            [
-                {
-                    "_account_id": 1000097,
-                    "name": "Jane Roe",
-                    "email": "jane.roe@example.com",
-                    "username": "jane"
-                },
-                {
-                    "_account_id": 1000096,
-                    "name": "John Doe",
-                    "email": "john.doe@example.com",
-                    "username": "john"
-                }
-            ],
+        "members": fake_account.get_fake_accounts(5),
         "includes": []
     }
     # 'name' key set only for single item, otherwise 'name' key is used

@@ -28,7 +28,7 @@ class TestUtils(oslo_base.BaseTestCase):
             [1, 'test_name']
         )
 
-    def test_get_display_data_single_with_none_existent_field(self):
+    def test_get_display_data_single_with_non_existent_field(self):
         columns = ('id', 'name', 'non-existent')
         data = {'id': 1, 'name': 'test_name'}
         self.assertEqual(
