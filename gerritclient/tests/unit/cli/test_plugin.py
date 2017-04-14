@@ -28,12 +28,19 @@ class TestPluginCommand(clibase.BaseCLITest):
         get_fake_plugin = fake_plugin.get_fake_plugin(plugin_id="fake-plugin")
         self.m_client.get_by_entity_id.return_value = get_fake_plugin
 
-    def test_plugin_list(self):
+    def test_plugin_list_enabled(self):
         args = 'plugin list'
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('plugin', mock.ANY)
-        self.m_client.get_all.assert_called_once_with()
+        self.m_client.get_all.assert_called_once_with(show_all=False)
+
+    def test_plugin_list_all(self):
+        args = 'plugin list --all'
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('plugin', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(show_all=True)
 
     def test_plugin_show(self):
         plugin_id = 'fake-plugin'

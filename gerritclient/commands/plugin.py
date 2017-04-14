@@ -14,6 +14,7 @@
 #    under the License.
 
 from gerritclient.commands import base
+from gerritclient.common import utils
 
 
 class PluginsMixIn(object):
@@ -27,8 +28,27 @@ class PluginList(PluginsMixIn, base.BaseListCommand):
     columns = ('id',
                'name',
                'version',
-               'index_url',
-               'disabled')
+               'index_url')
+
+    def get_parser(self, app_name):
+        parser = super(PluginList, self).get_parser(app_name)
+        parser.add_argument(
+            '-a',
+            '--all',
+            action="store_true",
+            help='Show all plugins (including disabled).'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        if parsed_args.all:
+            self.columns += ('disabled',)
+        data = self.client.get_all(show_all=parsed_args.all)
+        for entity_item in data:
+            data[entity_item]['name'] = entity_item
+        data = utils.get_display_data_multi(self.columns, data.values())
+
+        return self.columns, data
 
 
 class PluginShow(PluginsMixIn, base.BaseShowCommand):

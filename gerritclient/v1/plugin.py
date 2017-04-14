@@ -20,8 +20,11 @@ class PluginClient(base.BaseV1Client):
 
     api_path = "plugins/"
 
-    def get_all(self):
-        return self.connection.get_request(self.api_path)
+    def get_all(self, show_all=False):
+        request_path = "{api_path}{all}".format(
+            api_path=self.api_path,
+            all="?all" if show_all else "")
+        return self.connection.get_request(request_path)
 
     def get_by_entity_id(self, entity_id):
         request_path = "{api_path}{entity_id}/gerrit~status".format(
