@@ -15,7 +15,9 @@ CLI tool for Gerrit Code Review system based on REST API
        password: "1234567890aaWmmflSl+ZlOPs23Dffn"
     ```
 
-    Note, `base_url` can be used if your Gerrit Code Review does not sit at the root of the domain, e.g. if `http://example.com/gerrit` then `base_url="/gerrit"`.
+        *Notes:*
+    * `base_url` can be used if your Gerrit Code Review does not sit at the root of the domain, e.g. if `http://example.com/gerrit` then `base_url="/gerrit"`.
+    * `username` and `password` can be omitted then all requests will be anonymous with respective restrictions
 
 3. Create isolated Python environment `virtualenv gerritclient_venv` and activate it `source gerritclient_venv/bin/activate`.
 4. Install `python-gerritclient` with all necessary dependencies: `pip install python-gerritclient/.`.

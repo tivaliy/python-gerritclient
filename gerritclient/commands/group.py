@@ -50,8 +50,8 @@ class GroupShow(GroupMixIn, base.BaseShowCommand):
     def get_parser(self, prog_name):
         parser = super(GroupShow, self).get_parser(prog_name)
         parser.add_argument(
-            '-d',
-            '--detail',
+            '-a',
+            '--all',
             action='store_true',
             help='Show more details about group.'
         )
@@ -59,8 +59,8 @@ class GroupShow(GroupMixIn, base.BaseShowCommand):
 
     def take_action(self, parsed_args):
         data = self.client.get_by_entity_id(parsed_args.entity_id,
-                                            detailed=parsed_args.detail)
-        if parsed_args.detail:
+                                            detailed=parsed_args.all)
+        if parsed_args.all:
             self.columns += ('members', 'includes')
             # get only some fields from 'members' and 'includes' dicts
             # (in detailed mode) to make output more user friendly
@@ -101,7 +101,7 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
 
     def take_action(self, parsed_args):
         data = self.client.get_group_members(parsed_args.entity_id,
-                                             show_all=parsed_args.all)
+                                             detailed=parsed_args.all)
         data = utils.get_display_data_multi(self.columns, data)
 
         return self.columns, data

@@ -49,7 +49,7 @@ class TestGroupCommand(clibase.BaseCLITest):
 
     def test_group_show_w_details(self):
         group_id = '1'
-        args = 'group show -d {group_id}'.format(group_id=group_id)
+        args = 'group show {group_id} --all'.format(group_id=group_id)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
@@ -63,7 +63,7 @@ class TestGroupCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
         self.m_client.get_group_members.assert_called_once_with(group_id,
-                                                                show_all=False)
+                                                                detailed=False)
 
     def test_group_member_list_w_included_groups(self):
         group_id = '1'
@@ -72,4 +72,4 @@ class TestGroupCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
         self.m_client.get_group_members.assert_called_once_with(group_id,
-                                                                show_all=True)
+                                                                detailed=True)

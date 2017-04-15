@@ -30,11 +30,11 @@ class GroupClient(base.BaseV1Client):
             detail="detail" if detailed else "")
         return self.connection.get_request(request_path)
 
-    def get_group_members(self, entity_id, show_all=False):
+    def get_group_members(self, entity_id, detailed=False):
         request_path = "{api_path}{entity_id}/members/{all}".format(
             api_path=self.api_path,
             entity_id=entity_id,
-            all="?recursive" if show_all else "")
+            all="?recursive" if detailed else "")
         return self.connection.get_request(request_path)
 
 

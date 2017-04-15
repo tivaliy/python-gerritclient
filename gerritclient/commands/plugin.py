@@ -43,7 +43,7 @@ class PluginList(PluginsMixIn, base.BaseListCommand):
     def take_action(self, parsed_args):
         if parsed_args.all:
             self.columns += ('disabled',)
-        data = self.client.get_all(show_all=parsed_args.all)
+        data = self.client.get_all(detailed=parsed_args.all)
         for entity_item in data:
             data[entity_item]['name'] = entity_item
         data = utils.get_display_data_multi(self.columns, data.values())
