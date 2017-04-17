@@ -13,11 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from gerritclient.v1 import group
-from gerritclient.v1 import plugin
-from gerritclient.v1 import project
+from gerritclient.v1 import base
 
-# Please keeps the list in alphabetical order
-__all__ = ('group',
-           'plugin',
-           'project')
+
+class ProjectClient(base.BaseV1Client):
+
+    api_path = "projects/"
+
+    def get_all(self, description=False):
+        request_path = "{api_path}{all}".format(
+            api_path=self.api_path,
+            all="?d" if description else "")
+        return self.connection.get_request(request_path)
+
+
+def get_client(connection):
+    return ProjectClient(connection)

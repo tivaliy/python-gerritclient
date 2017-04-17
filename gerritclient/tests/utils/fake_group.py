@@ -37,7 +37,7 @@ def get_fake_group(name="fake-group", group_id=1, is_single_item=True):
         "includes": []
     }
     # 'name' key set only for single item, otherwise 'name' key is used
-    # as map key if we try to fetch a list of groups
+    # as map key if we try to fetch several items
     if is_single_item:
         fake_group['name'] = name
         return fake_group
