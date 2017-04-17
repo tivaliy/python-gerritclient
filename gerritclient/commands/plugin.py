@@ -14,7 +14,6 @@
 #    under the License.
 
 from gerritclient.commands import base
-from gerritclient.common import utils
 
 
 class PluginsMixIn(object):
@@ -44,11 +43,8 @@ class PluginList(PluginsMixIn, base.BaseListCommand):
         if parsed_args.all:
             self.columns += ('disabled',)
         data = self.client.get_all(detailed=parsed_args.all)
-        for entity_item in data:
-            data[entity_item]['name'] = entity_item
-        data = utils.get_display_data_multi(self.columns, data.values())
 
-        return self.columns, data
+        return self.columns, self._reformat_data(data)
 
 
 class PluginShow(PluginsMixIn, base.BaseShowCommand):

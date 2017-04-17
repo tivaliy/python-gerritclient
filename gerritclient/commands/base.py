@@ -48,8 +48,7 @@ class BaseListCommand(lister.Lister, BaseCommand):
         """Names of columns in the resulting table."""
         pass
 
-    def take_action(self, parsed_args):
-        data = self.client.get_all()
+    def _reformat_data(self, data):
         # As Gerrit returns a map that maps entity names to respective entries
         # in all list commands, let's retrieve these entity name keys
         # from received data and add it as a 'name'-key value to entry:
@@ -60,12 +59,16 @@ class BaseListCommand(lister.Lister, BaseCommand):
         #         ...                                    ...
         #   "entity_name_n": {...}           "entity_name_n":
         #                                       {"name": "entity_name_n", ...}
-        # }                                 }
+        # }                               }
         for entity_item in data:
             data[entity_item]['name'] = entity_item
         data = utils.get_display_data_multi(self.columns, data.values())
+        return data
 
-        return self.columns, data
+    def take_action(self, parsed_args):
+        data = self.client.get_all()
+
+        return self.columns, self._reformat_data(data)
 
 
 @six.add_metaclass(abc.ABCMeta)
