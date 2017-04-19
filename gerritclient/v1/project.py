@@ -20,11 +20,12 @@ class ProjectClient(base.BaseV1Client):
 
     api_path = "projects/"
 
-    def get_all(self, description=False):
+    def get_all(self, description=False, branches=None):
+        params = {'b': branches} if branches else {}
         request_path = "{api_path}{all}".format(
             api_path=self.api_path,
             all="?d" if description else "")
-        return self.connection.get_request(request_path)
+        return self.connection.get_request(request_path, params=params)
 
 
 def get_client(connection):

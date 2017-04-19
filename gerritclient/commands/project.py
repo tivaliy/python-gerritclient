@@ -37,6 +37,11 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
         return ''.join(["{0} ({1})".format(item['name'], item['url'])
                         for item in data['web_links']])
 
+    @staticmethod
+    def _retrieve_branches(data):
+        return ''.join('{0} ({1}); '.format(k, v)
+                       for k, v in data['branches'].items())
+
     def get_parser(self, prog_name):
         parser = super(ProjectList, self).get_parser(prog_name)
         parser.add_argument(
@@ -45,16 +50,31 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             action='store_true',
             help='Include project description in the results.'
         )
+        parser.add_argument(
+            '-b',
+            '--branches',
+            nargs='+',
+            default=None,
+            help='Limit the results to the projects '
+                 'having the specified branches and include the sha1 '
+                 'of the branches in the results.'
+        )
         return parser
 
     def take_action(self, parsed_args):
         if parsed_args.description:
             self.columns += ('description',)
-        data = self.client.get_all(description=parsed_args.description)
+        if parsed_args.branches:
+            self.columns += ('branches',)
+        data = self.client.get_all(description=parsed_args.description,
+                                   branches=parsed_args.branches)
         for entity_item in data:
             data[entity_item]['name'] = entity_item
             data[entity_item]['web_links'] = self._retrieve_web_links(
                 data[entity_item])
+            if parsed_args.branches:
+                data[entity_item]['branches'] = self._retrieve_branches(
+                    data[entity_item])
         data = utils.get_display_data_multi(self.columns, data.values())
 
         return self.columns, data

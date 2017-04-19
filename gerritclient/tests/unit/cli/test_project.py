@@ -26,16 +26,27 @@ class TestProjectCommand(clibase.BaseCLITest):
         super(TestProjectCommand, self).setUp()
         self.m_client.get_all.return_value = fake_project.get_fake_projects(10)
 
-    def test_plugin_list_all_wo_description(self):
+    def test_plugin_list_all_wo_description_wo_branches(self):
         args = 'project list'
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(description=False)
+        self.m_client.get_all.assert_called_once_with(description=False,
+                                                      branches=None)
 
-    def test_plugin_list_all_w_description(self):
+    def test_plugin_list_all_w_description_wo_branches(self):
         args = 'project list --description'
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(description=True)
+        self.m_client.get_all.assert_called_once_with(description=True,
+                                                      branches=None)
+
+    def test_plugin_list_all_wo_description_w_branches(self):
+        branches = ['master', 'fake_branch']
+        args = 'project list --branches {0}'.format(' '.join(branches))
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(description=False,
+                                                      branches=branches)
