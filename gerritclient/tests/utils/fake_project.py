@@ -13,10 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from gerritclient.tests.utils import fake_weblinkifno
+
 
 def get_fake_project(project_id="fakes%2Ffake-project",
                      name="fakes/fake-project",
                      state="ACTIVE",
+                     is_weblinkinfo=True,
                      is_single_item=True):
     """Creates a fake project
 
@@ -32,13 +35,11 @@ def get_fake_project(project_id="fakes%2Ffake-project",
         "branches": {
             "master": "49976b089a75e315233ab251bb9c591cfa5ed86d"
         },
-        "web_links": [
-            {
-                "name": "gitweb",
-                "url": "gitweb?p\u003d{}.git;a\u003dsummary".format(project_id)
-            }
-        ]
     }
+    if is_weblinkinfo:
+        fake_project['web_links'] = fake_weblinkifno.get_fake_weblinkinfo(
+            project_id=project_id
+        )
     # 'name' key set only for single item, otherwise 'name' key is used
     # as map key if we try to fetch several items
     if is_single_item:
@@ -47,7 +48,7 @@ def get_fake_project(project_id="fakes%2Ffake-project",
     return {name: fake_project}
 
 
-def get_fake_projects(projects_count):
+def get_fake_projects(projects_count, is_weblinkinfo=True):
     """Creates a random fake projects map."""
 
     fake_groups = {}
@@ -55,6 +56,7 @@ def get_fake_projects(projects_count):
         fake_groups.update(
             get_fake_project(project_id="fakes%2project-{0}".format(item),
                              name="fakes/project-{0}".format(item),
-                             is_single_item=False)
+                             is_single_item=False,
+                             is_weblinkinfo=is_weblinkinfo)
         )
     return fake_groups
