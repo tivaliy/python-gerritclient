@@ -1,5 +1,4 @@
-host: review.example.com
-port: "80"
-base_url: ""
+url: http://review.example.com
+path: ""
 username: admin
 password: "1234567890abcdefghijklmnopqrstuvwxyz"

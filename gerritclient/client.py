@@ -28,10 +28,8 @@ from gerritclient import error
 class APIClient(object):
     """This class handles API requests."""
 
-    def __init__(self, host, port, base_url="", username=None, password=None):
-        self.root = "http://{host}:{port}{base_url}".format(host=host,
-                                                            port=port,
-                                                            base_url=base_url)
+    def __init__(self, url, path="", username=None, password=None):
+        self.root = "{url}{path}".format(url=url, path=path)
         self._username = username
         self._password = password
         self._session = None
@@ -186,11 +184,10 @@ def get_settings(file_path=None):
     return config_data
 
 
-def connect(host, port, base_url="", username=None, password=None):
+def connect(url, path="", username=None, password=None):
     """Creates API connection."""
 
-    return APIClient(host, port, base_url=base_url,
-                     username=username, password=password)
+    return APIClient(url, path=path, username=username, password=password)
 
 
 def get_client(resource, version='v1', connection=None):

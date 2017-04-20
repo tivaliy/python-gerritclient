@@ -10,19 +10,20 @@ CLI tool for Gerrit Code Review system based on REST API
 2. Configure `settings.yaml` file (in `gerritclient/settings.yaml`) to meet your requirements.
 
     ```yaml
-       host: review.example.com
-       port: "80"
-       base_url: ""
+       url: http://review.example.com
+       path: ""
        username: admin
        password: "1234567890aaWmmflSl+ZlOPs23Dffn"
     ```
 
-    * `base_url` can be used if your Gerrit Code Review does not sit at the root of the domain, e.g. if `http://example.com/gerrit` then `base_url="/gerrit"`.
-    * `username` and `password` can be omitted then all requests will be anonymous with respective restrictions
+    * `url` can be specified according to the following format `<scheme>://<host>:<port>`, e.g. `https://review.openstack.org`
+    * `path` can be used if your Gerrit Code Review does not sit at the root of the domain, e.g. if `http://example.com/gerrit` then `path="/gerrit"`.
+    * `username` and `password` can be omitted, then all requests will be anonymous with respective restrictions
 
 3. Create isolated Python environment `virtualenv gerritclient_venv` and activate it `source gerritclient_venv/bin/activate`.
 4. Install `python-gerritclient` with all necessary dependencies: `pip install python-gerritclient/.`.
-5. Run `gerrit` command with required options, e.g. `gerrit plugin list`. To see all available commands run `gerrit --help`.
+5. (Optional) Add gerrit command bash completion `gerrit complete | sudo tee /etc/bash_completion.d/gc.bash_completion > /dev/null`
+6. Run `gerrit` command with required options, e.g. `gerrit plugin list`. To see all available commands run `gerrit --help`.
 
 ### Library
 1. Clone `python-gerritclient` repository: `git clone https://github.com/tivaliy/python-gerritclient.git`.
