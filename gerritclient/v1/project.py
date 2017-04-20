@@ -27,6 +27,12 @@ class ProjectClient(base.BaseV1Client):
             all="?d" if description else "")
         return self.connection.get_request(request_path, params=params)
 
+    def get_by_entity_id(self, entity_id):
+        request_path = "{api_path}{entity_id}".format(
+            api_path=self.api_path,
+            entity_id=entity_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)

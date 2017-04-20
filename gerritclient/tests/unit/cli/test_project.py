@@ -25,6 +25,8 @@ class TestProjectCommand(clibase.BaseCLITest):
     def setUp(self):
         super(TestProjectCommand, self).setUp()
         self.m_client.get_all.return_value = fake_project.get_fake_projects(10)
+        get_fake_project = fake_project.get_fake_project()
+        self.m_client.get_by_entity_id.return_value = get_fake_project
 
     def test_project_list_all_wo_description_wo_branches(self):
         args = 'project list'
@@ -60,3 +62,11 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(description=False,
                                                       branches=branches)
+
+    def test_project_show(self):
+        project_id = 'fakes%2Ffake-project'
+        args = 'project show {project_id}'.format(project_id=project_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_by_entity_id.assert_called_once_with(project_id)

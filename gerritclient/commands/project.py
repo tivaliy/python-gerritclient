@@ -21,20 +21,23 @@ class ProjectMixIn(object):
 
     entity_name = 'project'
 
+    @staticmethod
+    def _retrieve_web_links(data):
+        """Get 'web_links' dictionary from data and format it as a string."""
+
+        if 'web_links' in data:
+            data['web_links'] = ''.join(["{0} ({1})".format(
+                item['name'], item['url']) for item in data['web_links']])
+        return data
+
 
 class ProjectList(ProjectMixIn, base.BaseListCommand):
     """Lists all projects accessible by the caller."""
 
     columns = ('name',
                'id',
-               'state')
-
-    @staticmethod
-    def _retrieve_web_links(data):
-        """Get 'web_links' dictionary from data and format it as a string."""
-
-        return ''.join(["{0} ({1})".format(item['name'], item['url'])
-                        for item in data])
+               'state',
+               'web_links')
 
     @staticmethod
     def _retrieve_branches(data):
@@ -67,21 +70,31 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             self.columns += ('branches',)
         data = self.client.get_all(description=parsed_args.description,
                                    branches=parsed_args.branches)
-        web_links = None
         for entity_item in data:
             data[entity_item]['name'] = entity_item
-            # 'web_links' can be absent in project item in Gerrit response.
-            # If so, then skip this key-field, otherwise retrieve it.
-            web_links = data[entity_item].get('web_links')
-            if web_links:
-                data[entity_item]['web_links'] = self._retrieve_web_links(
-                    web_links)
+            data[entity_item] = self._retrieve_web_links(data[entity_item])
             if parsed_args.branches:
                 data[entity_item]['branches'] = self._retrieve_branches(
                     data[entity_item])
-        if web_links:
-            self.columns += ('web_links',)
         data = utils.get_display_data_multi(self.columns, data.values())
+
+        return self.columns, data
+
+
+class ProjectShow(ProjectMixIn, base.BaseShowCommand):
+    """Shows information about specific project in Gerrit Code Review."""
+
+    columns = ('id',
+               'name',
+               'parent',
+               'description',
+               'state',
+               'web_links')
+
+    def take_action(self, parsed_args):
+        data = self.client.get_by_entity_id(parsed_args.entity_id)
+        data = self._retrieve_web_links(data)
+        data = utils.get_display_data_single(self.columns, data)
 
         return self.columns, data
 
