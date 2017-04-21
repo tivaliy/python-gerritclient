@@ -70,13 +70,12 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             self.columns += ('branches',)
         data = self.client.get_all(description=parsed_args.description,
                                    branches=parsed_args.branches)
-        for entity_item in data:
-            data[entity_item]['name'] = entity_item
-            data[entity_item] = self._retrieve_web_links(data[entity_item])
+        data = self._reformat_data(data)
+        for item in data:
+            item = self._retrieve_web_links(item)
             if parsed_args.branches:
-                data[entity_item]['branches'] = self._retrieve_branches(
-                    data[entity_item])
-        data = utils.get_display_data_multi(self.columns, data.values())
+                item['branches'] = self._retrieve_branches(item)
+        data = utils.get_display_data_multi(self.columns, data)
 
         return self.columns, data
 

@@ -48,27 +48,38 @@ class BaseListCommand(lister.Lister, BaseCommand):
         """Names of columns in the resulting table."""
         pass
 
-    def _reformat_data(self, data):
-        # As Gerrit returns a map that maps entity names to respective entries
-        # in all list commands, let's retrieve these entity name keys
-        # from received data and add it as a 'name'-key value to entry:
-        # {                               {
-        #   "entity_name_1": {...},          "entity_name_1":
-        #         ...                           {"name": "entity_name_1", ...},
-        #         ...               ---->                ...
-        #         ...                                    ...
-        #   "entity_name_n": {...}           "entity_name_n":
-        #                                       {"name": "entity_name_n", ...}
-        # }                               }
+    @staticmethod
+    def _reformat_data(data):
+        """Reformat map of entities to list of respective entry values.
+
+        As Gerrit returns a map that maps entity names to respective entries
+        in all list commands, let's retrieve these entity name keys
+        from received data, add it as a 'name'-key value to entry and return
+        only values of respective entries as a list:
+        {                               {
+          "entity_name_1": {...},          "entity_name_1":
+                ...                           {"name": "entity_name_1", ...},
+                ...                --->                ...
+                ...                                    ...
+          "entity_name_n": {...}           "entity_name_n":
+                                              {"name": "entity_name_n", ...}
+        }                               }
+
+        ---> [{"name": "entity_name_1", ...}, {"name": "entity_name_n", ...}]
+
+        :param data: A map that maps entity names to respective entries
+        :return:     List of dictionaries containing values of entries.
+        """
         for entity_item in data:
             data[entity_item]['name'] = entity_item
-        data = utils.get_display_data_multi(self.columns, data.values())
-        return data
+        return data.values()
 
     def take_action(self, parsed_args):
         data = self.client.get_all()
+        data = self._reformat_data(data)
+        data = utils.get_display_data_multi(self.columns, data)
 
-        return self.columns, self._reformat_data(data)
+        return self.columns, data
 
 
 @six.add_metaclass(abc.ABCMeta)
