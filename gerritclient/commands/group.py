@@ -102,8 +102,8 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
     def take_action(self, parsed_args):
         data = self.client.get_group_members(parsed_args.entity_id,
                                              detailed=parsed_args.all)
-        data = utils.get_display_data_multi(self.columns, data)
-
+        data = utils.get_display_data_multi(self.columns, data,
+                                            sort_by=parsed_args.sort_columns)
         return self.columns, data
 
 

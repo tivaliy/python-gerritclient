@@ -37,10 +37,24 @@ def get_display_data_single(fields, data, missing_field_value=None):
     return [data.get(field, missing_field_value) for field in fields]
 
 
-def get_display_data_multi(fields, data):
-    """Performs slice of data by set of given fields for multiple objects."""
+def get_display_data_multi(fields, data, sort_by=None):
+    """Performs slice of data by set of given fields for multiple objects.
 
-    return [get_display_data_single(fields, elem) for elem in data]
+    :param fields:  Iterable containing names of fields to be retrieved
+                    from data
+    :param data:    Collection of JSON objects representing some
+                    external entities
+    :param sort_by: List of fields to sort by. By default no sorting
+
+    :return:        List containing the collection of values of the
+                    supplied attributes
+    """
+
+    data = [get_display_data_single(fields, elem) for elem in data]
+    if sort_by:
+        s_col_ids = [fields.index(col) for col in sort_by]
+        data.sort(key=lambda x: [x[s_col_id] for s_col_id in s_col_ids])
+    return data
 
 
 def safe_load(data_format, stream):

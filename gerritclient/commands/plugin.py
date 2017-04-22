@@ -45,8 +45,8 @@ class PluginList(PluginsMixIn, base.BaseListCommand):
             self.columns += ('disabled',)
         data = self.client.get_all(detailed=parsed_args.all)
         data = self._reformat_data(data)
-        data = utils.get_display_data_multi(self.columns, data)
-
+        data = utils.get_display_data_multi(self.columns, data,
+                                            sort_by=parsed_args.sort_columns)
         return self.columns, data
 
 

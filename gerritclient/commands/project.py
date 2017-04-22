@@ -75,8 +75,8 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             item = self._retrieve_web_links(item)
             if parsed_args.branches:
                 item['branches'] = self._retrieve_branches(item)
-        data = utils.get_display_data_multi(self.columns, data)
-
+        data = utils.get_display_data_multi(self.columns, data,
+                                            sort_by=parsed_args.sort_columns)
         return self.columns, data
 
 
