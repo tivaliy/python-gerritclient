@@ -33,7 +33,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(description=False,
+        self.m_client.get_all.assert_called_once_with(n=None,
+                                                      description=False,
                                                       branches=None)
 
     def test_project_list_wo_weblinkinfo_in_project_entity(self):
@@ -43,7 +44,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(description=False,
+        self.m_client.get_all.assert_called_once_with(n=None,
+                                                      description=False,
                                                       branches=None)
 
     def test_project_list_all_w_description_wo_branches(self):
@@ -51,7 +53,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(description=True,
+        self.m_client.get_all.assert_called_once_with(n=None,
+                                                      description=True,
                                                       branches=None)
 
     def test_project_list_all_wo_description_w_branches(self):
@@ -60,8 +63,19 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(description=False,
+        self.m_client.get_all.assert_called_once_with(n=None,
+                                                      description=False,
                                                       branches=branches)
+
+    def test_project_list_limit(self):
+        list_limit = '5'
+        args = 'project list --limit {0}'.format(list_limit)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(n=list_limit,
+                                                      description=False,
+                                                      branches=None)
 
     def test_project_show(self):
         project_id = 'fakes%2Ffake-project'

@@ -61,6 +61,11 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
                  'having the specified branches and include the sha1 '
                  'of the branches in the results.'
         )
+        parser.add_argument(
+            '-l',
+            '--limit',
+            help='Limit the number of projects to be included in the results.'
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -68,7 +73,8 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             self.columns += ('description',)
         if parsed_args.branches:
             self.columns += ('branches',)
-        data = self.client.get_all(description=parsed_args.description,
+        data = self.client.get_all(n=parsed_args.limit,
+                                   description=parsed_args.description,
                                    branches=parsed_args.branches)
         data = self._reformat_data(data)
         for item in data:
