@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/tivaliy/python-gerritclient.svg?branch=master)](https://travis-ci.org/tivaliy/python-gerritclient)
 
 # python-gerritclient
-CLI tool for Gerrit Code Review system based on REST API
+CLI tool and Python API wrapper for Gerrit Code Review
 
 ## Quick Start
 
@@ -33,7 +33,7 @@ CLI tool for Gerrit Code Review system based on REST API
 ```python
 from gerritclient import client
 
-connection = client.connect("review.openstack.org", "80", username="user-name", password="password")
+connection = client.connect("review.openstack.org", username="user-name", password="password")
 group_client = client.get_client('group', connection=connection)
 members = group_client.get_group_members('swift-core')  # or get_group_members(24)
 print(', '.join(member['name'] for member in members))
