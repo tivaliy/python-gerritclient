@@ -35,6 +35,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
+                                                      prefix=None,
                                                       description=False,
                                                       branches=None)
 
@@ -47,6 +48,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
+                                                      prefix=None,
                                                       description=False,
                                                       branches=None)
 
@@ -57,6 +59,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
+                                                      prefix=None,
                                                       description=True,
                                                       branches=None)
 
@@ -68,6 +71,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
+                                                      prefix=None,
                                                       description=False,
                                                       branches=branches)
 
@@ -79,6 +83,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(n=list_limit,
                                                       s=None,
+                                                      prefix=None,
                                                       description=False,
                                                       branches=None)
 
@@ -90,6 +95,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=list_skip,
+                                                      prefix=None,
                                                       description=False,
                                                       branches=None)
 
@@ -103,6 +109,19 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(n=list_limit,
                                                       s=list_skip,
+                                                      prefix=None,
+                                                      description=False,
+                                                      branches=None)
+
+    def test_project_list_w_prefix(self):
+        prefix = 'fake'
+        args = 'project list --prefix {0}'.format(prefix)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(n=None,
+                                                      s=None,
+                                                      prefix=prefix,
                                                       description=False,
                                                       branches=None)
 

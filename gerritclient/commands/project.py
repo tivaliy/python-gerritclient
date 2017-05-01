@@ -72,6 +72,12 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             help='Skip the given number of projects '
                  'from the beginning of the list.'
         )
+        parser.add_argument(
+            '-p',
+            '--prefix',
+            help='Limit the results to those projects '
+                 'that start with the specified prefix.'
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -81,6 +87,7 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             self.columns += ('branches',)
         data = self.client.get_all(n=parsed_args.limit,
                                    s=parsed_args.skip,
+                                   prefix=parsed_args.prefix,
                                    description=parsed_args.description,
                                    branches=parsed_args.branches)
         data = self._reformat_data(data)
