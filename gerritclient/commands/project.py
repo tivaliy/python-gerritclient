@@ -72,11 +72,18 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             help='Skip the given number of projects '
                  'from the beginning of the list.'
         )
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
             '-p',
             '--prefix',
             help='Limit the results to those projects '
                  'that start with the specified prefix.'
+        )
+        group.add_argument(
+            '-m',
+            '--match',
+            help='Limit the results to those projects '
+                 'that match the specified substring.'
         )
         return parser
 
@@ -88,6 +95,7 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
         data = self.client.get_all(n=parsed_args.limit,
                                    s=parsed_args.skip,
                                    prefix=parsed_args.prefix,
+                                   match=parsed_args.match,
                                    description=parsed_args.description,
                                    branches=parsed_args.branches)
         data = self._reformat_data(data)

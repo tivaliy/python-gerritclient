@@ -36,6 +36,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
                                                       prefix=None,
+                                                      match=None,
                                                       description=False,
                                                       branches=None)
 
@@ -49,6 +50,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
                                                       prefix=None,
+                                                      match=None,
                                                       description=False,
                                                       branches=None)
 
@@ -60,6 +62,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
                                                       prefix=None,
+                                                      match=None,
                                                       description=True,
                                                       branches=None)
 
@@ -72,6 +75,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
                                                       prefix=None,
+                                                      match=None,
                                                       description=False,
                                                       branches=branches)
 
@@ -84,6 +88,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_all.assert_called_once_with(n=list_limit,
                                                       s=None,
                                                       prefix=None,
+                                                      match=None,
                                                       description=False,
                                                       branches=None)
 
@@ -96,6 +101,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=list_skip,
                                                       prefix=None,
+                                                      match=None,
                                                       description=False,
                                                       branches=None)
 
@@ -110,6 +116,7 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_all.assert_called_once_with(n=list_limit,
                                                       s=list_skip,
                                                       prefix=None,
+                                                      match=None,
                                                       description=False,
                                                       branches=None)
 
@@ -122,8 +129,29 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_all.assert_called_once_with(n=None,
                                                       s=None,
                                                       prefix=prefix,
+                                                      match=None,
                                                       description=False,
                                                       branches=None)
+
+    def test_project_list_w_match(self):
+        substring = 'project'
+        args = 'project list --match {0}'.format(substring)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(n=None,
+                                                      s=None,
+                                                      prefix=None,
+                                                      match=substring,
+                                                      description=False,
+                                                      branches=None)
+
+    @mock.patch('sys.stderr')
+    def test_project_list_with_mutually_exclusive_params(self, mocked_stderr):
+        args = 'project list --match some --prefix fake'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('not allowed',
+                      mocked_stderr.write.call_args_list[-1][0][0])
 
     def test_project_show(self):
         project_id = 'fakes%2Ffake-project'
