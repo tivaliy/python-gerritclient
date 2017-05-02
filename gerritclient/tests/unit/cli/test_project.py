@@ -37,6 +37,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=None,
                                                       prefix=None,
                                                       match=None,
+                                                      regex=None,
                                                       description=False,
                                                       branches=None)
 
@@ -51,6 +52,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=None,
                                                       prefix=None,
                                                       match=None,
+                                                      regex=None,
                                                       description=False,
                                                       branches=None)
 
@@ -63,6 +65,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=None,
                                                       prefix=None,
                                                       match=None,
+                                                      regex=None,
                                                       description=True,
                                                       branches=None)
 
@@ -76,6 +79,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=None,
                                                       prefix=None,
                                                       match=None,
+                                                      regex=None,
                                                       description=False,
                                                       branches=branches)
 
@@ -89,6 +93,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=None,
                                                       prefix=None,
                                                       match=None,
+                                                      regex=None,
                                                       description=False,
                                                       branches=None)
 
@@ -102,6 +107,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=list_skip,
                                                       prefix=None,
                                                       match=None,
+                                                      regex=None,
                                                       description=False,
                                                       branches=None)
 
@@ -117,6 +123,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=list_skip,
                                                       prefix=None,
                                                       match=None,
+                                                      regex=None,
                                                       description=False,
                                                       branches=None)
 
@@ -130,6 +137,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=None,
                                                       prefix=prefix,
                                                       match=None,
+                                                      regex=None,
                                                       description=False,
                                                       branches=None)
 
@@ -143,15 +151,30 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       s=None,
                                                       prefix=None,
                                                       match=substring,
+                                                      regex=None,
                                                       description=False,
                                                       branches=None)
 
     @mock.patch('sys.stderr')
     def test_project_list_with_mutually_exclusive_params(self, mocked_stderr):
-        args = 'project list --match some --prefix fake'
+        args = 'project list --match some --prefix fake --regex fake*.*'
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('not allowed',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_project_list_w_regex(self):
+        regex = 'fake*.*'
+        args = 'project list --regex {0}'.format(regex)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(n=None,
+                                                      s=None,
+                                                      prefix=None,
+                                                      match=None,
+                                                      regex=regex,
+                                                      description=False,
+                                                      branches=None)
 
     def test_project_show(self):
         project_id = 'fakes%2Ffake-project'

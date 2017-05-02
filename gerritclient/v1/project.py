@@ -20,12 +20,13 @@ class ProjectClient(base.BaseV1Client):
 
     api_path = "projects/"
 
-    def get_all(self, n=None, s=None, prefix=None, match=None,
+    def get_all(self, n=None, s=None, prefix=None, match=None, regex=None,
                 description=False, branches=None):
         params = {k: v for k, v in (('n', n),
                                     ('S', s),
                                     ('p', prefix),
                                     ('m', match),
+                                    ('r', regex),
                                     ('b', branches)) if v is not None}
         request_path = "{api_path}{all}".format(
             api_path=self.api_path,

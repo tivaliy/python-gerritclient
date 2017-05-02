@@ -85,6 +85,12 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             help='Limit the results to those projects '
                  'that match the specified substring.'
         )
+        group.add_argument(
+            '-r',
+            '--regex',
+            help='Limit the results to those projects '
+                 'that match the specified regex.'
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -96,6 +102,7 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
                                    s=parsed_args.skip,
                                    prefix=parsed_args.prefix,
                                    match=parsed_args.match,
+                                   regex=parsed_args.regex,
                                    description=parsed_args.description,
                                    branches=parsed_args.branches)
         data = self._reformat_data(data)
