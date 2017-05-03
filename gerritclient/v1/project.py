@@ -20,9 +20,23 @@ class ProjectClient(base.BaseV1Client):
 
     api_path = "projects/"
 
-    def get_all(self, n=None, s=None, pattern_dispatcher=None,
+    def get_all(self, limit=None, skip=None, pattern_dispatcher=None,
                 description=False, branches=None):
-        """Get list of all available projects accessible by the caller."""
+        """Get list of all available projects accessible by the caller.
+
+        :param limit: Int value that allows to limit the number of projects
+                      to be included in the output results
+        :param skip: Int value that allows to skip the given
+                     number of projects from the beginning of the list
+        :param pattern_dispatcher: Dict of pattern type with respective
+                     pattern value: {('prefix' | 'match' | 'regex') : value}
+        :param description: boolean value, if True then description will be
+                            added to the output result
+        :param branches: List of names of branches as a string to limit the
+                         results to the projects having the specified branches
+                         and include the sha1 of the branches in the results
+        :return: A map (dict) that maps entity names to respective entries
+        """
 
         pattern_types = {'prefix': 'p',
                          'match': 'm',
@@ -38,8 +52,8 @@ class ProjectClient(base.BaseV1Client):
                 raise ValueError("Pattern types can be either "
                                  "'prefix', 'match' or 'regex'.")
 
-        params = {k: v for k, v in (('n', n),
-                                    ('S', s),
+        params = {k: v for k, v in (('n', limit),
+                                    ('S', skip),
                                     (p, v),
                                     ('b', branches)) if v is not None}
         request_path = "{api_path}{all}".format(

@@ -31,7 +31,7 @@ def get_display_data_single(fields, data, missing_field_value=None):
                    external entities
     :param missing_field_value: the value will be used for all missing fields
 
-    :return:       list containing the collection of values of the
+    :return:       List containing the collection of values of the
                    supplied attributes
     """
     return [data.get(field, missing_field_value) for field in fields]

@@ -33,8 +33,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(n=None,
-                                                      s=None,
+        self.m_client.get_all.assert_called_once_with(limit=None,
+                                                      skip=None,
                                                       pattern_dispatcher=None,
                                                       description=False,
                                                       branches=None)
@@ -46,8 +46,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(n=None,
-                                                      s=None,
+        self.m_client.get_all.assert_called_once_with(limit=None,
+                                                      skip=None,
                                                       pattern_dispatcher=None,
                                                       description=False,
                                                       branches=None)
@@ -57,8 +57,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(n=None,
-                                                      s=None,
+        self.m_client.get_all.assert_called_once_with(limit=None,
+                                                      skip=None,
                                                       pattern_dispatcher=None,
                                                       description=True,
                                                       branches=None)
@@ -69,46 +69,46 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(n=None,
-                                                      s=None,
+        self.m_client.get_all.assert_called_once_with(limit=None,
+                                                      skip=None,
                                                       pattern_dispatcher=None,
                                                       description=False,
                                                       branches=branches)
 
     def test_project_list_limit(self):
-        list_limit = '5'
+        list_limit = 5
         args = 'project list --limit {0}'.format(list_limit)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(n=list_limit,
-                                                      s=None,
+        self.m_client.get_all.assert_called_once_with(limit=list_limit,
+                                                      skip=None,
                                                       pattern_dispatcher=None,
                                                       description=False,
                                                       branches=None)
 
     def test_project_list_skip_first(self):
-        list_skip = '5'
+        list_skip = 5
         args = 'project list --skip {0}'.format(list_skip)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(n=None,
-                                                      s=list_skip,
+        self.m_client.get_all.assert_called_once_with(limit=None,
+                                                      skip=list_skip,
                                                       pattern_dispatcher=None,
                                                       description=False,
                                                       branches=None)
 
     def test_project_list_range(self):
-        list_skip = '2'
-        list_limit = '2'
+        list_skip = 2
+        list_limit = 2
         args = 'project list --skip {0} --limit {1}'.format(list_skip,
                                                             list_limit)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(n=list_limit,
-                                                      s=list_skip,
+        self.m_client.get_all.assert_called_once_with(limit=list_limit,
+                                                      skip=list_skip,
                                                       pattern_dispatcher=None,
                                                       description=False,
                                                       branches=None)
@@ -120,8 +120,8 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(
-            n=None,
-            s=None,
+            limit=None,
+            skip=None,
             pattern_dispatcher=prefix,
             description=False,
             branches=None)
@@ -133,8 +133,8 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(
-            n=None,
-            s=None,
+            limit=None,
+            skip=None,
             pattern_dispatcher=match,
             description=False,
             branches=None)
@@ -152,8 +152,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(n=None,
-                                                      s=None,
+        self.m_client.get_all.assert_called_once_with(limit=None,
+                                                      skip=None,
                                                       pattern_dispatcher=regex,
                                                       description=False,
                                                       branches=None)

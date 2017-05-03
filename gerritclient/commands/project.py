@@ -63,11 +63,13 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
         parser.add_argument(
             '-l',
             '--limit',
+            type=int,
             help='Limit the number of projects to be included in the results.'
         )
         parser.add_argument(
             '-S',
             '--skip',
+            type=int,
             help='Skip the given number of projects '
                  'from the beginning of the list.'
         )
@@ -102,8 +104,8 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
                                            ('regex', parsed_args.regex))
                          if v is not None}
         fetch_pattern = fetch_pattern if fetch_pattern else None
-        data = self.client.get_all(n=parsed_args.limit,
-                                   s=parsed_args.skip,
+        data = self.client.get_all(limit=parsed_args.limit,
+                                   skip=parsed_args.skip,
                                    pattern_dispatcher=fetch_pattern,
                                    description=parsed_args.description,
                                    branches=parsed_args.branches)
