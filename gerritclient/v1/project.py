@@ -20,13 +20,27 @@ class ProjectClient(base.BaseV1Client):
 
     api_path = "projects/"
 
-    def get_all(self, n=None, s=None, prefix=None, match=None, regex=None,
+    def get_all(self, n=None, s=None, pattern_dispatcher=None,
                 description=False, branches=None):
+        """Get list of all available projects accessible by the caller."""
+
+        pattern_types = {'prefix': 'p',
+                         'match': 'm',
+                         'regex': 'r'}
+
+        p, v = None, None
+        if pattern_dispatcher is not None and pattern_dispatcher:
+            for item in pattern_types:
+                if item in pattern_dispatcher:
+                    p, v = pattern_types[item], pattern_dispatcher[item]
+                    break
+            else:
+                raise ValueError("Pattern types can be either "
+                                 "'prefix', 'match' or 'regex'.")
+
         params = {k: v for k, v in (('n', n),
                                     ('S', s),
-                                    ('p', prefix),
-                                    ('m', match),
-                                    ('r', regex),
+                                    (p, v),
                                     ('b', branches)) if v is not None}
         request_path = "{api_path}{all}".format(
             api_path=self.api_path,

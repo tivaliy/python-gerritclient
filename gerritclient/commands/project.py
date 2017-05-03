@@ -18,7 +18,6 @@ from gerritclient.common import utils
 
 
 class ProjectMixIn(object):
-
     entity_name = 'project'
 
     @staticmethod
@@ -98,11 +97,14 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             self.columns += ('description',)
         if parsed_args.branches:
             self.columns += ('branches',)
+        fetch_pattern = {k: v for k, v in (('prefix', parsed_args.prefix),
+                                           ('match', parsed_args.match),
+                                           ('regex', parsed_args.regex))
+                         if v is not None}
+        fetch_pattern = fetch_pattern if fetch_pattern else None
         data = self.client.get_all(n=parsed_args.limit,
                                    s=parsed_args.skip,
-                                   prefix=parsed_args.prefix,
-                                   match=parsed_args.match,
-                                   regex=parsed_args.regex,
+                                   pattern_dispatcher=fetch_pattern,
                                    description=parsed_args.description,
                                    branches=parsed_args.branches)
         data = self._reformat_data(data)
