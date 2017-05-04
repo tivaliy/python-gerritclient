@@ -21,7 +21,7 @@ class ProjectClient(base.BaseV1Client):
     api_path = "projects/"
 
     def get_all(self, limit=None, skip=None, pattern_dispatcher=None,
-                description=False, branches=None):
+                project_type=None, description=False, branches=None):
         """Get list of all available projects accessible by the caller.
 
         :param limit: Int value that allows to limit the number of projects
@@ -29,7 +29,9 @@ class ProjectClient(base.BaseV1Client):
         :param skip: Int value that allows to skip the given
                      number of projects from the beginning of the list
         :param pattern_dispatcher: Dict of pattern type with respective
-                     pattern value: {('prefix' | 'match' | 'regex') : value}
+                     pattern value: {('prefix'|'match'|'regex') : value}
+        :param project_type: string value for type of projects to be fetched
+                            ('code'|'permissions'|'all')
         :param description: boolean value, if True then description will be
                             added to the output result
         :param branches: List of names of branches as a string to limit the
@@ -55,6 +57,7 @@ class ProjectClient(base.BaseV1Client):
         params = {k: v for k, v in (('n', limit),
                                     ('S', skip),
                                     (p, v),
+                                    ('type', project_type),
                                     ('b', branches)) if v is not None}
         request_path = "{api_path}{all}".format(
             api_path=self.api_path,

@@ -73,6 +73,11 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
             help='Skip the given number of projects '
                  'from the beginning of the list.'
         )
+        parser.add_argument(
+            '--type',
+            choices=['code', 'permissions', 'all'],
+            help='Display only projects of the specified type.'
+        )
         group = parser.add_mutually_exclusive_group()
         group.add_argument(
             '-p',
@@ -107,6 +112,7 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
         data = self.client.get_all(limit=parsed_args.limit,
                                    skip=parsed_args.skip,
                                    pattern_dispatcher=fetch_pattern,
+                                   project_type=parsed_args.type,
                                    description=parsed_args.description,
                                    branches=parsed_args.branches)
         data = self._reformat_data(data)
