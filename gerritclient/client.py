@@ -143,10 +143,9 @@ class APIClient(object):
     def _decode_content(response):
         if response.status_code == 204:
             return {}
-        if response.status_code == 200:
-            # Remove ")]}'" prefix from response, that is used to prevent XSSI
-            return json.loads(response.text.strip(")]}'"))
-        return response.json()
+
+        # Remove ")]}'" prefix from response, that is used to prevent XSSI
+        return json.loads(response.text.strip(")]}'"))
 
 
 def get_settings(file_path=None):
