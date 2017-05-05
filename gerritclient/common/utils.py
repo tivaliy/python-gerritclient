@@ -21,6 +21,8 @@ import yaml
 
 from gerritclient import error
 
+SUPPORTED_FILE_FORMATS = ('json', 'yaml')
+
 
 def get_display_data_single(fields, data, missing_field_value=None):
     """Performs slicing of data by set of given fields.
@@ -62,7 +64,8 @@ def safe_load(data_format, stream):
                'yaml': safe_deserialize(yaml.safe_load)}
 
     if data_format not in loaders:
-        raise ValueError('Unsupported data format.')
+        raise ValueError('Unsupported data format. Available formats are: '
+                         '{0}'.format(SUPPORTED_FILE_FORMATS))
 
     loader = loaders[data_format]
     return loader(stream)
@@ -77,7 +80,8 @@ def safe_dump(data_format, stream, data):
                'yaml': yaml_dumper}
 
     if data_format not in dumpers:
-        raise ValueError('Unsupported data format.')
+        raise ValueError('Unsupported data format. Available formats are: '
+                         '{0}'.format(SUPPORTED_FILE_FORMATS))
 
     dumper = dumpers[data_format]
     dumper(data, stream)
@@ -113,3 +117,12 @@ def safe_deserialize(loader):
                                          ''.format(e.__class__.__name__,
                                                    six.text_type(e)))
     return wrapper
+
+
+def file_exists(path):
+    """Checks if file exists
+
+    :param str path: path to the file
+    :returns: True if file exists, False otherwise
+    """
+    return os.path.lexists(path)

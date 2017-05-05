@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 import mock
 
 from gerritclient.tests.unit.cli import clibase
@@ -188,3 +189,52 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_by_entity_id.assert_called_once_with(project_id)
+
+    def test_project_create_w_default_parameters(self):
+        project_id = 'fake-project'
+        args = 'project create {0}'.format(project_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.create.assert_called_once_with(project_id, data=None)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_project_create_w_parameters_from_file(self):
+        project_id = 'fakes/fake-project'
+        test_data = {'name': project_id,
+                     'description': 'Fake project description',
+                     'owners': ['Fake Owner']}
+        expected_path = '/tmp/fakes/fake-project.yaml'
+        args = 'project create {0} --file {1}'.format(project_id,
+                                                      expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.exec_command(args)
+
+        m_open.assert_called_once_with(expected_path, 'r')
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.create.assert_called_once_with(project_id,
+                                                     data=test_data)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_project_create_w_parameters_from_bad_file_format_fail(self):
+        project_id = 'fakes/fake-project'
+        test_data = {}
+        expected_path = '/tmp/fakes/bad_file.format'
+        args = 'project create {0} --file {1}'.format(project_id,
+                                                      expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.assertRaisesRegexp(ValueError, "Unsupported data format",
+                                    self.exec_command, args)
+
+    @mock.patch('sys.stderr')
+    def test_create_project_fail(self, mocked_stderr):
+        args = 'project create'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('project create: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

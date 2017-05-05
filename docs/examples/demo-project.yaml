@@ -1,0 +1,8 @@
+---
+name: demo-project/demo
+description: This is a Demo project description.
+create_empty_commit: True
+branches:
+  - master
+owners:
+  - Demo Group

@@ -13,12 +13,22 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import argparse
+
 from gerritclient.commands import base
 from gerritclient.common import utils
+from gerritclient import error
 
 
 class ProjectMixIn(object):
     entity_name = 'project'
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(
+                'File "{0}" does not exist'.format(file_path))
+        return file_path
 
     @staticmethod
     def _retrieve_web_links(data):
@@ -141,6 +151,42 @@ class ProjectShow(ProjectMixIn, base.BaseShowCommand):
         data = utils.get_display_data_single(self.columns, data)
 
         return self.columns, data
+
+
+class ProjectCreate(ProjectMixIn, base.BaseShowCommand):
+    """Creates a new project in Gerrit Code Review."""
+
+    columns = ('id',
+               'name',
+               'parent',
+               'description')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectCreate, self).get_parser(prog_name)
+        parser.add_argument(
+            '--file',
+            type=self.get_file_path,
+            help='File with data to be uploaded.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            # If no additional data specified in file,
+            # then create a project with default parameters
+            data = utils.read_from_file(file_path) if file_path else None
+        except (OSError, IOError):
+            msg = "Could not read metadata for project '{}' at {}".format(
+                parsed_args.entity_id, file_path)
+            raise error.InvalidFileException(msg)
+
+        response = self.client.create(parsed_args.entity_id, data=data)
+        response = utils.get_display_data_single(self.columns, response)
+        self.app.stdout.write("Project '{0}' was successfully "
+                              "created.\n".format(parsed_args.entity_id))
+
+        return self.columns, response
 
 
 def debug(argv=None):

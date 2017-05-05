@@ -1,0 +1,11 @@
+{
+	"name": "demo-project/demo",
+	"description": "This is a Demo project description.",
+	"create_empty_commit": true,
+	"branches": [
+		"master"
+	],
+	"owners": [
+		"Demo Group"
+	]
+}
