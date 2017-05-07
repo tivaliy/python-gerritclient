@@ -14,6 +14,7 @@
 #    under the License.
 
 import abc
+import argparse
 import six
 
 from cliff import command
@@ -22,6 +23,7 @@ from cliff import show
 
 from gerritclient import client
 from gerritclient.common import utils
+from gerritclient import error
 
 VERSION = 'v1'
 
@@ -135,3 +137,42 @@ class BaseShowCommand(show.ShowOne, BaseCommand):
         data = utils.get_display_data_single(self.columns, data)
 
         return self.columns, data
+
+
+@six.add_metaclass(abc.ABCMeta)
+class BaseCreateCommand(BaseShowCommand):
+    """Creates entity."""
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(
+                "File '{0}' does not exist".format(file_path))
+        return file_path
+
+    def get_parser(self, prog_name):
+        parser = super(BaseCreateCommand, self).get_parser(prog_name)
+        parser.add_argument(
+            '--file',
+            type=self.get_file_path,
+            help='File with metadata to be uploaded.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            # If no additional data specified in the file,
+            # then create a entity with default parameters
+            data = utils.read_from_file(file_path) if file_path else None
+        except (OSError, IOError):
+            msg = "Could not read metadata for {0} '{1}' at {2}".format(
+                self.entity_name, parsed_args.entity_id, file_path)
+            raise error.InvalidFileException(msg)
+
+        response = self.client.create(parsed_args.entity_id, data=data)
+        response = utils.get_display_data_single(self.columns, response)
+        self.app.stdout.write("{0} '{1}' was successfully created.\n".format(
+            self.entity_name.capitalize(), parsed_args.entity_id))
+
+        return self.columns, response
