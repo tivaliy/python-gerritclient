@@ -1,0 +1,6 @@
+---
+name: Demo Group
+description: This is a Demo Group description.
+visible_to_all: True
+owner_id: Administrators
+owners: admin

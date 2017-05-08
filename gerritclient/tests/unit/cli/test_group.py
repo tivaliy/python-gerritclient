@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 import mock
 
 from gerritclient.tests.unit.cli import clibase
@@ -73,3 +74,53 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('group', mock.ANY)
         self.m_client.get_group_members.assert_called_once_with(group_id,
                                                                 detailed=True)
+
+    def test_group_create_w_default_parameters(self):
+        group_name = 'Fake-Group'
+        args = 'group create {0}'.format(group_name)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.create.assert_called_once_with(group_name, data=None)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_group_create_w_parameters_from_file(self):
+        group_name = 'Fake-Group'
+        test_data = {'name': group_name,
+                     'description': 'Fake Group description',
+                     'owner_id': 'Administrators',
+                     'owners': 'admin'}
+        expected_path = '/tmp/fakes/fake-group.yaml'
+        args = 'group create {0} --file {1}'.format(group_name,
+                                                    expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.exec_command(args)
+
+        m_open.assert_called_once_with(expected_path, 'r')
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.create.assert_called_once_with(group_name,
+                                                     data=test_data)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_group_create_w_parameters_from_bad_file_format_fail(self):
+        group_name = 'Fake-Group'
+        test_data = {}
+        expected_path = '/tmp/fakes/bad_file.format'
+        args = 'group create {0} --file {1}'.format(group_name,
+                                                    expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.assertRaisesRegexp(ValueError, "Unsupported data format",
+                                    self.exec_command, args)
+
+    @mock.patch('sys.stderr')
+    def test_group_project_fail(self, mocked_stderr):
+        args = 'group create'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('group create: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

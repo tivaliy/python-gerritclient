@@ -74,6 +74,16 @@ class GroupShow(GroupMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class GroupCreate(GroupMixIn, base.BaseCreateCommand):
+    """Creates a new group in Gerrit Code Review."""
+
+    columns = ('group_id',
+               'name',
+               'options',
+               'description',
+               'owner')
+
+
 class GroupMemberList(GroupMixIn, base.BaseListCommand):
     """Lists all members of specific group in Gerrit Code Review."""
 

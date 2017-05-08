@@ -13,8 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from requests import utils as requests_utils
-
 from gerritclient.v1 import base
 
 
@@ -71,15 +69,6 @@ class ProjectClient(base.BaseV1Client):
             api_path=self.api_path,
             entity_id=entity_id)
         return self.connection.get_request(request_path)
-
-    def create(self, entity_id, data=None):
-        """Creates a new project."""
-
-        data = data if data else {}
-        request_path = "{api_path}{entity_id}".format(
-            api_path=self.api_path,
-            entity_id=requests_utils.quote(entity_id, safe=''))
-        return self.connection.put_request(request_path, data=data)
 
 
 def get_client(connection):
