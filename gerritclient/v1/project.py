@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from requests import utils as requests_utils
+
 from gerritclient.v1 import base
 
 
@@ -69,6 +71,16 @@ class ProjectClient(base.BaseV1Client):
             api_path=self.api_path,
             entity_id=entity_id)
         return self.connection.get_request(request_path)
+
+    def delete(self, name, force=False, preserve=False):
+        """Delete specified project."""
+
+        data = {"force": force,
+                "preserve": preserve}
+        request_path = "{api_path}{entity_id}".format(
+            api_path=self.api_path,
+            entity_id=requests_utils.quote(name, safe=''))
+        return self.connection.delete_request(request_path, data)
 
 
 def get_client(connection):

@@ -153,6 +153,39 @@ class ProjectCreate(ProjectMixIn, base.BaseCreateCommand):
                'description')
 
 
+class ProjectDelete(ProjectMixIn, base.BaseCommand):
+    """Deletes specified project from Gerrit Code Review.
+
+    Note, 'deleteproject' plugin must be installed.
+    """
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectDelete, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        parser.add_argument(
+            '-f',
+            '--force',
+            action='store_true',
+            help='Delete project even if it has open changes.'
+        )
+        parser.add_argument(
+            '--preserve-git-repository',
+            action='store_true',
+            help='Do not delete git repository directory.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete(parsed_args.name,
+                           force=parsed_args.force,
+                           preserve=parsed_args.preserve_git_repository)
+        msg = "Project '{0}' was deleted\n".format(parsed_args.name)
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

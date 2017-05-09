@@ -233,8 +233,39 @@ class TestProjectCommand(clibase.BaseCLITest):
                                     self.exec_command, args)
 
     @mock.patch('sys.stderr')
-    def test_create_project_fail(self, mocked_stderr):
+    def test_project_create_fail(self, mocked_stderr):
         args = 'project create'
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('project create: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_project_delete(self):
+        project_name = 'fake/fake-project'
+        args = 'project delete {0}'.format(project_name)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.delete.assert_called_once_with(project_name,
+                                                     force=False,
+                                                     preserve=False)
+
+    def test_project_delete_w_force(self):
+        project_name = 'fake/fake-project'
+        args = 'project delete {0} --force'.format(project_name)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.delete.assert_called_once_with(project_name,
+                                                     force=True,
+                                                     preserve=False)
+
+    def test_project_delete_w_preserve_git_repository(self):
+        project_name = 'fake/fake-project'
+        args = 'project delete {0} --preserve-git-repository'.format(
+            project_name)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.delete.assert_called_once_with(project_name,
+                                                     force=False,
+                                                     preserve=True)
