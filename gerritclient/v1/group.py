@@ -37,6 +37,13 @@ class GroupClient(base.BaseV1Client):
             all="?recursive" if detailed else "")
         return self.connection.get_request(request_path)
 
+    def rename(self, entity_id, new_name):
+        data = {"name": new_name}
+        request_path = "{api_path}{entity_id}/name".format(
+            api_path=self.api_path,
+            entity_id=entity_id)
+        return self.connection.put_request(request_path, data=data)
+
 
 def get_client(connection):
     return GroupClient(connection)

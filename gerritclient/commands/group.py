@@ -84,6 +84,30 @@ class GroupCreate(GroupMixIn, base.BaseCreateCommand):
                'owner')
 
 
+class GroupRename(GroupMixIn, base.BaseCommand):
+    """Renames a Gerrit internal group."""
+
+    def get_parser(self, prog_name):
+        parser = super(GroupRename, self).get_parser(prog_name)
+        parser.add_argument(
+            'entity_id',
+            metavar='group-identifier',
+            help='Group identifier.'
+        )
+        parser.add_argument(
+            'new_name',
+            help='New group name.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.rename(parsed_args.entity_id,
+                                      parsed_args.new_name)
+        msg = ("Group with identifier '{0}' was successfully renamed to "
+               "'{1}'.\n".format(parsed_args.entity_id, response))
+        self.app.stdout.write(msg)
+
+
 class GroupMemberList(GroupMixIn, base.BaseListCommand):
     """Lists all members of specific group in Gerrit Code Review."""
 

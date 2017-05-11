@@ -124,3 +124,13 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('group create: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_group_rename(self):
+        group_id = '69'
+        new_name = 'New-Fake-Group'
+        args = 'group rename {group_id} {new_name}'.format(group_id=group_id,
+                                                           new_name=new_name)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.rename.assert_called_once_with(group_id, new_name)
