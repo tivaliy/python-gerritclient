@@ -57,6 +57,23 @@ class GroupClient(base.BaseV1Client):
             group_id=group_id)
         return self.connection.delete_request(request_path, data={})
 
+    def set_options(self, group_id, visibility):
+        """Set the options of a Gerrit internal group.
+
+        :param group_id: Identifier of a group
+                        (UUID|legacy numeric ID|name of the group)
+        :type group_id: str
+        :param visibility: Whether the group is visible to all registered users
+        :type visibility: bool
+        :return The new group options are returned as a dict
+        """
+
+        data = {'visible_to_all': visibility}
+        request_path = "{api_path}{group_id}/options".format(
+            api_path=self.api_path,
+            group_id=group_id)
+        return self.connection.put_request(request_path, data=data)
+
 
 def get_client(connection):
     return GroupClient(connection)

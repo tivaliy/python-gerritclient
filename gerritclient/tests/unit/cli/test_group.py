@@ -151,3 +151,21 @@ class TestGroupCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
         self.m_client.delete_description.assert_called_once_with(group_id)
+
+    def test_group_set_options(self):
+        group_id = '69'
+        args = 'group options set {group_id} --visible'.format(
+            group_id=group_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.set_options.assert_called_once_with(group_id, True)
+
+    @mock.patch('sys.stderr')
+    def test_group_set_options_fail(self, mocked_stderr):
+        group_id = '69'
+        args = 'group options set {group_id} --visible --no-visible'.format(
+            group_id=group_id)
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('not allowed with argument',
+                      mocked_stderr.write.call_args_list[-1][0][0])

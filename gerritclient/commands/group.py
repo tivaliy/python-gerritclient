@@ -151,6 +151,39 @@ class GroupDeleteDescription(GroupMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class GroupSetOptions(GroupMixIn, base.BaseShowCommand):
+    """Sets the options of a Gerrit internal group."""
+
+    columns = ('visible_to_all',)
+
+    def get_parser(self, prog_name):
+        parser = super(GroupSetOptions, self).get_parser(prog_name)
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
+            '--visible',
+            dest='visibility',
+            action='store_true',
+            help="Set group visible to all registered users."
+        )
+        group.add_argument(
+            '--no-visible',
+            dest='visibility',
+            action='store_false',
+            help="Set group not visible to all registered users."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.set_options(parsed_args.entity_id,
+                                           parsed_args.visibility)
+        msg = ("The group with identifier '{0}' was successfully updated "
+               "with the following options:\n".format(parsed_args.entity_id))
+        self.app.stdout.write(msg)
+        data = utils.get_display_data_single(self.columns, response)
+
+        return self.columns, data
+
+
 class GroupMemberList(GroupMixIn, base.BaseListCommand):
     """Lists all members of specific group in Gerrit Code Review."""
 
