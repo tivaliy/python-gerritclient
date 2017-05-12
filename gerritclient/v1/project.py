@@ -66,10 +66,12 @@ class ProjectClient(base.BaseV1Client):
             all="?d" if description else "")
         return self.connection.get_request(request_path, params=params)
 
-    def get_by_entity_id(self, entity_id):
-        request_path = "{api_path}{entity_id}".format(
+    def get_by_name(self, name):
+        """Get detailed info about specified project."""
+
+        request_path = "{api_path}{name}".format(
             api_path=self.api_path,
-            entity_id=entity_id)
+            name=name)
         return self.connection.get_request(request_path)
 
     def delete(self, name, force=False, preserve=False):
@@ -77,9 +79,9 @@ class ProjectClient(base.BaseV1Client):
 
         data = {"force": force,
                 "preserve": preserve}
-        request_path = "{api_path}{entity_id}".format(
+        request_path = "{api_path}{name}".format(
             api_path=self.api_path,
-            entity_id=requests_utils.quote(name, safe=''))
+            name=requests_utils.quote(name, safe=''))
         return self.connection.delete_request(request_path, data)
 
 

@@ -133,7 +133,7 @@ class BaseShowCommand(show.ShowOne, BaseCommand):
         return parser
 
     def take_action(self, parsed_args):
-        data = self.client.get_by_entity_id(parsed_args.entity_id)
+        data = self.client.get_by_id(parsed_args.entity_id)
         data = utils.get_display_data_single(self.columns, data)
 
         return self.columns, data

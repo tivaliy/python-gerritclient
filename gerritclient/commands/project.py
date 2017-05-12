@@ -137,7 +137,7 @@ class ProjectShow(ProjectMixIn, base.BaseShowCommand):
                'web_links')
 
     def take_action(self, parsed_args):
-        data = self.client.get_by_entity_id(parsed_args.entity_id)
+        data = self.client.get_by_name(parsed_args.entity_id)
         data = self._retrieve_web_links(data)
         data = utils.get_display_data_single(self.columns, data)
 
