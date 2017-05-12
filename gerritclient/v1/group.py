@@ -51,6 +51,12 @@ class GroupClient(base.BaseV1Client):
             group_id=group_id)
         return self.connection.put_request(request_path, data=data)
 
+    def delete_description(self, group_id):
+        request_path = "{api_path}{group_id}/description".format(
+            api_path=self.api_path,
+            group_id=group_id)
+        return self.connection.delete_request(request_path, data={})
+
 
 def get_client(connection):
     return GroupClient(connection)

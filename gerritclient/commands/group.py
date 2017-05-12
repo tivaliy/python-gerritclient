@@ -109,7 +109,7 @@ class GroupRename(GroupMixIn, base.BaseCommand):
 
 
 class GroupSetDescription(GroupMixIn, base.BaseCommand):
-    """Sets the description of a Gerrit internal group."""
+    """Sets the description of a specified Gerrit internal group."""
 
     def get_parser(self, prog_name):
         parser = super(GroupSetDescription, self).get_parser(prog_name)
@@ -129,6 +129,25 @@ class GroupSetDescription(GroupMixIn, base.BaseCommand):
                                     parsed_args.description)
         msg = ("Description for the group with identifier '{0}' "
                "was successfully set.\n".format(parsed_args.group_id))
+        self.app.stdout.write(msg)
+
+
+class GroupDeleteDescription(GroupMixIn, base.BaseCommand):
+    """Deletes the description of a specified Gerrit internal group."""
+
+    def get_parser(self, prog_name):
+        parser = super(GroupDeleteDescription, self).get_parser(prog_name)
+        parser.add_argument(
+            'group_id',
+            metavar='group-identifier',
+            help='Group identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_description(parsed_args.group_id)
+        msg = ("Description for the group with identifier '{0}' "
+               "was successfully removed.\n".format(parsed_args.group_id))
         self.app.stdout.write(msg)
 
 

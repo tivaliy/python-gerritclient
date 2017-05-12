@@ -143,3 +143,11 @@ class TestGroupCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
         self.m_client.rename.assert_called_once_with(group_id, description)
+
+    def test_group_delete_description(self):
+        group_id = '69'
+        args = 'group description delete {group_id}'.format(group_id=group_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.delete_description.assert_called_once_with(group_id)
