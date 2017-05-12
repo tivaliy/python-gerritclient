@@ -23,32 +23,32 @@ class GroupClient(base.BaseV1Client):
     def get_all(self):
         return self.connection.get_request(self.api_path)
 
-    def get_by_entity_id(self, entity_id, detailed=False):
-        request_path = "{api_path}{entity_id}/{detail}".format(
+    def get_by_id(self, group_id, detailed=False):
+        request_path = "{api_path}{group_id}/{detail}".format(
             api_path=self.api_path,
-            entity_id=entity_id,
+            group_id=group_id,
             detail="detail" if detailed else "")
         return self.connection.get_request(request_path)
 
-    def get_group_members(self, entity_id, detailed=False):
-        request_path = "{api_path}{entity_id}/members/{all}".format(
+    def get_members(self, group_id, detailed=False):
+        request_path = "{api_path}{group_id}/members/{all}".format(
             api_path=self.api_path,
-            entity_id=entity_id,
+            group_id=group_id,
             all="?recursive" if detailed else "")
         return self.connection.get_request(request_path)
 
-    def rename(self, entity_id, new_name):
+    def rename(self, group_id, new_name):
         data = {"name": new_name}
-        request_path = "{api_path}{entity_id}/name".format(
+        request_path = "{api_path}{group_id}/name".format(
             api_path=self.api_path,
-            entity_id=entity_id)
+            group_id=group_id)
         return self.connection.put_request(request_path, data=data)
 
-    def set_description(self, entity_id, description):
+    def set_description(self, group_id, description):
         data = {"description": description}
-        request_path = "{api_path}{entity_id}/description".format(
+        request_path = "{api_path}{group_id}/description".format(
             api_path=self.api_path,
-            entity_id=entity_id)
+            group_id=group_id)
         return self.connection.put_request(request_path, data=data)
 
 

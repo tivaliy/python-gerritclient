@@ -28,9 +28,9 @@ class TestGroupCommand(clibase.BaseCLITest):
         super(TestGroupCommand, self).setUp()
         self.m_client.get_all.return_value = fake_group.get_fake_groups(10)
         get_fake_group = fake_group.get_fake_group()
-        self.m_client.get_by_entity_id.return_value = get_fake_group
+        self.m_client.get_by_id.return_value = get_fake_group
         get_fake_accounts = fake_account.get_fake_accounts(10)
-        self.m_client.get_group_members.return_value = get_fake_accounts
+        self.m_client.get_members.return_value = get_fake_accounts
 
     def test_group_list(self):
         args = 'group list'
@@ -45,8 +45,8 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
-        self.m_client.get_by_entity_id.assert_called_once_with(group_id,
-                                                               detailed=False)
+        self.m_client.get_by_id.assert_called_once_with(group_id,
+                                                        detailed=False)
 
     def test_group_show_w_details(self):
         group_id = '1'
@@ -54,8 +54,8 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
-        self.m_client.get_by_entity_id.assert_called_once_with(group_id,
-                                                               detailed=True)
+        self.m_client.get_by_id.assert_called_once_with(group_id,
+                                                        detailed=True)
 
     def test_group_member_list_wo_included_groups(self):
         group_id = '1'
@@ -63,8 +63,8 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
-        self.m_client.get_group_members.assert_called_once_with(group_id,
-                                                                detailed=False)
+        self.m_client.get_members.assert_called_once_with(group_id,
+                                                          detailed=False)
 
     def test_group_member_list_w_included_groups(self):
         group_id = '1'
@@ -72,8 +72,8 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
-        self.m_client.get_group_members.assert_called_once_with(group_id,
-                                                                detailed=True)
+        self.m_client.get_members.assert_called_once_with(group_id,
+                                                          detailed=True)
 
     def test_group_create_w_default_parameters(self):
         group_name = 'Fake-Group'

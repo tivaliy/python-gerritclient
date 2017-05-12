@@ -58,8 +58,8 @@ class GroupShow(GroupMixIn, base.BaseShowCommand):
         return parser
 
     def take_action(self, parsed_args):
-        data = self.client.get_by_entity_id(parsed_args.entity_id,
-                                            detailed=parsed_args.all)
+        data = self.client.get_by_id(parsed_args.entity_id,
+                                     detailed=parsed_args.all)
         if parsed_args.all:
             self.columns += ('members', 'includes')
             # get only some fields from 'members' and 'includes' dicts
@@ -90,7 +90,7 @@ class GroupRename(GroupMixIn, base.BaseCommand):
     def get_parser(self, prog_name):
         parser = super(GroupRename, self).get_parser(prog_name)
         parser.add_argument(
-            'entity_id',
+            'group_id',
             metavar='group-identifier',
             help='Group identifier.'
         )
@@ -101,10 +101,10 @@ class GroupRename(GroupMixIn, base.BaseCommand):
         return parser
 
     def take_action(self, parsed_args):
-        response = self.client.rename(parsed_args.entity_id,
+        response = self.client.rename(parsed_args.group_id,
                                       parsed_args.new_name)
         msg = ("Group with identifier '{0}' was successfully renamed to "
-               "'{1}'.\n".format(parsed_args.entity_id, response))
+               "'{1}'.\n".format(parsed_args.group_id, response))
         self.app.stdout.write(msg)
 
 
@@ -114,7 +114,7 @@ class GroupSetDescription(GroupMixIn, base.BaseCommand):
     def get_parser(self, prog_name):
         parser = super(GroupSetDescription, self).get_parser(prog_name)
         parser.add_argument(
-            'entity_id',
+            'group_id',
             metavar='group-identifier',
             help='Group identifier.'
         )
@@ -125,10 +125,10 @@ class GroupSetDescription(GroupMixIn, base.BaseCommand):
         return parser
 
     def take_action(self, parsed_args):
-        self.client.set_description(parsed_args.entity_id,
+        self.client.set_description(parsed_args.group_id,
                                     parsed_args.description)
         msg = ("Description for the group with identifier '{0}' "
-               "was successfully set.\n".format(parsed_args.entity_id))
+               "was successfully set.\n".format(parsed_args.group_id))
         self.app.stdout.write(msg)
 
 
@@ -144,7 +144,7 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
         parser = super(GroupMemberList, self).get_parser(app_name)
 
         parser.add_argument(
-            'entity_id',
+            'group_id',
             metavar='group-identifier',
             help='Group identifier.'
         )
@@ -158,8 +158,8 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
         return parser
 
     def take_action(self, parsed_args):
-        data = self.client.get_group_members(parsed_args.entity_id,
-                                             detailed=parsed_args.all)
+        data = self.client.get_members(parsed_args.group_id,
+                                       detailed=parsed_args.all)
         data = utils.get_display_data_multi(self.columns, data,
                                             sort_by=parsed_args.sort_columns)
         return self.columns, data
