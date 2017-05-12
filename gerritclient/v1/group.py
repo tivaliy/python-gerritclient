@@ -44,6 +44,13 @@ class GroupClient(base.BaseV1Client):
             entity_id=entity_id)
         return self.connection.put_request(request_path, data=data)
 
+    def set_description(self, entity_id, description):
+        data = {"description": description}
+        request_path = "{api_path}{entity_id}/description".format(
+            api_path=self.api_path,
+            entity_id=entity_id)
+        return self.connection.put_request(request_path, data=data)
+
 
 def get_client(connection):
     return GroupClient(connection)

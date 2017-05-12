@@ -108,6 +108,30 @@ class GroupRename(GroupMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class GroupSetDescription(GroupMixIn, base.BaseCommand):
+    """Sets the description of a Gerrit internal group."""
+
+    def get_parser(self, prog_name):
+        parser = super(GroupSetDescription, self).get_parser(prog_name)
+        parser.add_argument(
+            'entity_id',
+            metavar='group-identifier',
+            help='Group identifier.'
+        )
+        parser.add_argument(
+            'description',
+            help='Group description.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.set_description(parsed_args.entity_id,
+                                    parsed_args.description)
+        msg = ("Description for the group with identifier '{0}' "
+               "was successfully set.\n".format(parsed_args.entity_id))
+        self.app.stdout.write(msg)
+
+
 class GroupMemberList(GroupMixIn, base.BaseListCommand):
     """Lists all members of specific group in Gerrit Code Review."""
 
