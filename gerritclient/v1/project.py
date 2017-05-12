@@ -71,7 +71,7 @@ class ProjectClient(base.BaseV1Client):
 
         request_path = "{api_path}{name}".format(
             api_path=self.api_path,
-            name=name)
+            name=requests_utils.quote(name, safe=''))
         return self.connection.get_request(request_path)
 
     def delete(self, name, force=False, preserve=False):

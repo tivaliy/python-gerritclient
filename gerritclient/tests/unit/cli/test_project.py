@@ -183,7 +183,7 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       branches=None)
 
     def test_project_show(self):
-        project_id = 'fakes%2Ffake-project'
+        project_id = 'fakes/fake-project'
         args = 'project show {project_id}'.format(project_id=project_id)
         self.exec_command(args)
 
