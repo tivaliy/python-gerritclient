@@ -169,3 +169,14 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('not allowed with argument',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_group_set_owner_group(self):
+        group_id = '69'
+        owner_group = 'Administrators'
+        args = 'group owner set {group_id} {owner_group}'.format(
+            group_id=group_id, owner_group=owner_group)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.set_owner_group.assert_called_once_with(group_id,
+                                                              owner_group)

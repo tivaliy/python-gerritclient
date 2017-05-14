@@ -74,6 +74,14 @@ class GroupClient(base.BaseV1Client):
             group_id=group_id)
         return self.connection.put_request(request_path, data=data)
 
+    def set_owner_group(self, group_id, owner_group):
+
+        data = {'owner': owner_group}
+        request_path = "{api_path}{group_id}/owner".format(
+            api_path=self.api_path,
+            group_id=group_id)
+        return self.connection.put_request(request_path, data=data)
+
 
 def get_client(connection):
     return GroupClient(connection)

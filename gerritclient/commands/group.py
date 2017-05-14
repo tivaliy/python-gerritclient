@@ -184,6 +184,32 @@ class GroupSetOptions(GroupMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class GroupSetOwner(GroupMixIn, base.BaseCommand):
+    """Sets the owner group of a Gerrit internal group."""
+
+    def get_parser(self, prog_name):
+        parser = super(GroupSetOwner, self).get_parser(prog_name)
+        parser.add_argument(
+            'group_id',
+            metavar='group-identifier',
+            help='Group identifier.'
+        )
+        parser.add_argument(
+            'owner',
+            help='Group owner.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.set_owner_group(parsed_args.group_id,
+                                               parsed_args.owner)
+        msg = ("Owner group '{0}' with id '{1}' was successfully assigned to "
+               "the group with id '{2}':\n".format(response['name'],
+                                                   response['group_id'],
+                                                   parsed_args.group_id))
+        self.app.stdout.write(msg)
+
+
 class GroupMemberList(GroupMixIn, base.BaseListCommand):
     """Lists all members of specific group in Gerrit Code Review."""
 
