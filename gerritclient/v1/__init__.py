@@ -13,11 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from gerritclient.v1 import account
 from gerritclient.v1 import group
 from gerritclient.v1 import plugin
 from gerritclient.v1 import project
 
 # Please keeps the list in alphabetical order
-__all__ = ('group',
+__all__ = ('account',
+           'group',
            'plugin',
            'project')

@@ -26,7 +26,8 @@ def get_fake_account(_account_id=1000226, name="John Doe",
         "_account_id": _account_id,
         "name": name,
         "email": email,
-        "username": username
+        "username": username,
+        "secondary_emails": ['fake-email@example.com']
     }
 
 
