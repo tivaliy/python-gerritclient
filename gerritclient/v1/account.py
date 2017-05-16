@@ -52,6 +52,18 @@ class AccountClient(base.BaseV1Client):
             suggest="?suggest" if suggested else "")
         return self.connection.get_request(request_path, params=params)
 
+    def get_by_id(self, account_id):
+        """Get data about specific account in Gerrit.
+
+        :param account_id: (account_ID|username|email|name) as a string value
+        :return: dict, that contains information about account
+        """
+
+        request_path = "{api_path}{account_id}".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return AccountClient(connection)

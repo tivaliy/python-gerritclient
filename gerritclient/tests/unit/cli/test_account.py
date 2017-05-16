@@ -25,6 +25,7 @@ class TestAccountCommand(clibase.BaseCLITest):
     def setUp(self):
         super(TestAccountCommand, self).setUp()
         self.m_client.get_all.return_value = fake_account.get_fake_accounts(10)
+        self.m_client.get_by_id.return_value = fake_account.get_fake_account()
 
     def exec_list_command(self, cmd, **kwargs):
         query = 'fake-name'
@@ -75,3 +76,18 @@ class TestAccountCommand(clibase.BaseCLITest):
             limit, skip)
         self.exec_list_command(args, detailed=True, all_emails=True,
                                limit=limit, skip=skip)
+
+    def test_account_show(self):
+        account_id = 'john'
+        args = 'account show {account_id}'.format(account_id=account_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.get_by_id.assert_called_once_with(account_id)
+
+    @mock.patch('sys.stderr')
+    def test_account_show_fail(self, mocked_stderr):
+        args = 'account show'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('account show: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

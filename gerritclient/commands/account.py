@@ -84,6 +84,15 @@ class AccountList(AccountMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class AccountShow(AccountMixIn, base.BaseShowCommand):
+    """Shows information about specific account in Gerrit."""
+
+    columns = ('_account_id',
+               'name',
+               'email',
+               'username')
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
