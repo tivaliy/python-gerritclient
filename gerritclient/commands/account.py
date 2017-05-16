@@ -92,6 +92,24 @@ class AccountShow(AccountMixIn, base.BaseShowCommand):
                'email',
                'username')
 
+    def get_parser(self, prog_name):
+        parser = super(AccountShow, self).get_parser(prog_name)
+        parser.add_argument(
+            '-a',
+            '--all',
+            action='store_true',
+            help='Show more details about account.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        if parsed_args.all:
+            self.columns += ('secondary_emails', 'registered_on')
+        response = self.client.get_by_id(parsed_args.entity_id,
+                                         detailed=parsed_args.all)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
 
 def debug(argv=None):
     """Helper to debug the required command."""

@@ -83,7 +83,8 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('account', mock.ANY)
-        self.m_client.get_by_id.assert_called_once_with(account_id)
+        self.m_client.get_by_id.assert_called_once_with(account_id,
+                                                        detailed=False)
 
     @mock.patch('sys.stderr')
     def test_account_show_fail(self, mocked_stderr):
@@ -91,3 +92,12 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('account show: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_account_show_w_details(self):
+        account_id = 'john'
+        args = 'account show {account_id} --all'.format(account_id=account_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.get_by_id.assert_called_once_with(account_id,
+                                                        detailed=True)
