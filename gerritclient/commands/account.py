@@ -111,6 +111,15 @@ class AccountShow(AccountMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class AccountCreate(AccountMixIn, base.BaseCreateCommand):
+    """Creates a new account in Gerrit Code Review."""
+
+    columns = ('_account_id',
+               'username',
+               'name',
+               'email')
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

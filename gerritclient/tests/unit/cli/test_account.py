@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 import mock
 
 from gerritclient.tests.unit.cli import clibase
@@ -101,3 +102,52 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.get_by_id.assert_called_once_with(account_id,
                                                         detailed=True)
+
+    def test_account_create_w_default_parameters(self):
+        username = 'fake-user'
+        args = 'account create {0}'.format(username)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.create.assert_called_once_with(username, data=None)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_account_create_w_parameters_from_file(self):
+        username = 'fake-user'
+        test_data = {'username': username,
+                     'name': 'Fake User',
+                     'groups': ['Fake Group']}
+        expected_path = '/tmp/fakes/fake-account.yaml'
+        args = 'account create {0} --file {1}'.format(username,
+                                                      expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.exec_command(args)
+
+        m_open.assert_called_once_with(expected_path, 'r')
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.create.assert_called_once_with(username,
+                                                     data=test_data)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_account_create_w_parameters_from_bad_file_format_fail(self):
+        username = 'fake-user'
+        test_data = {}
+        expected_path = '/tmp/fakes/bad_file.format'
+        args = 'account create {0} --file {1}'.format(username,
+                                                      expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.assertRaisesRegexp(ValueError, "Unsupported data format",
+                                    self.exec_command, args)
+
+    @mock.patch('sys.stderr')
+    def test_account_create_fail(self, mocked_stderr):
+        args = 'account create'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('account create: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

@@ -1,0 +1,10 @@
+{
+	"username": "jdoe",
+	"name": "John Doe",
+	"email": "j.doe@example.com",
+	"ssh_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHIsZdlFD24+RbAn5sR/G8z+gTyBJqaeVUQExmbBqCSlm9MwHBgN9grQTRZiCt0I8cpPi58e9t3cu8JDQsoKVnNmts3opSM2fQXoaXjnXu5HlNPNA8iCaH4DxmzHKSMgQG6ZMQHO66p/D+xsyOr3/xxfhkTTx7UDOYrm+uJwhoSz0m6DFTfTSTLbW/Op9oE2hbSrXzdQ69Yr3HfDbbXyNe6XGjFwAvqwD7vV7gP1aftsn0U1UJem5QEpiAHMIF2ytdWLuW9/hR8pvvaoab4ORS/YSYKWGsPRcLAMUdVmA/MpZ5hned2YvE0jvthIVYkasj4iTlyUuL3WVZTqjkEXU7 jdoe@example",
+	"http_password": "shd77jlq8d0lziql87zx",
+	"groups": [
+		"Demo Group"
+	]
+}
