@@ -138,11 +138,12 @@ class TestGroupCommand(clibase.BaseCLITest):
     def test_group_set_description(self):
         group_id = '69'
         description = 'New Fake group description'
-        args = 'group rename {0} "{1}"'.format(group_id, description)
+        args = 'group description set {0} "{1}"'.format(group_id, description)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
-        self.m_client.rename.assert_called_once_with(group_id, description)
+        self.m_client.set_description.assert_called_once_with(group_id,
+                                                              description)
 
     def test_group_delete_description(self):
         group_id = '69'
