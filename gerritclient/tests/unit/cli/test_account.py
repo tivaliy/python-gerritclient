@@ -151,3 +151,12 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('account create: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_account_set_fullname(self):
+        account_id = '69'
+        name = 'Fake Name'
+        args = 'account name set {0} "{1}"'.format(account_id, name)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.set_name.assert_called_once_with(account_id, name)

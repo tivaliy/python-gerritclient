@@ -66,6 +66,20 @@ class AccountClient(base.BaseV1Client):
             detail="detail" if detailed else "")
         return self.connection.get_request(request_path)
 
+    def set_name(self, account_id, name):
+        """Set full name for account.
+
+        :param account_id: (account_ID|username|email|name) as a string value
+        :param name: Full name for account as a string
+        :return: response as a dict {'name': Full Name}
+        """
+
+        data = {"name": name}
+        request_path = "{api_path}{account_id}/name".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.put_request(request_path, data=data)
+
 
 def get_client(connection):
     return AccountClient(connection)
