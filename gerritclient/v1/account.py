@@ -80,6 +80,21 @@ class AccountClient(base.BaseV1Client):
             account_id=account_id)
         return self.connection.put_request(request_path, data=data)
 
+    def set_username(self, account_id, username):
+        """Set the username of an account in Gerrit Code Review.
+
+        Once set, the username cannot be changed or deleted.
+        If attempted this fails with 405 - Method Not Allowed.
+        :param account_id: (account_ID|username|email|name) as a string value
+        :param username: Username of an account as a string
+        :return: response username as a string
+        """
+        data = {"username": username}
+        request_path = "{api_path}{account_id}/username".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.put_request(request_path, data=data)
+
 
 def get_client(connection):
     return AccountClient(connection)

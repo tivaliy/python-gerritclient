@@ -13,6 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import abc
+
+import six
+
 from gerritclient.commands import base
 from gerritclient.common import utils
 
@@ -120,29 +124,55 @@ class AccountCreate(AccountMixIn, base.BaseCreateCommand):
                'email')
 
 
-class AccountSetName(AccountMixIn, base.BaseCommand):
-    """Sets the full name of an account in Gerrit Code Review."""
+@six.add_metaclass(abc.ABCMeta)
+class BaseAccountSetCommand(AccountMixIn, base.BaseCommand):
+
+    @abc.abstractmethod
+    def action(self, account_id, attribute):
+        pass
+
+    @abc.abstractproperty
+    def attribute(self):
+        pass
 
     def get_parser(self, prog_name):
-        parser = super(AccountSetName, self).get_parser(prog_name)
+        parser = super(BaseAccountSetCommand, self).get_parser(prog_name)
         parser.add_argument(
             'account_id',
             metavar='account-identifier',
             help='Account identifier.'
         )
         parser.add_argument(
-            'name',
-            help='Account full name.'
+            'attribute',
+            metavar='{attribute}'.format(attribute=self.attribute),
+            help='Account {attribute}.'.format(attribute=self.attribute)
         )
         return parser
 
     def take_action(self, parsed_args):
-        response = self.client.set_name(parsed_args.account_id,
-                                        parsed_args.name)
-        msg = ("Full name '{0}' for the account with identifier '{1}' "
-               "was successfully set.\n".format(response,
+        self.action(parsed_args.account_id, parsed_args.attribute)
+        msg = ("{0} for the account with identifier '{1}' "
+               "was successfully set.\n".format(self.attribute.capitalize(),
                                                 parsed_args.account_id))
         self.app.stdout.write(msg)
+
+
+class AccountSetName(BaseAccountSetCommand):
+    """Sets the full name of an account in Gerrit Code Review."""
+
+    attribute = "name"
+
+    def action(self, account_id, attribute):
+        return self.client.set_name(account_id, name=attribute)
+
+
+class AccountSetUsername(BaseAccountSetCommand):
+    """Sets the username of an account in Gerrit Code Review."""
+
+    attribute = "username"
+
+    def action(self, account_id, attribute):
+        return self.client.set_username(account_id, username=attribute)
 
 
 def debug(argv=None):
