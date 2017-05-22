@@ -171,3 +171,19 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.set_username.assert_called_once_with(account_id,
                                                            username=username)
+
+    def test_account_enable(self):
+        account_id = '69'
+        args = 'account enable {0}'.format(account_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.enable.assert_called_once_with(account_id)
+
+    def test_account_disable(self):
+        account_id = '69'
+        args = 'account disable {0}'.format(account_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.disable.assert_called_once_with(account_id)

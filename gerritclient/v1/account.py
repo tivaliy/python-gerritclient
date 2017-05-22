@@ -81,7 +81,7 @@ class AccountClient(base.BaseV1Client):
         return self.connection.put_request(request_path, data=data)
 
     def set_username(self, account_id, username):
-        """Set the username of an account in Gerrit Code Review.
+        """Set the username of an account in Gerrit.
 
         Once set, the username cannot be changed or deleted.
         If attempted this fails with 405 - Method Not Allowed.
@@ -94,6 +94,22 @@ class AccountClient(base.BaseV1Client):
             api_path=self.api_path,
             account_id=account_id)
         return self.connection.put_request(request_path, data=data)
+
+    def enable(self, account_id):
+        """Enable account in Gerrit."""
+
+        request_path = "{api_path}{account_id}/active".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.put_request(request_path, data={})
+
+    def disable(self, account_id):
+        """Disable account in Gerrit."""
+
+        request_path = "{api_path}{account_id}/active".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.delete_request(request_path, data={})
 
 
 def get_client(connection):
