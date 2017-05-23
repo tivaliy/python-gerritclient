@@ -247,6 +247,25 @@ class AccountSetPassword(AccountMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class AccountDeletePassword(AccountMixIn, base.BaseCommand):
+    """Deletes the HTTP password of an account in Gerrit."""
+
+    def get_parser(self, prog_name):
+        parser = super(AccountDeletePassword, self).get_parser(prog_name)
+        parser.add_argument(
+            'account_id',
+            metavar='account-identifier',
+            help='Account identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_password(parsed_args.account_id)
+        msg = ("HTTP password for the account with identifier '{0}' "
+               "was successfully removed.\n".format(parsed_args.account_id))
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

@@ -133,6 +133,14 @@ class AccountClient(base.BaseV1Client):
             account_id=account_id)
         return self.connection.put_request(request_path, data=data)
 
+    def delete_password(self, account_id):
+        """Delete the HTTP password of an account in Gerrit."""
+
+        request_path = "{api_path}{account_id}/password.http".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.delete_request(request_path, data={})
+
 
 def get_client(connection):
     return AccountClient(connection)

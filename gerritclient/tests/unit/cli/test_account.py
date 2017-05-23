@@ -226,3 +226,11 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.m_client.set_password.assert_called_once_with(account_id,
                                                            None,
                                                            True)
+
+    def test_account_delete_password(self):
+        account_id = '69'
+        args = 'account password delete {0}'.format(account_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.delete_password.assert_called_once_with(account_id)
