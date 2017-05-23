@@ -18,6 +18,7 @@ import mock
 
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_account
+from gerritclient.tests.utils import fake_sshkeyinfo
 
 
 class TestAccountCommand(clibase.BaseCLITest):
@@ -234,3 +235,13 @@ class TestAccountCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.delete_password.assert_called_once_with(account_id)
+
+    def test_account_ssh_keys_list(self):
+        account_id = '69'
+        args = 'account ssh-key list {0}'.format(account_id)
+        fake_ssh_keys_info = fake_sshkeyinfo.get_fake_ssh_keys_info(5)
+        self.m_client.get_ssh_keys.return_value = fake_ssh_keys_info
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.get_ssh_keys.assert_called_once_with(account_id)

@@ -141,6 +141,14 @@ class AccountClient(base.BaseV1Client):
             account_id=account_id)
         return self.connection.delete_request(request_path, data={})
 
+    def get_ssh_keys(self, account_id):
+        """Get list of SSH keys of an account in Gerrit."""
+
+        request_path = "{api_path}{account_id}/sshkeys".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return AccountClient(connection)

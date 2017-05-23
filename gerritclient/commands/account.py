@@ -266,6 +266,32 @@ class AccountDeletePassword(AccountMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class AccountSSHKeyList(AccountMixIn, base.BaseListCommand):
+    """Returns the SSH keys of an account in Gerrit."""
+
+    columns = ('seq',
+               'ssh_public_key',
+               'encoded_key',
+               'algorithm',
+               'comment',
+               'valid')
+
+    def get_parser(self, prog_name):
+        parser = super(AccountSSHKeyList, self).get_parser(prog_name)
+        parser.add_argument(
+            'account_id',
+            metavar='account-identifier',
+            help='Account identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_ssh_keys(parsed_args.account_id)
+        data = utils.get_display_data_multi(self.columns, response)
+
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
