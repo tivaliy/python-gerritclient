@@ -187,3 +187,42 @@ class TestAccountCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.disable.assert_called_once_with(account_id)
+
+    def test_account_set_password(self):
+        account_id = '69'
+        password = 'fake-password'
+        args = 'account password set {0} --password {1}'.format(account_id,
+                                                                password)
+        self.m_client.set_password.return_value = password
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.set_password.assert_called_once_with(account_id,
+                                                           password,
+                                                           False)
+
+    def test_account_set_empty_password(self):
+        account_id = '69'
+        empty_password = ''
+        args = 'account password set {0} --password "{1}"'.format(
+            account_id,
+            empty_password)
+        self.m_client.set_password.return_value = empty_password
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.set_password.assert_called_once_with(account_id,
+                                                           empty_password,
+                                                           False)
+
+    def test_account_generate_password(self):
+        account_id = '69'
+        args = 'account password set {0} --generate'.format(account_id)
+        password = 'khbasdl09|asd'
+        self.m_client.set_password.return_value = password
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.set_password.assert_called_once_with(account_id,
+                                                           None,
+                                                           True)

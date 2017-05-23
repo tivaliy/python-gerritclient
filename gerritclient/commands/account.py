@@ -204,13 +204,47 @@ class BaseAccountSetState(AccountMixIn, base.BaseCommand):
 
 
 class AccountEnable(BaseAccountSetState):
+    """Sets the account state in Gerrit to active."""
 
     action_type = 'enable'
 
 
 class AccountDisable(BaseAccountSetState):
+    """Sets the account state in Gerrit to inactive."""
 
     action_type = 'disable'
+
+
+class AccountSetPassword(AccountMixIn, base.BaseShowCommand):
+    """Sets/Generates the HTTP password of an account in Gerrit."""
+
+    columns = ('account_identifier',
+               'http_password')
+
+    def get_parser(self, prog_name):
+        parser = super(AccountSetPassword, self).get_parser(prog_name)
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
+            '--generate',
+            action='store_true',
+            help='Generate HTTP password.'
+        )
+        group.add_argument(
+            '-p',
+            '--password',
+            help='HTTP password.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.set_password(parsed_args.entity_id,
+                                            parsed_args.password,
+                                            parsed_args.generate)
+        data = {'account_identifier': parsed_args.entity_id,
+                'http_password': response if response else None}
+        data = utils.get_display_data_single(self.columns, data)
+
+        return self.columns, data
 
 
 def debug(argv=None):

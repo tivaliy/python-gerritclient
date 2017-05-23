@@ -111,6 +111,28 @@ class AccountClient(base.BaseV1Client):
             account_id=account_id)
         return self.connection.delete_request(request_path, data={})
 
+    def set_password(self, account_id, password=None, generate=False):
+        """Set/Generate the HTTP password of an account in Gerrit.
+
+        Only Gerrit administrators may set the HTTP password directly.
+        If password is empty or not set and generate is False or not set,
+        the HTTP password is deleted.
+
+        :param account_id: (account_ID|username|email|name) as a string value
+        :param password: password as a string
+        :param generate: boolean value, if True then password will be generated
+        :return: set/generated password as a string or
+                 empty dict {} if password is deleted
+        """
+
+        data = {k: v for
+                k, v in (('generate', generate),
+                         ('http_password', password)) if v is not None}
+        request_path = "{api_path}{account_id}/password.http".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.put_request(request_path, data=data)
+
 
 def get_client(connection):
     return AccountClient(connection)
