@@ -245,3 +245,24 @@ class TestAccountCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.get_ssh_keys.assert_called_once_with(account_id)
+
+    def test_account_ssh_key_show(self):
+        account_id = '69'
+        sequence_id = 71
+        args = 'account ssh-key show {0} --sequence-id {1}'.format(account_id,
+                                                                   sequence_id)
+        fake_ssh_key_info = fake_sshkeyinfo.get_fake_ssh_key_info(sequence_id)
+        self.m_client.get_ssh_key.return_value = fake_ssh_key_info
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.get_ssh_key.assert_called_once_with(account_id,
+                                                          sequence_id)
+
+    @mock.patch('sys.stderr')
+    def test_account_ssh_key_show_fail(self, mocked_stderr):
+        account_id = '69'
+        args = 'account ssh-key show {0}'.format(account_id)
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('ssh-key show: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

@@ -292,6 +292,34 @@ class AccountSSHKeyList(AccountMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class AccountSSHKeyShow(AccountMixIn, base.BaseShowCommand):
+    """Retrieves an SSH key of a user in Gerrit."""
+
+    columns = ('seq',
+               'ssh_public_key',
+               'encoded_key',
+               'algorithm',
+               'comment',
+               'valid')
+
+    def get_parser(self, app_name):
+        parser = super(AccountSSHKeyShow, self).get_parser(app_name)
+        parser.add_argument(
+            '-s',
+            '--sequence-id',
+            type=int,
+            required=True,
+            help='The sequence number of the SSH key.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_ssh_key(parsed_args.entity_id,
+                                           parsed_args.sequence_id)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

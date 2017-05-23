@@ -149,6 +149,20 @@ class AccountClient(base.BaseV1Client):
             account_id=account_id)
         return self.connection.get_request(request_path)
 
+    def get_ssh_key(self, account_id, sequence_id):
+        """Retrieve an SSH key of a user.
+
+        :param account_id: (account_ID|username|email|name) as a string value
+        :param sequence_id: int value of a sequence number
+        :return: dict that describes the SSH key
+        """
+
+        request_path = "{api_path}{account_id}/sshkeys/{sequence_id}".format(
+            api_path=self.api_path,
+            account_id=account_id,
+            sequence_id=sequence_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return AccountClient(connection)
