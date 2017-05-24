@@ -163,6 +163,15 @@ class AccountClient(base.BaseV1Client):
             sequence_id=sequence_id)
         return self.connection.get_request(request_path)
 
+    def add_ssh_key(self, account_id, ssh_key):
+        """Add an SSH key for a user."""
+
+        request_path = "{api_path}{account_id}/sshkeys".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.post_request(request_path, data=ssh_key,
+                                            content_type='plain/text')
+
 
 def get_client(connection):
     return AccountClient(connection)

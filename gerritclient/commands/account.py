@@ -14,11 +14,13 @@
 #    under the License.
 
 import abc
+import argparse
 
 import six
 
 from gerritclient.commands import base
 from gerritclient.common import utils
+from gerritclient import error
 
 
 class AccountMixIn(object):
@@ -316,6 +318,53 @@ class AccountSSHKeyShow(AccountMixIn, base.BaseShowCommand):
     def take_action(self, parsed_args):
         response = self.client.get_ssh_key(parsed_args.entity_id,
                                            parsed_args.sequence_id)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
+class AccountSSHKeyAdd(AccountMixIn, base.BaseShowCommand):
+    """Adds an SSH key for a user in Gerrit."""
+
+    columns = ('seq',
+               'ssh_public_key',
+               'encoded_key',
+               'algorithm',
+               'comment',
+               'valid')
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(
+                "File '{0}' does not exist".format(file_path))
+        return file_path
+
+    def get_parser(self, app_name):
+        parser = super(AccountSSHKeyAdd, self).get_parser(app_name)
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
+            '--ssh-key',
+            help='The SSH public key.'
+        )
+        group.add_argument(
+            '--file',
+            metavar='SSH_KEY_FILE',
+            type=self.get_file_path,
+            help='File with the SSH public key.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        ssh_key = parsed_args.ssh_key
+        if file_path:
+            try:
+                with open(file_path, 'r') as stream:
+                    ssh_key = stream.read()
+            except (OSError, IOError):
+                msg = "Could not read file '{0}'".format(file_path)
+                raise error.InvalidFileException(msg)
+        response = self.client.add_ssh_key(parsed_args.entity_id, ssh_key)
         data = utils.get_display_data_single(self.columns, response)
         return self.columns, data
 

@@ -266,3 +266,54 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('ssh-key show: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_account_ssh_key_add(self):
+        account_id = '69'
+        ssh_key = ('ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA0T...'
+                   'YImydZAw\u003d\u003d john.doe@example.com')
+        args = 'account ssh-key add {0} --ssh-key "{1}"'.format(account_id,
+                                                                ssh_key)
+        fake_ssh_key_info = fake_sshkeyinfo.get_fake_ssh_key_info(1)
+        self.m_client.add_ssh_key.return_value = fake_ssh_key_info
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.add_ssh_key.assert_called_once_with(account_id,
+                                                          ssh_key)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_account_ssh_key_add_from_file(self):
+        account_id = '69'
+        test_data = ('ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA0T...'
+                     'YImydZAw\u003d\u003d john.doe@example.com')
+        expected_path = '/tmp/fakes/fake-ssh-key.pub'
+        args = 'account ssh-key add {0} --file {1}'.format(account_id,
+                                                           expected_path)
+        fake_ssh_key_info = fake_sshkeyinfo.get_fake_ssh_key_info(1)
+        self.m_client.add_ssh_key.return_value = fake_ssh_key_info
+        m_open = mock.mock_open(read_data=test_data)
+        with mock.patch('gerritclient.commands.account.open', m_open,
+                        create=True):
+            self.exec_command(args)
+
+        m_open.assert_called_once_with(expected_path, 'r')
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.add_ssh_key.assert_called_once_with(account_id,
+                                                          test_data)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    @mock.patch('sys.stderr')
+    def test_account_ssh_key_add_fail_with_mutually_exclusive_params(
+            self, mocked_stderr):
+        account_id = '69'
+        expected_path = '/tmp/fakes/fake-ssh-key.pub'
+        ssh_key = ('ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA0T...'
+                   'YImydZAw\u003d\u003d john.doe@example.com')
+        args = 'account ssh-key add {0} --ssh-key "{1}" --file {2} '.format(
+            account_id, ssh_key, expected_path
+        )
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('not allowed',
+                      mocked_stderr.write.call_args_list[-1][0][0])

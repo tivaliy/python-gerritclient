@@ -113,22 +113,30 @@ class APIClient(object):
         self._raise_for_status_with_info(resp)
         return self._decode_content(resp)
 
-    def post_request_raw(self, api, data=None):
+    def post_request_raw(self, api, data=None, json_data=None,
+                         content_type=None):
         """Make a POST request to specific API and return raw response.
 
         :param api: API endpoint (path)
-        :param data: data send in request, will be serialized to JSON
+        :param data: Dictionary, bytes, or file-like object to send in the body
+        :param json_data: Data in JSON to send in the body
+        :param content_type: Content-Type value, if not specified (None) than
+                             'application/json' is used by default
         """
 
         url = self.api_root + api
-        data_json = None if data is None else json.dumps(data)
+        # Some POST requests require 'Content-Type' value other
+        # than default 'application/json'
+        if content_type is not None:
+            self.session.headers.update({'Content-Type': content_type})
 
-        return self.session.post(url, data=data_json)
+        return self.session.post(url, data=data, json=json_data)
 
-    def post_request(self, api, data=None):
+    def post_request(self, api, data=None, json_data=None,
+                     content_type=None):
         """Make POST request to specific API with some data."""
 
-        resp = self.post_request_raw(api, data)
+        resp = self.post_request_raw(api, data, json_data, content_type)
         self._raise_for_status_with_info(resp)
         return self._decode_content(resp)
 
