@@ -172,6 +172,15 @@ class AccountClient(base.BaseV1Client):
         return self.connection.post_request(request_path, data=ssh_key,
                                             content_type='plain/text')
 
+    def delete_ssh_key(self, account_id, ssh_key_id):
+        """Delete an SSH key of a user."""
+
+        request_path = "{api_path}{account_id}/sshkeys/{ssh_key_id}".format(
+            api_path=self.api_path,
+            account_id=account_id,
+            ssh_key_id=ssh_key_id)
+        return self.connection.delete_request(request_path)
+
 
 def get_client(connection):
     return AccountClient(connection)

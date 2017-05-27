@@ -369,6 +369,33 @@ class AccountSSHKeyAdd(AccountMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class AccountSSHKeyDelete(AccountMixIn, base.BaseCommand):
+    """Deletes an SSH key of a user in Gerrit."""
+
+    def get_parser(self, prog_name):
+        parser = super(AccountSSHKeyDelete, self).get_parser(prog_name)
+        parser.add_argument(
+            'account_id',
+            metavar='account-identifier',
+            help='Account identifier.'
+        )
+        parser.add_argument(
+            '--sequence-id',
+            required=True,
+            type=int,
+            help='The sequence number of the SSH key.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_ssh_key(parsed_args.account_id,
+                                   parsed_args.sequence_id)
+        msg = ("SSH key with id '{0}' for the account with identifier '{1}' "
+               "was successfully removed.\n".format(parsed_args.sequence_id,
+                                                    parsed_args.account_id))
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

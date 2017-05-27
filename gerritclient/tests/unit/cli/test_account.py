@@ -317,3 +317,14 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('not allowed',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_account_ssh_key_delete(self):
+        account_id = '69'
+        sequence_id = 71
+        args = 'account ssh-key delete {0} --sequence-id {1}'.format(
+            account_id, sequence_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.delete_ssh_key.assert_called_once_with(account_id,
+                                                             sequence_id)
