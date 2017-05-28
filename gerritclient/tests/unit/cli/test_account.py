@@ -189,6 +189,15 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.disable.assert_called_once_with(account_id)
 
+    def test_account_status_show(self):
+        account_id = '69'
+        args = 'account status show {0}'.format(account_id)
+        self.m_client.is_active.return_value = True
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.is_active.assert_called_once_with(account_id)
+
     def test_account_set_password(self):
         account_id = '69'
         password = 'fake-password'

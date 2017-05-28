@@ -217,6 +217,20 @@ class AccountDisable(BaseAccountSetState):
     action_type = 'disable'
 
 
+class AccountStatusShow(AccountMixIn, base.BaseShowCommand):
+    """Fetches the status of an account in Gerrit."""
+
+    columns = ('account_identifier',
+               'is_active')
+
+    def take_action(self, parsed_args):
+        response = self.client.is_active(parsed_args.entity_id)
+        data = {self.columns[0]: parsed_args.entity_id,
+                self.columns[1]: response}
+        data = utils.get_display_data_single(self.columns, data)
+        return self.columns, data
+
+
 class AccountSetPassword(AccountMixIn, base.BaseShowCommand):
     """Sets/Generates the HTTP password of an account in Gerrit."""
 

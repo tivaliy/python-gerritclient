@@ -152,6 +152,10 @@ class APIClient(object):
         if response.status_code == 204:
             return {}
 
+        # Some responses can be of 'text/plain' Content-Type
+        if 'text/plain' in response.headers.get('Content-Type'):
+            return response.text
+
         # Remove ")]}'" prefix from response, that is used to prevent XSSI
         return json.loads(response.text.strip(")]}'"))
 

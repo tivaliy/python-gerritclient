@@ -95,6 +95,15 @@ class AccountClient(base.BaseV1Client):
             account_id=account_id)
         return self.connection.put_request(request_path, data=data)
 
+    def is_active(self, account_id):
+        """Check the status of an account in Gerrit."""
+
+        request_path = "{api_path}{account_id}/active".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        result = self.connection.get_request(request_path)
+        return True if result else False
+
     def enable(self, account_id):
         """Enable account in Gerrit."""
 
