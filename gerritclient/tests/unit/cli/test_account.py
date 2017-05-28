@@ -328,3 +328,11 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.delete_ssh_key.assert_called_once_with(account_id,
                                                              sequence_id)
+
+    def test_account_membership_list(self):
+        account_id = '69'
+        args = 'account membership list {0}'.format(account_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.get_membership.assert_called_once_with(account_id)

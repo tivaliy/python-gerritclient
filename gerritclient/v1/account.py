@@ -181,6 +181,14 @@ class AccountClient(base.BaseV1Client):
             ssh_key_id=ssh_key_id)
         return self.connection.delete_request(request_path)
 
+    def get_membership(self, account_id):
+        """Lists all groups that contain the specified user as a member."""
+
+        request_path = "{api_path}{account_id}/groups".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return AccountClient(connection)

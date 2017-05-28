@@ -396,6 +396,33 @@ class AccountSSHKeyDelete(AccountMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class AccountMembershipList(AccountMixIn, base.BaseListCommand):
+    """Lists all groups that contain the specified user as a member."""
+
+    columns = ('group_id',
+               'name',
+               'id',
+               'url',
+               'options',
+               'description',
+               'owner',
+               'owner_id')
+
+    def get_parser(self, prog_name):
+        parser = super(AccountMembershipList, self).get_parser(prog_name)
+        parser.add_argument(
+            'account_id',
+            metavar='account-identifier',
+            help='Account identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_membership(parsed_args.account_id)
+        data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
