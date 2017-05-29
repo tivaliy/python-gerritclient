@@ -345,3 +345,18 @@ class TestAccountCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.get_membership.assert_called_once_with(account_id)
+
+    def test_account_email_add(self):
+        account_id = '69'
+        email = 'jdoe@example.com'
+        args = 'account email add {0} --email {1}'.format(account_id, email)
+        fake_account_email_info = fake_account.get_fake_account_email_info(
+            email=email)
+        self.m_client.add_email.return_value = fake_account_email_info
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.add_email.assert_called_once_with(account_id,
+                                                        email,
+                                                        no_confirmation=False,
+                                                        preferred=False)

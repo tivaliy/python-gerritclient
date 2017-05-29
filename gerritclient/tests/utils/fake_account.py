@@ -33,7 +33,16 @@ def get_fake_account(_account_id=1000226, name="John Doe",
 
 
 def get_fake_accounts(account_count):
-    """Create a random fake list of accounts."""
+    """Creates a random fake list of accounts."""
 
     return [get_fake_account(_account_id=i, username='john-{}'.format(i))
             for i in range(1, account_count+1)]
+
+
+def get_fake_account_email_info(email="jdoe@example.com", preferred=False,
+                                no_confirmation=False):
+    """Creates a random fake email info of accounts."""
+
+    return {"email": email,
+            "preferred": preferred,
+            "no_confirmation": no_confirmation}

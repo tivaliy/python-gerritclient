@@ -437,6 +437,44 @@ class AccountMembershipList(AccountMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class AccountEmailAdd(AccountMixIn, base.BaseShowCommand):
+    """Registers a new email address for the user in Gerrit."""
+
+    columns = ('email',
+               'preferred',
+               'pending_confirmation')
+
+    def get_parser(self, app_name):
+        parser = super(AccountEmailAdd, self).get_parser(app_name)
+        parser.add_argument(
+            '-e',
+            '--email',
+            required=True,
+            help='Account email.'
+        )
+        parser.add_argument(
+            '--preferred',
+            action="store_true",
+            help='Set email address as preferred.'
+        )
+        parser.add_argument(
+            '--no-confirmation',
+            action="store_true",
+            help='Email address confirmation. Only Gerrit administrators '
+                 'are allowed to add email addresses without confirmation.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.add_email(
+            parsed_args.entity_id,
+            parsed_args.email,
+            preferred=parsed_args.preferred,
+            no_confirmation=parsed_args.no_confirmation)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

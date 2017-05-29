@@ -198,6 +198,34 @@ class AccountClient(base.BaseV1Client):
             account_id=account_id)
         return self.connection.get_request(request_path)
 
+    def add_email(self, account_id, email, preferred=False,
+                  no_confirmation=False):
+        """Register a new email address for the user in Gerrit.
+
+        :param account_id: (account_ID|username|email|name) as a string value
+        :param email: email address
+        :param preferred: boolean value, whether the new email address should
+                          become the preferred email address of the user (only
+                          supported if no_confirmation is set or if the auth
+                          type is DEVELOPMENT_BECOME_ANY_ACCOUNT).
+        :param no_confirmation: boolean value, whether the email address should
+                                be added without confirmation. In this case
+                                no verification email is sent to the user.
+                                Only Gerrit administrators are allowed to add
+                                email addresses without confirmation.
+        :return: the EmailInfo entity (as a dict) that contains information
+                 about an email address of a user.
+        """
+
+        data = {'email': email,
+                'preferred': preferred,
+                'no_confirmation': no_confirmation}
+        request_path = "{api_path}{account_id}/emails/{email}".format(
+            api_path=self.api_path,
+            account_id=account_id,
+            email=email)
+        return self.connection.put_request(request_path, data=data)
+
 
 def get_client(connection):
     return AccountClient(connection)
