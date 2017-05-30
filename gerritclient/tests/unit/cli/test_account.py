@@ -360,3 +360,12 @@ class TestAccountCommand(clibase.BaseCLITest):
                                                         email,
                                                         no_confirmation=False,
                                                         preferred=False)
+
+    def test_account_email_delete(self):
+        account_id = '69'
+        email = 'jdoe@example.com'
+        args = 'account email delete {0} --email {1}'.format(account_id, email)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.delete_email.assert_called_once_with(account_id, email)

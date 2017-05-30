@@ -475,6 +475,32 @@ class AccountEmailAdd(AccountMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class AccountEmailDelete(AccountMixIn, base.BaseCommand):
+    """Deletes an email address of an account in Gerrit."""
+
+    def get_parser(self, prog_name):
+        parser = super(AccountEmailDelete, self).get_parser(prog_name)
+        parser.add_argument(
+            'account_id',
+            metavar='account-identifier',
+            help='Account identifier.'
+        )
+        parser.add_argument(
+            '-e',
+            '--email',
+            required=True,
+            help='Account email.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_email(parsed_args.account_id, parsed_args.email)
+        msg = ("Email address '{0}' of the account with identifier '{1}' "
+               "was successfully removed.\n".format(parsed_args.email,
+                                                    parsed_args.account_id))
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

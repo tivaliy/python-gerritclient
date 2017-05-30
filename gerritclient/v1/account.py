@@ -226,6 +226,15 @@ class AccountClient(base.BaseV1Client):
             email=email)
         return self.connection.put_request(request_path, data=data)
 
+    def delete_email(self, account_id, email):
+        """Delete an email address of an account."""
+
+        request_path = "{api_path}{account_id}/emails/{email}".format(
+            api_path=self.api_path,
+            account_id=account_id,
+            email=email)
+        return self.connection.delete_request(request_path)
+
 
 def get_client(connection):
     return AccountClient(connection)
