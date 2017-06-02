@@ -369,3 +369,13 @@ class TestAccountCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.delete_email.assert_called_once_with(account_id, email)
+
+    def test_account_email_set_as_preferred(self):
+        account_id = '69'
+        email = 'jdoe@example.com'
+        args = 'account email set-preferred {0} {1}'.format(account_id, email)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.set_preferred_email.assert_called_once_with(account_id,
+                                                                  email=email)

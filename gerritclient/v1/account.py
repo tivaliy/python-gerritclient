@@ -235,6 +235,15 @@ class AccountClient(base.BaseV1Client):
             email=email)
         return self.connection.delete_request(request_path)
 
+    def set_preferred_email(self, account_id, email):
+        """Set an email address as preferred one for an account."""
+
+        request_path = "{api}{account_id}/emails/{email}/preferred".format(
+            api=self.api_path,
+            account_id=account_id,
+            email=email)
+        return self.connection.put_request(request_path, data={})
+
 
 def get_client(connection):
     return AccountClient(connection)

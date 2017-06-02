@@ -501,6 +501,15 @@ class AccountEmailDelete(AccountMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class AccountPreferredEmailSet(BaseAccountSetCommand):
+    """Sets an email address as preferred email address for an account."""
+
+    attribute = "email"
+
+    def action(self, account_id, attribute):
+        return self.client.set_preferred_email(account_id, email=attribute)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
