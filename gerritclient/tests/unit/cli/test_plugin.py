@@ -79,3 +79,11 @@ class TestPluginCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('plugin disable: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_plugin_reload(self):
+        plugin_id = 'fake-plugin'
+        args = 'plugin reload {plugin_id}'.format(plugin_id=plugin_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('plugin', mock.ANY)
+        self.m_client.reload.assert_called_once_with(plugin_id)

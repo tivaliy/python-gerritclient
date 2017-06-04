@@ -71,6 +71,20 @@ class PluginDisable(PluginsMixIn, base.BaseEntitySetState):
     action_type = 'disable'
 
 
+class PluginReload(PluginsMixIn, base.BaseShowCommand):
+    """Reloads a plugin on the Gerrit server."""
+
+    columns = ('id',
+               'version',
+               'index_url',
+               'disabled')
+
+    def take_action(self, parsed_args):
+        response = self.client.reload(parsed_args.entity_id)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
