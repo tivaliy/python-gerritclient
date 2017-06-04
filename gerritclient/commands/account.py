@@ -177,41 +177,13 @@ class AccountSetUsername(BaseAccountSetCommand):
         return self.client.set_username(account_id, username=attribute)
 
 
-class BaseAccountSetState(AccountMixIn, base.BaseCommand):
-
-    @abc.abstractproperty
-    def action_type(self):
-        """Type of action: ('enable'|'disable').
-
-        :rtype: str
-        """
-        pass
-
-    def get_parser(self, prog_name):
-        parser = super(BaseAccountSetState, self).get_parser(prog_name)
-        parser.add_argument(
-            'account_id',
-            metavar='account-identifier',
-            help='Account identifier.'
-        )
-        return parser
-
-    def take_action(self, parsed_args):
-        actions = {'enable': self.client.enable,
-                   'disable': self.client.disable}
-        actions[self.action_type](parsed_args.account_id)
-        msg = ("Account with identifier '{0}' was successfully "
-               "{1}d.\n".format(parsed_args.account_id, self.action_type))
-        self.app.stdout.write(msg)
-
-
-class AccountEnable(BaseAccountSetState):
+class AccountEnable(AccountMixIn, base.BaseEntitySetState):
     """Sets the account state in Gerrit to active."""
 
     action_type = 'enable'
 
 
-class AccountDisable(BaseAccountSetState):
+class AccountDisable(AccountMixIn, base.BaseEntitySetState):
     """Sets the account state in Gerrit to inactive."""
 
     action_type = 'disable'

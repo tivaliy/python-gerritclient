@@ -49,3 +49,33 @@ class TestPluginCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('plugin', mock.ANY)
         self.m_client.get_by_id.assert_called_once_with(plugin_id)
+
+    def test_plugin_enable(self):
+        plugin_id = 'fake-plugin'
+        args = 'plugin enable {plugin_id}'.format(plugin_id=plugin_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('plugin', mock.ANY)
+        self.m_client.enable.assert_called_once_with(plugin_id)
+
+    def test_plugin_disable(self):
+        plugin_id = 'fake-plugin'
+        args = 'plugin disable {plugin_id}'.format(plugin_id=plugin_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('plugin', mock.ANY)
+        self.m_client.disable.assert_called_once_with(plugin_id)
+
+    @mock.patch('sys.stderr')
+    def test_plugin_enable_fail(self, mocked_stderr):
+        args = 'plugin enable'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('plugin enable: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])
+
+    @mock.patch('sys.stderr')
+    def test_plugin_disable_fail(self, mocked_stderr):
+        args = 'plugin disable'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('plugin disable: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

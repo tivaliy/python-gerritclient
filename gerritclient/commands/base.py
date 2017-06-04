@@ -176,3 +176,33 @@ class BaseCreateCommand(BaseShowCommand):
             self.entity_name.capitalize(), parsed_args.entity_id))
 
         return self.columns, response
+
+
+class BaseEntitySetState(BaseCommand):
+
+    @abc.abstractproperty
+    def action_type(self):
+        """Type of action: ('enable'|'disable').
+
+        :rtype: str
+        """
+        pass
+
+    def get_parser(self, prog_name):
+        parser = super(BaseEntitySetState, self).get_parser(prog_name)
+        parser.add_argument(
+            'entity_id',
+            metavar='{0}-identifier'.format(self.entity_name),
+            help='{0} identifier.'.format(self.entity_name.capitalize())
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        actions = {'enable': self.client.enable,
+                   'disable': self.client.disable}
+        actions[self.action_type](parsed_args.entity_id)
+        msg = ("{0} with identifier '{1}' was successfully {2}d.\n".format(
+            self.entity_name.capitalize(),
+            parsed_args.entity_id,
+            self.action_type))
+        self.app.stdout.write(msg)

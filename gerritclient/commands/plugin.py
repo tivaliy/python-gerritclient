@@ -59,6 +59,18 @@ class PluginShow(PluginsMixIn, base.BaseShowCommand):
                'disabled')
 
 
+class PluginEnable(PluginsMixIn, base.BaseEntitySetState):
+    """Enables a plugin on the Gerrit server."""
+
+    action_type = 'enable'
+
+
+class PluginDisable(PluginsMixIn, base.BaseEntitySetState):
+    """Disables a plugin on the Gerrit server."""
+
+    action_type = 'disable'
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

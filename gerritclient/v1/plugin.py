@@ -32,6 +32,18 @@ class PluginClient(base.BaseV1Client):
             plugin_id=plugin_id)
         return self.connection.get_request(request_path)
 
+    def enable(self, plugin_id):
+        request_path = "{api_path}{plugin_id}/gerrit~enable".format(
+            api_path=self.api_path,
+            plugin_id=plugin_id)
+        return self.connection.post_request(request_path, json_data={})
+
+    def disable(self, plugin_id):
+        request_path = "{api_path}{plugin_id}".format(
+            api_path=self.api_path,
+            plugin_id=plugin_id)
+        return self.connection.delete_request(request_path, data={})
+
 
 def get_client(connection):
     return PluginClient(connection)
