@@ -39,4 +39,4 @@ class BaseV1Client(object):
         request_path = "{api_path}{entity_id}".format(
             api_path=self.api_path,
             entity_id=requests_utils.quote(entity_id, safe=''))
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)

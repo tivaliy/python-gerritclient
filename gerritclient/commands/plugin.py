@@ -13,8 +13,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import argparse
+import os
+
 from gerritclient.commands import base
 from gerritclient.common import utils
+from gerritclient import error
 
 
 class PluginsMixIn(object):
@@ -81,6 +85,53 @@ class PluginReload(PluginsMixIn, base.BaseShowCommand):
 
     def take_action(self, parsed_args):
         response = self.client.reload(parsed_args.entity_id)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
+class PluginInstall(PluginsMixIn, base.BaseShowCommand):
+    """Installs a new plugin on the Gerrit server."""
+
+    columns = ('id',
+               'version',
+               'index_url',
+               'disabled')
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(
+                "File '{0}' does not exist".format(file_path))
+        return file_path
+
+    def get_parser(self, app_name):
+        parser = super(PluginInstall, self).get_parser(app_name)
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
+            '--url',
+            help='URL to the plugin jar.'
+        )
+        group.add_argument(
+            '--file',
+            type=self.get_file_path,
+            help='File path to the plugin jar.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        if os.path.splitext(parsed_args.entity_id)[1] != '.jar':
+            raise ValueError('Plugin identifier must contain ".jar" prefix')
+        source_type, value = 'url', parsed_args.url
+        if parsed_args.file:
+            try:
+                with open(parsed_args.file, 'rb') as stream:
+                    source_type, value = 'file', stream.read()
+            except (OSError, IOError):
+                msg = "Could not read data from '{0}'".format(parsed_args.file)
+                raise error.InvalidFileException(msg)
+        response = self.client.install(parsed_args.entity_id,
+                                       source_type=source_type,
+                                       value=value)
         data = utils.get_display_data_single(self.columns, response)
         return self.columns, data
 

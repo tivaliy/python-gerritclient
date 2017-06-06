@@ -82,16 +82,17 @@ class APIClient(object):
 
         return self._decode_content(resp)
 
-    def put_request(self, api, data, **params):
+    def put_request(self, api, data=None, json_data=None, **kwargs):
         """Make PUT request to specific API with some data.
 
         :param api: API endpoint (path)
-        :param data: Data send in request, will be serialized to JSON
-        :param params: Params of query string
+        :param data: Dictionary, bytes, or file-like object to send in the body
+        :param json_data: Data in JSON to send in the body
+        :param kwargs: Optional arguments that ``request`` takes
         """
 
         url = self.api_root + api
-        resp = self.session.put(url, json=data, params=params)
+        resp = self.session.put(url, json=json_data, data=data, **kwargs)
         self._raise_for_status_with_info(resp)
         return self._decode_content(resp)
 

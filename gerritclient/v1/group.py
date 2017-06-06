@@ -42,14 +42,14 @@ class GroupClient(base.BaseV1Client):
         request_path = "{api_path}{group_id}/name".format(
             api_path=self.api_path,
             group_id=group_id)
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)
 
     def set_description(self, group_id, description):
         data = {"description": description}
         request_path = "{api_path}{group_id}/description".format(
             api_path=self.api_path,
             group_id=group_id)
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)
 
     def delete_description(self, group_id):
         request_path = "{api_path}{group_id}/description".format(
@@ -72,7 +72,7 @@ class GroupClient(base.BaseV1Client):
         request_path = "{api_path}{group_id}/options".format(
             api_path=self.api_path,
             group_id=group_id)
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)
 
     def set_owner_group(self, group_id, owner_group):
 
@@ -80,7 +80,7 @@ class GroupClient(base.BaseV1Client):
         request_path = "{api_path}{group_id}/owner".format(
             api_path=self.api_path,
             group_id=group_id)
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)
 
 
 def get_client(connection):

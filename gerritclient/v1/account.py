@@ -78,7 +78,7 @@ class AccountClient(base.BaseV1Client):
         request_path = "{api_path}{account_id}/name".format(
             api_path=self.api_path,
             account_id=account_id)
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)
 
     def set_username(self, account_id, username):
         """Set the username of an account in Gerrit.
@@ -93,7 +93,7 @@ class AccountClient(base.BaseV1Client):
         request_path = "{api_path}{account_id}/username".format(
             api_path=self.api_path,
             account_id=account_id)
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)
 
     def is_active(self, account_id):
         """Check the status of an account in Gerrit."""
@@ -110,7 +110,7 @@ class AccountClient(base.BaseV1Client):
         request_path = "{api_path}{account_id}/active".format(
             api_path=self.api_path,
             account_id=account_id)
-        return self.connection.put_request(request_path, data={})
+        return self.connection.put_request(request_path, json_data={})
 
     def disable(self, account_id):
         """Disable account in Gerrit."""
@@ -140,7 +140,7 @@ class AccountClient(base.BaseV1Client):
         request_path = "{api_path}{account_id}/password.http".format(
             api_path=self.api_path,
             account_id=account_id)
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)
 
     def delete_password(self, account_id):
         """Delete the HTTP password of an account in Gerrit."""
@@ -224,7 +224,7 @@ class AccountClient(base.BaseV1Client):
             api_path=self.api_path,
             account_id=account_id,
             email=email)
-        return self.connection.put_request(request_path, data=data)
+        return self.connection.put_request(request_path, json_data=data)
 
     def delete_email(self, account_id, email):
         """Delete an email address of an account."""
@@ -242,7 +242,7 @@ class AccountClient(base.BaseV1Client):
             api=self.api_path,
             account_id=account_id,
             email=email)
-        return self.connection.put_request(request_path, data={})
+        return self.connection.put_request(request_path, json_data={})
 
 
 def get_client(connection):
