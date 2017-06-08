@@ -13,15 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from gerritclient.v1 import account
-from gerritclient.v1 import config
-from gerritclient.v1 import group
-from gerritclient.v1 import plugin
-from gerritclient.v1 import project
+from gerritclient.v1 import base
 
-# Please keeps the list in alphabetical order
-__all__ = ('account',
-           'config',
-           'group',
-           'plugin',
-           'project')
+
+class ConfigClient(base.BaseV1Client):
+
+    api_path = "config/server/"
+
+    def get_version(self):
+        """Return the version of the Gerrit server."""
+
+        request_path = "{api_path}version".format(api_path=self.api_path)
+        return self.connection.get_request(request_path)
+
+
+def get_client(connection):
+    return ConfigClient(connection)

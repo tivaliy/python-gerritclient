@@ -13,15 +13,21 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from gerritclient.v1 import account
-from gerritclient.v1 import config
-from gerritclient.v1 import group
-from gerritclient.v1 import plugin
-from gerritclient.v1 import project
+import mock
 
-# Please keeps the list in alphabetical order
-__all__ = ('account',
-           'config',
-           'group',
-           'plugin',
-           'project')
+from gerritclient.tests.unit.cli import clibase
+
+
+class TestConfigServerCommand(clibase.BaseCLITest):
+    """Tests for gerrit config server * commands."""
+
+    def setUp(self):
+        super(TestConfigServerCommand, self).setUp()
+
+    def test_server_version_show(self):
+        args = 'server version'
+        self.m_client.get_version.return_value = '2.14'
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_client.get_version.assert_called_once_with()

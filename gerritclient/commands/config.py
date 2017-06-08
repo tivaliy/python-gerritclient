@@ -13,15 +13,27 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from gerritclient.v1 import account
-from gerritclient.v1 import config
-from gerritclient.v1 import group
-from gerritclient.v1 import plugin
-from gerritclient.v1 import project
+from gerritclient.commands import base
 
-# Please keeps the list in alphabetical order
-__all__ = ('account',
-           'config',
-           'group',
-           'plugin',
-           'project')
+
+class ConfigMixIn(object):
+
+    entity_name = 'config'
+
+
+class ServerVersionShow(ConfigMixIn, base.BaseCommand):
+    """Returns the version of the Gerrit server."""
+
+    def take_action(self, parsed_args):
+        self.app.stdout.write(self.client.get_version() + '\n')
+
+
+def debug(argv=None):
+    """Helper to debug the required command."""
+
+    from gerritclient.main import debug
+    debug("version", ServerVersionShow, argv)
+
+
+if __name__ == "__main__":
+    debug()
