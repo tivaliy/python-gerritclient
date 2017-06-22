@@ -37,6 +37,13 @@ class GroupClient(base.BaseV1Client):
             all="?recursive" if detailed else "")
         return self.connection.get_request(request_path)
 
+    def add_member(self, group_id, account_id):
+        request_path = "{api_path}{group_id}/members/{account_id}".format(
+            api_path=self.api_path,
+            group_id=group_id,
+            account_id=account_id)
+        return self.connection.put_request(request_path, json_data={})
+
     def rename(self, group_id, new_name):
         data = {"name": new_name}
         request_path = "{api_path}{group_id}/name".format(

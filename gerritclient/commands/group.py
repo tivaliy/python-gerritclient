@@ -243,6 +243,30 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class GroupMemberAdd(GroupMixIn, base.BaseShowCommand):
+    """Adds a user as member to a Gerrit internal group."""
+
+    columns = ('_account_id',
+               'username',
+               'name',
+               'email')
+
+    def get_parser(self, app_name):
+        parser = super(GroupMemberAdd, self).get_parser(app_name)
+        parser.add_argument(
+            'account_id',
+            metavar='account-identifier',
+            help='Account identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.add_member(parsed_args.entity_id,
+                                          parsed_args.account_id)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
