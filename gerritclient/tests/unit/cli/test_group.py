@@ -182,13 +182,16 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.m_client.set_owner_group.assert_called_once_with(group_id,
                                                               owner_group)
 
-    def test_group_member_add(self):
+    def test_group_members_add(self):
         group_id = '69'
-        account_id = '13'
-        args = 'group member add {group_id} {account_id}'.format(
-            group_id=group_id, account_id=account_id)
-        self.m_client.add_member.return_value = fake_account.get_fake_account()
+        accounts_ids = ['1013', '1014', '1015']
+        args = 'group member add {group_id} --account {account_id}'.format(
+            group_id=group_id, account_id=' '.join(accounts_ids))
+        fake_accounts = [fake_account.get_fake_account(_account_id=i)
+                         for i in accounts_ids]
+        self.m_client.add_members.return_value = fake_accounts
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('group', mock.ANY)
-        self.m_client.add_member.assert_called_once_with(group_id, account_id)
+        self.m_client.add_members.assert_called_once_with(group_id,
+                                                          accounts_ids)

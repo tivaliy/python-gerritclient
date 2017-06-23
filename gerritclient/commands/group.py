@@ -243,8 +243,8 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
         return self.columns, data
 
 
-class GroupMemberAdd(GroupMixIn, base.BaseShowCommand):
-    """Adds a user as member to a Gerrit internal group."""
+class GroupMemberAdd(GroupMixIn, base.BaseListCommand):
+    """Adds user(s) as member to a Gerrit internal group."""
 
     columns = ('_account_id',
                'username',
@@ -254,16 +254,23 @@ class GroupMemberAdd(GroupMixIn, base.BaseShowCommand):
     def get_parser(self, app_name):
         parser = super(GroupMemberAdd, self).get_parser(app_name)
         parser.add_argument(
-            'account_id',
+            'group_id',
+            metavar='group-identifier',
+            help='Group identifier.'
+        )
+        parser.add_argument(
+            '--accounts',
+            required=True,
+            nargs='+',
             metavar='account-identifier',
-            help='Account identifier.'
+            help='Account identifier(s).'
         )
         return parser
 
     def take_action(self, parsed_args):
-        response = self.client.add_member(parsed_args.entity_id,
-                                          parsed_args.account_id)
-        data = utils.get_display_data_single(self.columns, response)
+        response = self.client.add_members(parsed_args.group_id,
+                                           parsed_args.accounts)
+        data = utils.get_display_data_multi(self.columns, response)
         return self.columns, data
 
 

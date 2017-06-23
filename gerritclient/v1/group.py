@@ -37,12 +37,20 @@ class GroupClient(base.BaseV1Client):
             all="?recursive" if detailed else "")
         return self.connection.get_request(request_path)
 
-    def add_member(self, group_id, account_id):
-        request_path = "{api_path}{group_id}/members/{account_id}".format(
+    def add_members(self, group_id, accounts_ids):
+        """Adds user(s) as member to a Gerrit internal group.
+
+        :param group_id: Group identifier
+        :param accounts_ids: A list of accounts identifiers
+        :return: A list of detailed AccountInfo entities that describes
+                 the group members that were specified
+        """
+
+        data = {'members': accounts_ids}
+        request_path = "{api_path}{group_id}/members".format(
             api_path=self.api_path,
-            group_id=group_id,
-            account_id=account_id)
-        return self.connection.put_request(request_path, json_data={})
+            group_id=group_id)
+        return self.connection.post_request(request_path, json_data=data)
 
     def rename(self, group_id, new_name):
         data = {"name": new_name}
