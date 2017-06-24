@@ -13,6 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import abc
+import six
+
 from gerritclient.commands import base
 from gerritclient.common import utils
 
@@ -243,16 +246,21 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
         return self.columns, data
 
 
-class GroupMemberAdd(GroupMixIn, base.BaseListCommand):
-    """Adds user(s) as member to a Gerrit internal group."""
+@six.add_metaclass(abc.ABCMeta)
+class BaseGroupMemberAction(GroupMixIn, base.BaseCommand):
 
-    columns = ('_account_id',
-               'username',
-               'name',
-               'email')
+    columns = ('_account_id', )
+
+    @abc.abstractproperty
+    def action(self):
+        """Type of action: ('add'|'delete').
+
+        :rtype: str
+        """
+        pass
 
     def get_parser(self, app_name):
-        parser = super(GroupMemberAdd, self).get_parser(app_name)
+        parser = super(BaseGroupMemberAction, self).get_parser(app_name)
         parser.add_argument(
             'group_id',
             metavar='group-identifier',
@@ -268,10 +276,27 @@ class GroupMemberAdd(GroupMixIn, base.BaseListCommand):
         return parser
 
     def take_action(self, parsed_args):
-        response = self.client.add_members(parsed_args.group_id,
-                                           parsed_args.accounts)
-        data = utils.get_display_data_multi(self.columns, response)
-        return self.columns, data
+        actions = {'add': self.client.add_members,
+                   'delete': self.client.delete_members}
+        actions[self.action](parsed_args.group_id, parsed_args.accounts)
+        action_msg = 'added to' if self.action == 'add' else 'removed from'
+        msg = ("The following accounts were successfully {} the group with id "
+               "'{}': {}.\n".format(action_msg,
+                                    parsed_args.group_id,
+                                    ', '.join(parsed_args.accounts)))
+        self.app.stdout.write(msg)
+
+
+class GroupMemberAdd(BaseGroupMemberAction):
+    """Adds a user or several users as member(s) to a Gerrit internal group."""
+
+    action = 'add'
+
+
+class GroupMemberDelete(BaseGroupMemberAction):
+    """Removes a user or several users from a Gerrit internal group."""
+
+    action = 'delete'
 
 
 def debug(argv=None):

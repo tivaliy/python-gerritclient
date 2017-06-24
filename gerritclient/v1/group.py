@@ -38,7 +38,7 @@ class GroupClient(base.BaseV1Client):
         return self.connection.get_request(request_path)
 
     def add_members(self, group_id, accounts_ids):
-        """Adds user(s) as member to a Gerrit internal group.
+        """Add a user or several users as member(s) to a Gerrit internal group.
 
         :param group_id: Group identifier
         :param accounts_ids: A list of accounts identifiers
@@ -48,6 +48,19 @@ class GroupClient(base.BaseV1Client):
 
         data = {'members': accounts_ids}
         request_path = "{api_path}{group_id}/members".format(
+            api_path=self.api_path,
+            group_id=group_id)
+        return self.connection.post_request(request_path, json_data=data)
+
+    def delete_members(self, group_id, accounts_ids):
+        """Remove a user or several users from a Gerrit internal group..
+
+        :param group_id: Group identifier
+        :param accounts_ids: A list of accounts identifiers
+        """
+
+        data = {'members': accounts_ids}
+        request_path = "{api_path}{group_id}/members.delete".format(
             api_path=self.api_path,
             group_id=group_id)
         return self.connection.post_request(request_path, json_data=data)
