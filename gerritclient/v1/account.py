@@ -43,13 +43,13 @@ class AccountClient(base.BaseV1Client):
         option = filter(None, ['DETAILS' if detailed else None,
                                'ALL_EMAILS' if all_emails else None])
         option = None if not option else option
-        params = {k: v for k, v in (('q', query),
-                                    ('n', limit),
+        params = {k: v for k, v in (('n', limit),
                                     ('S', skip),
                                     ('o', option)) if v is not None}
-        request_path = "{api_path}{suggest}".format(
+        request_path = "{api_path}{suggest}{query}".format(
             api_path=self.api_path,
-            suggest="?suggest" if suggested else "")
+            suggest="?suggest&" if suggested else "?",
+            query="q={query}".format(query=query))
         return self.connection.get_request(request_path, params=params)
 
     def get_by_id(self, account_id, detailed=False):
