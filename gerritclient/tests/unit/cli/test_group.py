@@ -203,3 +203,23 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('group', mock.ANY)
         self.m_client.delete_members.assert_called_once_with(group_id,
                                                              accounts_ids)
+
+    def test_group_include_groups(self):
+        group_id = '69'
+        groups_ids = ['1013', '1014', '1015']
+        args = 'group include {group_id} --group {groups_ids}'.format(
+            group_id=group_id, groups_ids=' '.join(groups_ids))
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.include.assert_called_once_with(group_id, groups_ids)
+
+    def test_group_exclude_groups(self):
+        group_id = '69'
+        groups_ids = ['1013', '1014', '1015']
+        args = 'group exclude {group_id} --group {groups_ids}'.format(
+            group_id=group_id, groups_ids=' '.join(groups_ids))
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('group', mock.ANY)
+        self.m_client.exclude.assert_called_once_with(group_id, groups_ids)

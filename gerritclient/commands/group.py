@@ -247,56 +247,85 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class BaseGroupMemberAction(GroupMixIn, base.BaseCommand):
-
-    columns = ('_account_id', )
+class BaseGroupAction(GroupMixIn, base.BaseCommand):
 
     @abc.abstractproperty
     def action(self):
-        """Type of action: ('add'|'delete').
+        """Type of action: ('add'|'delete'|'include'|'exclude').
 
         :rtype: str
         """
         pass
 
+    @abc.abstractproperty
+    def attribute(self):
+        """Type of attribute: ('account'|'group')
+
+        :return: str
+        """
+        pass
+
     def get_parser(self, app_name):
-        parser = super(BaseGroupMemberAction, self).get_parser(app_name)
+        parser = super(BaseGroupAction, self).get_parser(app_name)
         parser.add_argument(
             'group_id',
             metavar='group-identifier',
             help='Group identifier.'
         )
         parser.add_argument(
-            '--accounts',
+            '--{attribute}'.format(attribute=self.attribute),
             required=True,
             nargs='+',
-            metavar='account-identifier',
-            help='Account identifier(s).'
+            metavar='{}-identifier'.format(self.attribute),
+            help='{}(s) identifier(s).'.format(self.attribute.capitalize())
         )
         return parser
 
     def take_action(self, parsed_args):
         actions = {'add': self.client.add_members,
-                   'delete': self.client.delete_members}
-        actions[self.action](parsed_args.group_id, parsed_args.accounts)
-        action_msg = 'added to' if self.action == 'add' else 'removed from'
-        msg = ("The following accounts were successfully {} the group with id "
-               "'{}': {}.\n".format(action_msg,
-                                    parsed_args.group_id,
-                                    ', '.join(parsed_args.accounts)))
+                   'delete': self.client.delete_members,
+                   'include': self.client.include,
+                   'exclude': self.client.exclude}
+        ids = parsed_args.__getattribute__(self.attribute)
+        actions[self.action](parsed_args.group_id, ids)
+        msg = ("The following {}s were successfully {}(e)d to/from the "
+               "group with ID='{}': {}.\n".format(self.attribute,
+                                                  self.action,
+                                                  parsed_args.group_id,
+                                                  ', '.join(ids)))
         self.app.stdout.write(msg)
 
 
-class GroupMemberAdd(BaseGroupMemberAction):
+class GroupMemberAdd(BaseGroupAction):
     """Adds a user or several users as member(s) to a Gerrit internal group."""
 
     action = 'add'
 
+    attribute = 'account'
 
-class GroupMemberDelete(BaseGroupMemberAction):
+
+class GroupMemberDelete(BaseGroupAction):
     """Removes a user or several users from a Gerrit internal group."""
 
     action = 'delete'
+
+    attribute = 'account'
+
+
+class GroupInclude(BaseGroupAction):
+    """Includes one or several groups into a Gerrit internal group."""
+
+    action = 'include'
+
+    attribute = 'group'
+
+
+class GroupExclude(BaseGroupAction):
+    """Deletes one or several included groups from a Gerrit internal group."""
+
+    action = 'exclude'
+
+    attribute = 'group'
 
 
 def debug(argv=None):

@@ -110,6 +110,38 @@ class GroupClient(base.BaseV1Client):
             group_id=group_id)
         return self.connection.put_request(request_path, json_data=data)
 
+    def include(self, group_id, included_groups):
+        """Include one or several groups into a Gerrit internal group.
+
+        :param group_id: Identifier of a group
+                        (UUID|legacy numeric ID|name of the group)
+        :param included_groups: Group(s) identifier(s) as a list
+        :return A list of GroupInfo entities that describes the groups that
+                were specified in the included_groups
+        """
+
+        data = {"groups": included_groups}
+        request_path = "{api_path}{group_id}/groups".format(
+            api_path=self.api_path,
+            group_id=group_id)
+        return self.connection.post_request(request_path, json_data=data)
+
+    def exclude(self, group_id, excluded_groups):
+        """Exclude one or several groups from a Gerrit internal group.
+
+        :param group_id: Identifier of a group
+                        (UUID|legacy numeric ID|name of the group)
+        :param excluded_groups: Group(s) identifier(s) as a list
+        :return A list of GroupInfo entities that describes the groups that
+                were specified in the excluded_groups
+        """
+
+        data = {"groups": excluded_groups}
+        request_path = "{api_path}{group_id}/groups.delete".format(
+            api_path=self.api_path,
+            group_id=group_id)
+        return self.connection.post_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return GroupClient(connection)
