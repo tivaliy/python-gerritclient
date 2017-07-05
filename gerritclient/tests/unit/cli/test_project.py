@@ -30,11 +30,12 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.get_by_name.return_value = get_fake_project
 
     def test_project_list_all_wo_description_wo_branches(self):
-        args = 'project list'
+        args = 'project list --all'
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=None,
+        self.m_client.get_all.assert_called_once_with(is_all=True,
+                                                      limit=None,
                                                       skip=None,
                                                       pattern_dispatcher=None,
                                                       project_type=None,
@@ -48,7 +49,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=None,
+        self.m_client.get_all.assert_called_once_with(is_all=False,
+                                                      limit=None,
                                                       skip=None,
                                                       pattern_dispatcher=None,
                                                       project_type=None,
@@ -56,11 +58,12 @@ class TestProjectCommand(clibase.BaseCLITest):
                                                       branches=None)
 
     def test_project_list_all_w_description_wo_branches(self):
-        args = 'project list --description'
+        args = 'project list --description --all'
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=None,
+        self.m_client.get_all.assert_called_once_with(is_all=True,
+                                                      limit=None,
                                                       skip=None,
                                                       pattern_dispatcher=None,
                                                       project_type=None,
@@ -69,11 +72,12 @@ class TestProjectCommand(clibase.BaseCLITest):
 
     def test_project_list_all_wo_description_w_branches(self):
         branches = ['master', 'fake_branch']
-        args = 'project list --branches {0}'.format(' '.join(branches))
+        args = 'project list --all --branches {0}'.format(' '.join(branches))
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=None,
+        self.m_client.get_all.assert_called_once_with(is_all=True,
+                                                      limit=None,
                                                       skip=None,
                                                       pattern_dispatcher=None,
                                                       project_type=None,
@@ -86,7 +90,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=list_limit,
+        self.m_client.get_all.assert_called_once_with(is_all=False,
+                                                      limit=list_limit,
                                                       skip=None,
                                                       pattern_dispatcher=None,
                                                       project_type=None,
@@ -99,7 +104,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=None,
+        self.m_client.get_all.assert_called_once_with(is_all=False,
+                                                      limit=None,
                                                       skip=list_skip,
                                                       pattern_dispatcher=None,
                                                       project_type=None,
@@ -114,7 +120,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=list_limit,
+        self.m_client.get_all.assert_called_once_with(is_all=False,
+                                                      limit=list_limit,
                                                       skip=list_skip,
                                                       pattern_dispatcher=None,
                                                       project_type=None,
@@ -128,6 +135,7 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(
+            is_all=False,
             limit=None,
             skip=None,
             pattern_dispatcher=prefix,
@@ -142,6 +150,7 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_all.assert_called_once_with(
+            is_all=False,
             limit=None,
             skip=None,
             pattern_dispatcher=match,
@@ -162,7 +171,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=None,
+        self.m_client.get_all.assert_called_once_with(is_all=False,
+                                                      limit=None,
                                                       skip=None,
                                                       pattern_dispatcher=regex,
                                                       project_type=None,
@@ -175,7 +185,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_all.assert_called_once_with(limit=None,
+        self.m_client.get_all.assert_called_once_with(is_all=False,
+                                                      limit=None,
                                                       skip=None,
                                                       pattern_dispatcher=None,
                                                       project_type=prj_type,

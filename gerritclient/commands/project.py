@@ -47,6 +47,12 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
     def get_parser(self, prog_name):
         parser = super(ProjectList, self).get_parser(prog_name)
         parser.add_argument(
+            '-a',
+            '--all',
+            action='store_true',
+            help='Include hidden projects in the results.'
+        )
+        parser.add_argument(
             '-d',
             '--description',
             action='store_true',
@@ -110,7 +116,8 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
                                            ('regex', parsed_args.regex))
                          if v is not None}
         fetch_pattern = fetch_pattern if fetch_pattern else None
-        data = self.client.get_all(limit=parsed_args.limit,
+        data = self.client.get_all(is_all=parsed_args.all,
+                                   limit=parsed_args.limit,
                                    skip=parsed_args.skip,
                                    pattern_dispatcher=fetch_pattern,
                                    project_type=parsed_args.type,

@@ -22,10 +22,13 @@ class ProjectClient(base.BaseV1Client):
 
     api_path = "projects/"
 
-    def get_all(self, limit=None, skip=None, pattern_dispatcher=None,
-                project_type=None, description=False, branches=None):
+    def get_all(self, is_all=False, limit=None, skip=None,
+                pattern_dispatcher=None, project_type=None,
+                description=False, branches=None):
         """Get list of all available projects accessible by the caller.
 
+        :param is_all: boolean value, if True then all projects (including
+                       hidden ones) will be added to the results
         :param limit: Int value that allows to limit the number of projects
                       to be included in the output results
         :param skip: Int value that allows to skip the given
@@ -61,10 +64,9 @@ class ProjectClient(base.BaseV1Client):
                                     (p, v),
                                     ('type', project_type),
                                     ('b', branches)) if v is not None}
-        request_path = "{api_path}{all}".format(
-            api_path=self.api_path,
-            all="?d" if description else "")
-        return self.connection.get_request(request_path, params=params)
+        params['all'] = int(is_all)
+        params['d'] = int(description)
+        return self.connection.get_request(self.api_path, params=params)
 
     def get_by_name(self, name):
         """Get detailed info about specified project."""
