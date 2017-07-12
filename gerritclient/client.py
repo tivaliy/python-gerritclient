@@ -28,11 +28,33 @@ from gerritclient import error
 class APIClient(object):
     """This class handles API requests."""
 
-    def __init__(self, url, username=None, password=None):
+    def __init__(self, url, auth_type=None, username=None, password=None):
+        """Creates APIClient.
+
+        :param url: URL path to the Gerrit server
+        :type url: str
+        :param auth_type: Authentication method preferred ('basic'|'digest'),
+                          if None then anonymous access is assumed
+        :type auth_type: str
+        :param username: username
+        :type username: str
+        :param password: password
+        :type password: str
+        """
+
         self.root = url
         self._username = username
         self._password = password
         self._session = None
+        self._auth = None
+        if auth_type:
+            if not all((self._username, self._password)):
+                raise ValueError('Username and password must be specified.')
+            auth_types = {'basic': auth.HTTPBasicAuth,
+                          'digest': auth.HTTPDigestAuth}
+            if auth_type not in auth_types:
+                raise ValueError('Unsupported auth_type {}'.format(auth_type))
+            self._auth = auth_types[auth_type](self._username, self._password)
 
         if self.is_authed:
             self.api_root = self.root + "/a/"
@@ -43,7 +65,7 @@ class APIClient(object):
     def is_authed(self):
         """Checks whether credentials were passed."""
 
-        return True if self._username and self._password else False
+        return True if self._auth else False
 
     @staticmethod
     def _make_common_headers():
@@ -56,8 +78,7 @@ class APIClient(object):
         """Initializes a HTTP session."""
 
         session = requests.Session()
-        if self.is_authed:
-            session.auth = auth.HTTPDigestAuth(self._username, self._password)
+        session.auth = self._auth
         session.headers.update(self._make_common_headers())
         return session
 
@@ -196,10 +217,13 @@ def get_settings(file_path=None):
     return config_data
 
 
-def connect(url, username=None, password=None):
+def connect(url, auth_type=None, username=None, password=None):
     """Creates API connection."""
 
-    return APIClient(url, username=username, password=password)
+    return APIClient(url,
+                     auth_type=auth_type,
+                     username=username,
+                     password=password)
 
 
 def get_client(resource, version='v1', connection=None):

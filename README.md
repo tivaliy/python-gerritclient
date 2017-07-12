@@ -11,12 +11,14 @@ CLI tool and Python API wrapper for Gerrit Code Review
 
     ```yaml
        url: http://review.example.com
+       auth_type: basic
        username: admin
        password: "1234567890aaWmmflSl+ZlOPs23Dffn"
     ```
 
     * `url` can be specified according to the following format `<scheme>://<host>:<port>`, e.g. `https://review.openstack.org`
-    * `username` and `password` can be omitted, then all requests will be anonymous with respective restrictions
+    * `auth_type` specifies HTTP authentication scheme (`basic` or `digest`), can be omitted, then all requests will be anonymous with respective restrictions
+    * `username` and `password` - user credentials from Gerrit system (Settings &#8594; HTTP Password)
 
 3. Create isolated Python environment `virtualenv gerritclient_venv` and activate it `source gerritclient_venv/bin/activate`.
 4. Install `python-gerritclient` with all necessary dependencies: `pip install python-gerritclient/.`.
@@ -31,7 +33,7 @@ CLI tool and Python API wrapper for Gerrit Code Review
 ```python
 from gerritclient import client
 
-connection = client.connect("review.openstack.org", username="user-name", password="password")
+connection = client.connect("review.openstack.org", auth_type="digest" username="user-name", password="password")
 group_client = client.get_client('group', connection=connection)
 members = group_client.get_group_members('swift-core')  # or get_group_members(24)
 print(', '.join(member['name'] for member in members))
