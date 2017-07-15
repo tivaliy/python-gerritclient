@@ -16,6 +16,7 @@
 import mock
 
 from gerritclient.tests.unit.cli import clibase
+from gerritclient.tests.utils import fake_config
 
 
 class TestConfigServerCommand(clibase.BaseCLITest):
@@ -31,3 +32,48 @@ class TestConfigServerCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('config', mock.ANY)
         self.m_client.get_version.assert_called_once_with()
+
+    @mock.patch('json.dump')
+    def test_server_configuration_download_json(self, m_dump):
+        file_format = 'json'
+        directory = '/tmp'
+        test_data = fake_config.get_fake_config()
+        args = 'server configuration download -f {} -d {}'.format(file_format,
+                                                                  directory)
+        expected_path = '{directory}/gerrit_config.{file_format}'.format(
+            directory=directory, file_format=file_format)
+
+        self.m_client.get_config.return_value = test_data
+
+        m_open = mock.mock_open()
+        with mock.patch('gerritclient.commands.config.open',
+                        m_open, create=True):
+            self.exec_command(args)
+
+        m_open.assert_called_once_with(expected_path, 'w')
+        m_dump.assert_called_once_with(test_data, mock.ANY, indent=4)
+        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_client.get_config.assert_called_once_with()
+
+    @mock.patch('yaml.safe_dump')
+    def test_server_configuration_download_yaml(self, m_safe_dump):
+        file_format = 'yaml'
+        directory = '/tmp'
+        test_data = fake_config.get_fake_config()
+        args = 'server configuration download -f {} -d {}'.format(file_format,
+                                                                  directory)
+        expected_path = '{directory}/gerrit_config.{file_format}'.format(
+            directory=directory, file_format=file_format)
+
+        self.m_client.get_config.return_value = test_data
+
+        m_open = mock.mock_open()
+        with mock.patch('gerritclient.commands.config.open',
+                        m_open, create=True):
+            self.exec_command(args)
+
+        m_open.assert_called_once_with(expected_path, 'w')
+        m_safe_dump.assert_called_once_with(test_data, mock.ANY,
+                                            default_flow_style=False)
+        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_client.get_config.assert_called_once_with()

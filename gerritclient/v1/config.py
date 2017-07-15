@@ -26,6 +26,12 @@ class ConfigClient(base.BaseV1Client):
         request_path = "{api_path}version".format(api_path=self.api_path)
         return self.connection.get_request(request_path)
 
+    def get_config(self):
+        """Return the information about the Gerrit server configuration."""
+
+        request_path = "{api_path}info".format(api_path=self.api_path)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ConfigClient(connection)
