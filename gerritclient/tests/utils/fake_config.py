@@ -147,3 +147,78 @@ def get_fake_config():
             "anonymous_coward_name": "Anonymous Coward"
         }
     }
+
+
+def get_fake_capabilities():
+    """Creates a fake capabilities data
+
+    Returns the serialized and parametrized representation of a dumped
+    Gerrit Code Review environment.
+    """
+
+    return {
+        "accessDatabase": {
+            "id": "accessDatabase",
+            "name": "Access Database"
+        },
+        "administrateServer": {
+            "id": "administrateServer",
+            "name": "Administrate Server"
+        },
+        "createAccount": {
+            "id": "createAccount",
+            "name": "Create Account"
+        },
+        "createGroup": {
+            "id": "createGroup",
+            "name": "Create Group"
+        },
+        "createProject": {
+            "id": "createProject",
+            "name": "Create Project"
+        },
+        "emailReviewers": {
+            "id": "emailReviewers",
+            "name": "Email Reviewers"
+        },
+        "flushCaches": {
+            "id": "flushCaches",
+            "name": "Flush Caches"
+        },
+        "killTask": {
+            "id": "killTask",
+            "name": "Kill Task"
+        },
+        "priority": {
+            "id": "priority",
+            "name": "Priority"
+        },
+        "queryLimit": {
+            "id": "queryLimit",
+            "name": "Query Limit"
+        },
+        "runGC": {
+            "id": "runGC",
+            "name": "Run Garbage Collection"
+        },
+        "streamEvents": {
+            "id": "streamEvents",
+            "name": "Stream Events"
+        },
+        "viewCaches": {
+            "id": "viewCaches",
+            "name": "View Caches"
+        },
+        "viewConnections": {
+            "id": "viewConnections",
+            "name": "View Connections"
+        },
+        "viewPlugins": {
+            "id": "viewPlugins",
+            "name": "View Plugins"
+        },
+        "viewQueue": {
+            "id": "viewQueue",
+            "name": "View Queue"
+        }
+    }

@@ -32,6 +32,12 @@ class ConfigClient(base.BaseV1Client):
         request_path = "{api_path}info".format(api_path=self.api_path)
         return self.connection.get_request(request_path)
 
+    def get_capabilities(self):
+        """Lists the capabilities that are available in the system."""
+
+        request_path = "{api_path}capabilities".format(api_path=self.api_path)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ConfigClient(connection)

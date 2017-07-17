@@ -13,7 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import abc
 import os
+import six
 
 from gerritclient.commands import base
 from gerritclient.common import utils
@@ -32,16 +34,26 @@ class ServerVersionShow(ConfigMixIn, base.BaseCommand):
         self.app.stdout.write(self.client.get_version() + '\n')
 
 
-class ServerConfigDownload(ConfigMixIn, base.BaseCommand):
-    """Returns the information about the Gerrit server configuration."""
+@six.add_metaclass(abc.ABCMeta)
+class ServerBaseDownload(ConfigMixIn, base.BaseCommand):
+    """Base Download class Gerrit server configuration."""
+
+    @abc.abstractproperty
+    def attribute(self):
+        """Type of attribute: ('configuration'|'capabilities')
+
+        :rtype: str
+        """
+        pass
 
     def get_parser(self, prog_name):
-        parser = super(ServerConfigDownload, self).get_parser(prog_name)
+        parser = super(ServerBaseDownload, self).get_parser(prog_name)
         parser.add_argument('-f',
                             '--format',
                             default='json',
                             choices=utils.SUPPORTED_FILE_FORMATS,
-                            help='Format of serialized server configuration.')
+                            help='Format of serialized {} '
+                                 'configuration.'.format(self.attribute))
         parser.add_argument('-d',
                             '--directory',
                             required=False,
@@ -51,20 +63,36 @@ class ServerConfigDownload(ConfigMixIn, base.BaseCommand):
         return parser
 
     def take_action(self, parsed_args):
+        attributes = {'configuration': self.client.get_config,
+                      'capabilities': self.client.get_capabilities}
         file_path = os.path.join(os.path.abspath(parsed_args.directory),
-                                 'gerrit_config.{}'.format(parsed_args.format))
-        response_data = self.client.get_config()
+                                 '{}.{}'.format(self.attribute,
+                                                parsed_args.format))
+        response_data = attributes[self.attribute]()
         try:
             if not os.path.exists(parsed_args.directory):
                 os.makedirs(parsed_args.directory)
             with open(file_path, 'w') as stream:
                 utils.safe_dump(parsed_args.format, stream, response_data)
         except (OSError, IOError) as e:
-            msg = ("Could not store configuration data at {}. "
-                   "{}".format(file_path, e))
+            msg = ("Could not store {} data at {}. "
+                   "{}".format(self.attribute, file_path, e))
             raise error.InvalidFileException(msg)
-        msg = "Server configuration data was stored in {}\n".format(file_path)
+        msg = "{} data was stored in {}\n".format(self.attribute.capitalize(),
+                                                  file_path)
         self.app.stdout.write(msg)
+
+
+class ServerConfigDownload(ServerBaseDownload):
+    """Returns the information about the Gerrit server configuration."""
+
+    attribute = 'configuration'
+
+
+class ServerCapabilitiesDownload(ServerBaseDownload):
+    """Lists the capabilities that are available in the system."""
+
+    attribute = 'capabilities'
 
 
 def debug(argv=None):
