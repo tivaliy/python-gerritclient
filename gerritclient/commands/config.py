@@ -40,7 +40,7 @@ class ServerBaseDownload(ConfigMixIn, base.BaseCommand):
 
     @abc.abstractproperty
     def attribute(self):
-        """Type of attribute: ('configuration'|'capabilities')
+        """Type of attribute: ('configuration'|'capabilities'|'caches')
 
         :rtype: str
         """
@@ -64,7 +64,8 @@ class ServerBaseDownload(ConfigMixIn, base.BaseCommand):
 
     def take_action(self, parsed_args):
         attributes = {'configuration': self.client.get_config,
-                      'capabilities': self.client.get_capabilities}
+                      'capabilities': self.client.get_capabilities,
+                      'caches': self.client.get_caches}
         file_path = os.path.join(os.path.abspath(parsed_args.directory),
                                  '{}.{}'.format(self.attribute,
                                                 parsed_args.format))
@@ -84,15 +85,21 @@ class ServerBaseDownload(ConfigMixIn, base.BaseCommand):
 
 
 class ServerConfigDownload(ServerBaseDownload):
-    """Returns the information about the Gerrit server configuration."""
+    """Downloads the information about the Gerrit server configuration."""
 
     attribute = 'configuration'
 
 
 class ServerCapabilitiesDownload(ServerBaseDownload):
-    """Lists the capabilities that are available in the system."""
+    """Downloads a list of the capabilities available in the system."""
 
     attribute = 'capabilities'
+
+
+class ServerCacheInfoDownload(ServerBaseDownload):
+    """Downloads a list of the caches of the server."""
+
+    attribute = 'caches'
 
 
 def debug(argv=None):

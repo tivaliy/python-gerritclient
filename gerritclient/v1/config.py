@@ -38,6 +38,12 @@ class ConfigClient(base.BaseV1Client):
         request_path = "{api_path}capabilities".format(api_path=self.api_path)
         return self.connection.get_request(request_path)
 
+    def get_caches(self):
+        """Lists all the caches of the server."""
+
+        request_path = "{api_path}caches".format(api_path=self.api_path)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ConfigClient(connection)

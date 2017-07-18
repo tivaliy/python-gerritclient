@@ -15,7 +15,7 @@
 
 
 def get_fake_config():
-    """Creates a fake Gerrit server configuration
+    """Creates a fake Gerrit server configuration.
 
     Returns the serialized and parametrized representation of a dumped
     Gerrit Code Review environment.
@@ -150,7 +150,7 @@ def get_fake_config():
 
 
 def get_fake_capabilities():
-    """Creates a fake capabilities data
+    """Creates a fake capabilities data.
 
     Returns the serialized and parametrized representation of a dumped
     Gerrit Code Review environment.
@@ -220,5 +220,105 @@ def get_fake_capabilities():
         "viewQueue": {
             "id": "viewQueue",
             "name": "View Queue"
+        }
+    }
+
+
+def get_fake_caches_info():
+    """Creates a fake caches info data.
+
+    Returns the serialized and parametrized representation of a dumped
+    Gerrit Code Review environment.
+    """
+    return {
+        "accounts": {
+            "type": "MEM",
+            "entries": {
+                "mem": 4
+            },
+            "average_get": "2.5ms",
+            "hit_ratio": {
+                "mem": 94
+            }
+        },
+        "accounts_byemail": {
+            "type": "MEM",
+            "entries": {
+                "mem": 4
+            },
+            "average_get": "771.8us",
+            "hit_ratio": {
+                "mem": 95
+            }
+        },
+        "accounts_byname": {
+            "type": "MEM",
+            "entries": {
+                "mem": 4
+            },
+            "hit_ratio": {
+                "mem": 100
+            }
+        },
+        "adv_bases": {
+            "type": "MEM",
+            "entries": {},
+            "hit_ratio": {}
+        },
+        "change_kind": {
+            "type": "DISK",
+            "entries": {
+                "space": "0.00k"
+            },
+            "hit_ratio": {}
+        },
+        "changes": {
+            "type": "MEM",
+            "entries": {},
+            "hit_ratio": {}
+        },
+        "conflicts": {
+            "type": "DISK",
+            "entries": {
+                "mem": 2,
+                "disk": 3,
+                "space": "2.75k"
+            },
+            "hit_ratio": {
+                "mem": 0,
+                "disk": 100
+            }
+        },
+        "diff": {
+            "type": "DISK",
+            "entries": {
+                "mem": 177,
+                "disk": 253,
+                "space": "170.97k"
+            },
+            "average_get": "1.1ms",
+            "hit_ratio": {
+                "mem": 67,
+                "disk": 100
+            }
+        },
+        "diff_intraline": {
+            "type": "DISK",
+            "entries": {
+                "mem": 1,
+                "disk": 1,
+                "space": "0.37k"
+            },
+            "average_get": "6.8ms",
+            "hit_ratio": {
+                "mem": 0
+            }
+        },
+        "git_tags": {
+            "type": "DISK",
+            "entries": {
+                "space": "0.00k"
+            },
+            "hit_ratio": {}
         }
     }
