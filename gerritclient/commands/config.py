@@ -102,6 +102,26 @@ class ServerCacheInfoDownload(ServerBaseDownload):
     attribute = 'caches'
 
 
+class ServerCacheList(ConfigMixIn, base.BaseCommand):
+    """Show the cache names as a list."""
+
+    def get_parser(self, prog_name):
+        parser = super(ServerCacheList, self).get_parser(prog_name)
+        parser.add_argument(
+            '-f',
+            '--format',
+            default='text',
+            choices=['text', 'json'],
+            help='Output formats.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        format_map = {'text': 'text_list', 'json': 'list'}
+        formatting = format_map[parsed_args.format]
+        return self.client.get_caches(formatting=formatting)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

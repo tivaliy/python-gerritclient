@@ -38,11 +38,20 @@ class ConfigClient(base.BaseV1Client):
         request_path = "{api_path}capabilities".format(api_path=self.api_path)
         return self.connection.get_request(request_path)
 
-    def get_caches(self):
-        """Lists all the caches of the server."""
+    def get_caches(self, formatting=None):
+        """List information about all the caches of the server.
 
+        :param formatting: 'text_list'|'list'
+                           'list' - returns the cache names as JSON list;
+                           'text_list' - returns the cache names as a UTF-8
+                           list that is base64 encoded. The cache names are
+                           delimited by '\n'.
+        :return An information about caches of the server depend on formatting
+        """
+
+        params = {'format': formatting}
         request_path = "{api_path}caches".format(api_path=self.api_path)
-        return self.connection.get_request(request_path)
+        return self.connection.get_request(request_path, params=params)
 
 
 def get_client(connection):

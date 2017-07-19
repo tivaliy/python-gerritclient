@@ -124,7 +124,7 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_capabilities.assert_called_once_with()
 
     @mock.patch('json.dump')
-    def test_caches_info_download_json(self, m_dump):
+    def test_server_caches_info_download_json(self, m_dump):
         file_format = 'json'
         directory = '/tmp'
         test_data = fake_config.get_fake_caches_info()
@@ -146,10 +146,10 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_caches.assert_called_once_with()
 
     @mock.patch('yaml.safe_dump')
-    def test_caches_info_download_yaml(self, m_safe_dump):
+    def test_server_caches_info_download_yaml(self, m_safe_dump):
         file_format = 'yaml'
         directory = '/tmp'
-        test_data = fake_config.get_fake_capabilities()
+        test_data = fake_config.get_fake_caches_info()
         args = 'server cache-info download -f {} -d {}'.format(file_format,
                                                                directory)
         expected_path = '{directory}/caches.{file_format}'.format(
@@ -167,3 +167,32 @@ class TestConfigServerCommand(clibase.BaseCLITest):
                                             default_flow_style=False)
         self.m_get_client.assert_called_once_with('config', mock.ANY)
         self.m_client.get_caches.assert_called_once_with()
+
+    def test_server_cache_list_text(self):
+        fake_caches = ['fake-cache1', 'fake-cache2', 'fake-cache3']
+        args = 'server cache list --format text'
+        self.exec_command(args)
+
+        self.m_client.get_caches.return_value = '\n'.join(fake_caches)
+
+        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_client.get_caches.assert_called_once_with(
+            formatting='text_list')
+
+    def test_server_cache_list_json(self):
+        fake_caches = [u'fake-cache1', u'fake-cache2', u'fake-cache3']
+        args = 'server cache list --format json'
+        self.exec_command(args)
+
+        self.m_client.get_caches.return_value = fake_caches
+
+        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_client.get_caches.assert_called_once_with(
+            formatting='list')
+
+    @mock.patch('sys.stderr')
+    def test_server_cache_list_bad_format_fail(self, mocked_stderr):
+        args = 'server cache list --format bad_format'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('error: argument -f/--format',
+                      mocked_stderr.write.call_args_list[-1][0][0])
