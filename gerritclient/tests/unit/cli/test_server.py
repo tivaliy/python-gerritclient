@@ -16,7 +16,7 @@
 import mock
 
 from gerritclient.tests.unit.cli import clibase
-from gerritclient.tests.utils import fake_config
+from gerritclient.tests.utils import fake_server
 
 
 class TestConfigServerCommand(clibase.BaseCLITest):
@@ -30,14 +30,14 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_version.return_value = '2.14'
         self.exec_command(args)
 
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_version.assert_called_once_with()
 
     @mock.patch('json.dump')
     def test_server_configuration_download_json(self, m_dump):
         file_format = 'json'
         directory = '/tmp'
-        test_data = fake_config.get_fake_config()
+        test_data = fake_server.get_fake_config()
         args = 'server configuration download -f {} -d {}'.format(file_format,
                                                                   directory)
         expected_path = '{directory}/configuration.{file_format}'.format(
@@ -46,20 +46,20 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_config.return_value = test_data
 
         m_open = mock.mock_open()
-        with mock.patch('gerritclient.commands.config.open',
+        with mock.patch('gerritclient.commands.server.open',
                         m_open, create=True):
             self.exec_command(args)
 
         m_open.assert_called_once_with(expected_path, 'w')
         m_dump.assert_called_once_with(test_data, mock.ANY, indent=4)
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_config.assert_called_once_with()
 
     @mock.patch('yaml.safe_dump')
     def test_server_configuration_download_yaml(self, m_safe_dump):
         file_format = 'yaml'
         directory = '/tmp'
-        test_data = fake_config.get_fake_config()
+        test_data = fake_server.get_fake_config()
         args = 'server configuration download -f {} -d {}'.format(file_format,
                                                                   directory)
         expected_path = '{directory}/configuration.{file_format}'.format(
@@ -68,21 +68,21 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_config.return_value = test_data
 
         m_open = mock.mock_open()
-        with mock.patch('gerritclient.commands.config.open',
+        with mock.patch('gerritclient.commands.server.open',
                         m_open, create=True):
             self.exec_command(args)
 
         m_open.assert_called_once_with(expected_path, 'w')
         m_safe_dump.assert_called_once_with(test_data, mock.ANY,
                                             default_flow_style=False)
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_config.assert_called_once_with()
 
     @mock.patch('json.dump')
     def test_capabilities_download_json(self, m_dump):
         file_format = 'json'
         directory = '/tmp'
-        test_data = fake_config.get_fake_capabilities()
+        test_data = fake_server.get_fake_capabilities()
         args = 'server capabilities download -f {} -d {}'.format(file_format,
                                                                  directory)
         expected_path = '{directory}/capabilities.{file_format}'.format(
@@ -91,20 +91,20 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_capabilities.return_value = test_data
 
         m_open = mock.mock_open()
-        with mock.patch('gerritclient.commands.config.open',
+        with mock.patch('gerritclient.commands.server.open',
                         m_open, create=True):
             self.exec_command(args)
 
         m_open.assert_called_once_with(expected_path, 'w')
         m_dump.assert_called_once_with(test_data, mock.ANY, indent=4)
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_capabilities.assert_called_once_with()
 
     @mock.patch('yaml.safe_dump')
     def test_capabilities_download_yaml(self, m_safe_dump):
         file_format = 'yaml'
         directory = '/tmp'
-        test_data = fake_config.get_fake_capabilities()
+        test_data = fake_server.get_fake_capabilities()
         args = 'server capabilities download -f {} -d {}'.format(file_format,
                                                                  directory)
         expected_path = '{directory}/capabilities.{file_format}'.format(
@@ -113,21 +113,21 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_capabilities.return_value = test_data
 
         m_open = mock.mock_open()
-        with mock.patch('gerritclient.commands.config.open',
+        with mock.patch('gerritclient.commands.server.open',
                         m_open, create=True):
             self.exec_command(args)
 
         m_open.assert_called_once_with(expected_path, 'w')
         m_safe_dump.assert_called_once_with(test_data, mock.ANY,
                                             default_flow_style=False)
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_capabilities.assert_called_once_with()
 
     @mock.patch('json.dump')
     def test_server_caches_info_download_json(self, m_dump):
         file_format = 'json'
         directory = '/tmp'
-        test_data = fake_config.get_fake_caches_info()
+        test_data = fake_server.get_fake_caches_info()
         args = 'server cache-info download -f {} -d {}'.format(file_format,
                                                                directory)
         expected_path = '{directory}/caches.{file_format}'.format(
@@ -136,20 +136,20 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_caches.return_value = test_data
 
         m_open = mock.mock_open()
-        with mock.patch('gerritclient.commands.config.open',
+        with mock.patch('gerritclient.commands.server.open',
                         m_open, create=True):
             self.exec_command(args)
 
         m_open.assert_called_once_with(expected_path, 'w')
         m_dump.assert_called_once_with(test_data, mock.ANY, indent=4)
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_caches.assert_called_once_with()
 
     @mock.patch('yaml.safe_dump')
     def test_server_caches_info_download_yaml(self, m_safe_dump):
         file_format = 'yaml'
         directory = '/tmp'
-        test_data = fake_config.get_fake_caches_info()
+        test_data = fake_server.get_fake_caches_info()
         args = 'server cache-info download -f {} -d {}'.format(file_format,
                                                                directory)
         expected_path = '{directory}/caches.{file_format}'.format(
@@ -158,14 +158,14 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.m_client.get_caches.return_value = test_data
 
         m_open = mock.mock_open()
-        with mock.patch('gerritclient.commands.config.open',
+        with mock.patch('gerritclient.commands.server.open',
                         m_open, create=True):
             self.exec_command(args)
 
         m_open.assert_called_once_with(expected_path, 'w')
         m_safe_dump.assert_called_once_with(test_data, mock.ANY,
                                             default_flow_style=False)
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_caches.assert_called_once_with()
 
     def test_server_cache_list_text(self):
@@ -175,7 +175,7 @@ class TestConfigServerCommand(clibase.BaseCLITest):
 
         self.m_client.get_caches.return_value = '\n'.join(fake_caches)
 
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_caches.assert_called_once_with(
             formatting='text_list')
 
@@ -186,7 +186,7 @@ class TestConfigServerCommand(clibase.BaseCLITest):
 
         self.m_client.get_caches.return_value = fake_caches
 
-        self.m_get_client.assert_called_once_with('config', mock.ANY)
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_caches.assert_called_once_with(
             formatting='list')
 

@@ -16,7 +16,7 @@
 from gerritclient.v1 import base
 
 
-class ConfigClient(base.BaseV1Client):
+class ServerClient(base.BaseV1Client):
 
     api_path = "config/server/"
 
@@ -55,4 +55,4 @@ class ConfigClient(base.BaseV1Client):
 
 
 def get_client(connection):
-    return ConfigClient(connection)
+    return ServerClient(connection)

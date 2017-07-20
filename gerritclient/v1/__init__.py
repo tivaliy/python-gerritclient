@@ -14,14 +14,14 @@
 #    under the License.
 
 from gerritclient.v1 import account
-from gerritclient.v1 import config
+from gerritclient.v1 import server
 from gerritclient.v1 import group
 from gerritclient.v1 import plugin
 from gerritclient.v1 import project
 
 # Please keeps the list in alphabetical order
 __all__ = ('account',
-           'config',
            'group',
            'plugin',
-           'project')
+           'project',
+           'server')

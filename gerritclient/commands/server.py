@@ -22,12 +22,12 @@ from gerritclient.common import utils
 from gerritclient import error
 
 
-class ConfigMixIn(object):
+class ServerMixIn(object):
 
-    entity_name = 'config'
+    entity_name = 'server'
 
 
-class ServerVersionShow(ConfigMixIn, base.BaseCommand):
+class ServerVersionShow(ServerMixIn, base.BaseCommand):
     """Returns the version of the Gerrit server."""
 
     def take_action(self, parsed_args):
@@ -35,7 +35,7 @@ class ServerVersionShow(ConfigMixIn, base.BaseCommand):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class ServerBaseDownload(ConfigMixIn, base.BaseCommand):
+class ServerBaseDownload(ServerMixIn, base.BaseCommand):
     """Base Download class Gerrit server configuration."""
 
     @abc.abstractproperty
@@ -79,8 +79,8 @@ class ServerBaseDownload(ConfigMixIn, base.BaseCommand):
             msg = ("Could not store {} data at {}. "
                    "{}".format(self.attribute, file_path, e))
             raise error.InvalidFileException(msg)
-        msg = "{} data was stored in {}\n".format(self.attribute.capitalize(),
-                                                  file_path)
+        msg = "Information about {} was stored in {}\n".format(self.attribute,
+                                                               file_path)
         self.app.stdout.write(msg)
 
 
@@ -102,7 +102,7 @@ class ServerCacheInfoDownload(ServerBaseDownload):
     attribute = 'caches'
 
 
-class ServerCacheList(ConfigMixIn, base.BaseCommand):
+class ServerCacheList(ServerMixIn, base.BaseCommand):
     """Show the cache names as a list."""
 
     def get_parser(self, prog_name):

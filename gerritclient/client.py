@@ -244,15 +244,13 @@ def get_client(resource, version='v1', connection=None):
                      calls to the specified version of the API.
     """
 
-    # from gerritclient import v1
-
     version_map = {
         'v1': {
             'account': gerritclient.v1.account,
-            'config': gerritclient.v1.config,
             'group': gerritclient.v1.group,
             'plugin': gerritclient.v1.plugin,
-            'project': gerritclient.v1.project
+            'project': gerritclient.v1.project,
+            'server': gerritclient.v1.server
         }
     }
 
