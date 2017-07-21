@@ -24,6 +24,8 @@ class TestConfigServerCommand(clibase.BaseCLITest):
 
     def setUp(self):
         super(TestConfigServerCommand, self).setUp()
+        fake_cache_info = fake_server.get_fake_cache_info()
+        self.m_client.get_cache.return_value = fake_cache_info
 
     def test_server_version_show(self):
         args = 'server version'
@@ -127,7 +129,7 @@ class TestConfigServerCommand(clibase.BaseCLITest):
     def test_server_caches_info_download_json(self, m_dump):
         file_format = 'json'
         directory = '/tmp'
-        test_data = fake_server.get_fake_caches_info()
+        test_data = fake_server.get_fake_caches_info(5)
         args = 'server cache-info download -f {} -d {}'.format(file_format,
                                                                directory)
         expected_path = '{directory}/caches.{file_format}'.format(
@@ -149,7 +151,7 @@ class TestConfigServerCommand(clibase.BaseCLITest):
     def test_server_caches_info_download_yaml(self, m_safe_dump):
         file_format = 'yaml'
         directory = '/tmp'
-        test_data = fake_server.get_fake_caches_info()
+        test_data = fake_server.get_fake_caches_info(5)
         args = 'server cache-info download -f {} -d {}'.format(file_format,
                                                                directory)
         expected_path = '{directory}/caches.{file_format}'.format(
@@ -196,3 +198,11 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('error: argument -f/--format',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_server_cache_show(self):
+        fake_cache = 'fake_cache'
+        args = 'server cache show {name}'.format(name=fake_cache)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
+        self.m_client.get_cache.assert_called_once_with(fake_cache)

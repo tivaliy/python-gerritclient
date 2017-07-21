@@ -53,6 +53,13 @@ class ServerClient(base.BaseV1Client):
         request_path = "{api_path}caches".format(api_path=self.api_path)
         return self.connection.get_request(request_path, params=params)
 
+    def get_cache(self, name):
+        """Retrieve information about a specific cache."""
+
+        request_path = "{api_path}caches/{name}".format(api_path=self.api_path,
+                                                        name=name)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ServerClient(connection)

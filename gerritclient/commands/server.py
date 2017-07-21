@@ -122,6 +122,29 @@ class ServerCacheList(ServerMixIn, base.BaseCommand):
         return self.client.get_caches(formatting=formatting)
 
 
+class ServerCacheShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
+    """Retrieves information about a cache."""
+
+    columns = ('name',
+               'type',
+               'entries',
+               'average_get',
+               'hit_ratio')
+
+    def get_parser(self, app_name):
+        parser = super(ServerCacheShow, self).get_parser(app_name)
+        parser.add_argument(
+            'name',
+            help='Cache name.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_cache(parsed_args.name)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

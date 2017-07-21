@@ -224,101 +224,33 @@ def get_fake_capabilities():
     }
 
 
-def get_fake_caches_info():
-    """Creates a fake caches info data.
+def get_fake_cache_info(name="fake_cache", cache_type=None,
+                        is_single_item=True):
+    """Creates a fake cache info data."""
 
-    Returns the serialized and parametrized representation of a dumped
-    Gerrit Code Review environment.
-    """
-    return {
-        "accounts": {
-            "type": "MEM",
-            "entries": {
-                "mem": 4
-            },
-            "average_get": "2.5ms",
-            "hit_ratio": {
-                "mem": 94
-            }
+    fake_cache = {
+        "type": cache_type or "MEM",
+        "entries": {
+            "mem": 4
         },
-        "accounts_byemail": {
-            "type": "MEM",
-            "entries": {
-                "mem": 4
-            },
-            "average_get": "771.8us",
-            "hit_ratio": {
-                "mem": 95
-            }
-        },
-        "accounts_byname": {
-            "type": "MEM",
-            "entries": {
-                "mem": 4
-            },
-            "hit_ratio": {
-                "mem": 100
-            }
-        },
-        "adv_bases": {
-            "type": "MEM",
-            "entries": {},
-            "hit_ratio": {}
-        },
-        "change_kind": {
-            "type": "DISK",
-            "entries": {
-                "space": "0.00k"
-            },
-            "hit_ratio": {}
-        },
-        "changes": {
-            "type": "MEM",
-            "entries": {},
-            "hit_ratio": {}
-        },
-        "conflicts": {
-            "type": "DISK",
-            "entries": {
-                "mem": 2,
-                "disk": 3,
-                "space": "2.75k"
-            },
-            "hit_ratio": {
-                "mem": 0,
-                "disk": 100
-            }
-        },
-        "diff": {
-            "type": "DISK",
-            "entries": {
-                "mem": 177,
-                "disk": 253,
-                "space": "170.97k"
-            },
-            "average_get": "1.1ms",
-            "hit_ratio": {
-                "mem": 67,
-                "disk": 100
-            }
-        },
-        "diff_intraline": {
-            "type": "DISK",
-            "entries": {
-                "mem": 1,
-                "disk": 1,
-                "space": "0.37k"
-            },
-            "average_get": "6.8ms",
-            "hit_ratio": {
-                "mem": 0
-            }
-        },
-        "git_tags": {
-            "type": "DISK",
-            "entries": {
-                "space": "0.00k"
-            },
-            "hit_ratio": {}
+        "average_get": "2.5ms",
+        "hit_ratio": {
+            "mem": 94
         }
     }
+    # 'name' key set only for single item, otherwise 'name' key is used
+    # as map key if we try to fetch several items
+    if is_single_item:
+        fake_cache['name'] = name
+        return fake_cache
+    return {name: fake_cache}
+
+
+def get_fake_caches_info(caches_count):
+    """Creates a list of fake caches info data."""
+
+    fake_caches = {}
+    for i in range(1, caches_count + 1):
+        fake_caches.update(get_fake_cache_info(name="fake-cache-{}".format(i),
+                                               is_single_item=False))
+    return fake_caches
