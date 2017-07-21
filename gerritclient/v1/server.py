@@ -41,7 +41,7 @@ class ServerClient(base.BaseV1Client):
     def get_caches(self, formatting=None):
         """List information about all the caches of the server.
 
-        :param formatting: 'text_list'|'list'
+        :param formatting: None|'text_list'|'list'
                            'list' - returns the cache names as JSON list;
                            'text_list' - returns the cache names as a UTF-8
                            list that is base64 encoded. The cache names are

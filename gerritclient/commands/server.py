@@ -64,8 +64,7 @@ class ServerBaseDownload(ServerMixIn, base.BaseCommand):
 
     def take_action(self, parsed_args):
         attributes = {'configuration': self.client.get_config,
-                      'capabilities': self.client.get_capabilities,
-                      'caches': self.client.get_caches}
+                      'capabilities': self.client.get_capabilities}
         file_path = os.path.join(os.path.abspath(parsed_args.directory),
                                  '{}.{}'.format(self.attribute,
                                                 parsed_args.format))
@@ -96,30 +95,20 @@ class ServerCapabilitiesDownload(ServerBaseDownload):
     attribute = 'capabilities'
 
 
-class ServerCacheInfoDownload(ServerBaseDownload):
-    """Downloads a list of the caches of the server."""
-
-    attribute = 'caches'
-
-
-class ServerCacheList(ServerMixIn, base.BaseCommand):
+class ServerCacheList(ServerMixIn, base.BaseListCommand):
     """Show the cache names as a list."""
 
-    def get_parser(self, prog_name):
-        parser = super(ServerCacheList, self).get_parser(prog_name)
-        parser.add_argument(
-            '-f',
-            '--format',
-            default='text',
-            choices=['text', 'json'],
-            help='Output formats.'
-        )
-        return parser
+    columns = ('name',
+               'type',
+               'entries',
+               'average_get',
+               'hit_ratio')
 
     def take_action(self, parsed_args):
-        format_map = {'text': 'text_list', 'json': 'list'}
-        formatting = format_map[parsed_args.format]
-        return self.client.get_caches(formatting=formatting)
+        response = self.client.get_caches()
+        data = self._reformat_data(response)
+        data = utils.get_display_data_multi(self.columns, data)
+        return self.columns, data
 
 
 class ServerCacheShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
