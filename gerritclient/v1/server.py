@@ -60,6 +60,18 @@ class ServerClient(base.BaseV1Client):
                                                         name=name)
         return self.connection.get_request(request_path)
 
+    def flush_caches(self, is_all=False, names=None):
+        """Flush all/specific cache.
+
+        :param is_all: boolean value, if True then all cache will be flushed
+        :param names: list of names of cache to be flushed
+        """
+
+        data = {"operation": "FLUSH_ALL" if is_all else "FLUSH",
+                "caches": names}
+        request_path = "{api_path}caches".format(api_path=self.api_path)
+        return self.connection.post_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return ServerClient(connection)

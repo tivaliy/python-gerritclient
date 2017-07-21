@@ -141,3 +141,34 @@ class TestConfigServerCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_cache.assert_called_once_with(fake_cache)
+
+    def test_server_cache_flush_all(self):
+        args = 'server cache flush --all'
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
+        self.m_client.flush_caches.assert_called_once_with(is_all=True,
+                                                           names=None)
+
+    def test_server_cache_flush_several(self):
+        fake_caches = ['fake_cache_1', 'fake_cache_2']
+        args = 'server cache flush --name {}'.format(' '.join(fake_caches))
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
+        self.m_client.flush_caches.assert_called_once_with(is_all=False,
+                                                           names=fake_caches)
+
+    @mock.patch('sys.stderr')
+    def test_server_cache_flush_w_mutually_exclusive_params_fail(self,
+                                                                 m_stderr):
+        args = 'server cache flush --name fake_cache1 fake_cache_2 --all'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('not allowed', m_stderr.write.call_args_list[-1][0][0])
+
+    @mock.patch('sys.stderr')
+    def test_server_cache_flush_wo_params_fail(self, m_stderr):
+        args = 'server cache flush'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('error: one of the arguments',
+                      m_stderr.write.call_args_list[-1][0][0])

@@ -134,6 +134,34 @@ class ServerCacheShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
         return self.columns, data
 
 
+class ServerCacheFlush(ServerMixIn, base.BaseCommand):
+    """Flushes a cache."""
+
+    def get_parser(self, prog_name):
+        parser = super(ServerCacheFlush, self).get_parser(prog_name)
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
+            '-a',
+            '--all',
+            action='store_true',
+            help='All available caches.'
+        )
+        group.add_argument(
+            '-n',
+            '--name',
+            nargs='+',
+            help='Caches names.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.flush_caches(is_all=parsed_args.all,
+                                 names=parsed_args.name)
+        msg = "The following caches were flushed: {}\n".format(
+            'ALL' if parsed_args.all else ', '.join(parsed_args.name))
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
