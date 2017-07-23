@@ -72,6 +72,13 @@ class ServerClient(base.BaseV1Client):
         request_path = "{api_path}caches".format(api_path=self.api_path)
         return self.connection.post_request(request_path, json_data=data)
 
+    def get_summary_state(self, jvm=False, gc=False):
+        """Retrieve a summary of the current server state."""
+
+        params = {'jvm': int(jvm), 'gc': int(gc)}
+        request_path = "{api_path}summary".format(api_path=self.api_path)
+        return self.connection.get_request(request_path, params=params)
+
 
 def get_client(connection):
     return ServerClient(connection)

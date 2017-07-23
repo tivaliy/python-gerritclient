@@ -172,3 +172,21 @@ class TestConfigServerCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('error: one of the arguments',
                       m_stderr.write.call_args_list[-1][0][0])
+
+    def test_server_get_summary_state_show(self):
+        args = 'server state show --max-width 110'
+        fake_summary_state = fake_server.get_fake_summary_state()
+        self.m_client.get_summary_state.return_value = fake_summary_state
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
+        self.m_client.get_summary_state.assert_called_once_with(False, False)
+
+    def test_server_get_summary_state_show_w_jvm_gc(self):
+        args = 'server state show --jvm --gc --max-width 110'
+        fake_summary_state = fake_server.get_fake_summary_state()
+        self.m_client.get_summary_state.return_value = fake_summary_state
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
+        self.m_client.get_summary_state.assert_called_once_with(True, True)

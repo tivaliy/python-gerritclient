@@ -254,3 +254,55 @@ def get_fake_caches_info(caches_count):
         fake_caches.update(get_fake_cache_info(name="fake-cache-{}".format(i),
                                                is_single_item=False))
     return fake_caches
+
+
+def get_fake_summary_state():
+    """Creates a fake server state data."""
+
+    return {
+        "task_summary": {
+            "total": 1,
+            "sleeping": 1
+        },
+        "mem_summary": {
+            "total": "495.50m",
+            "used": "220.50m",
+            "free": "275.00m",
+            "buffers": "0.00k",
+            "max": "3.45g"
+        },
+        "thread_summary": {
+            "cpus": 2,
+            "threads": 60,
+            "counts": {
+                "SshCommandStart": {
+                    "WAITING": 2
+                },
+                "sshd-SshServer": {
+                    "TIMED_WAITING": 1,
+                    "WAITING": 3
+                },
+                "HTTP": {
+                    "TIMED_WAITING": 2,
+                    "RUNNABLE": 3
+                },
+                "Other": {
+                    "TIMED_WAITING": 17,
+                    "WAITING": 10,
+                    "RUNNABLE": 2
+                }
+            }
+        },
+        "jvm_summary": {
+            "vm_vendor": "Oracle Corporation",
+            "vm_name": "OpenJDK 64-Bit Server VM",
+            "vm_version": "25.131-b11",
+            "os_name": "Linux",
+            "os_version": "4.4.0-83-generic",
+            "os_arch": "amd64",
+            "user": "gerrit2",
+            "host": "d4e1ae041cca",
+            "current_working_directory": "/var/gerrit/review_site",
+            "site": "/var/gerrit/review_site"
+        }
+    }

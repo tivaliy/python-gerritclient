@@ -162,6 +162,37 @@ class ServerCacheFlush(ServerMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class ServerStateSummaryList(ServerMixIn, base.BaseCommand, base.show.ShowOne):
+    """Retrieves a summary of the current server state."""
+
+    columns = ('task_summary',
+               'mem_summary',
+               'thread_summary')
+
+    def get_parser(self, prog_name):
+        parser = super(ServerStateSummaryList, self).get_parser(prog_name)
+        parser.add_argument(
+            '--jvm',
+            action='store_true',
+            help='Includes a JVM summary.'
+        )
+        parser.add_argument(
+            '--gc',
+            action='store_true',
+            help='Requests a Java garbage collection before computing '
+                 'the information about the Java memory heap.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_summary_state(parsed_args.jvm,
+                                                 parsed_args.gc)
+        if parsed_args.jvm:
+            self.columns += ('jvm_summary',)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
