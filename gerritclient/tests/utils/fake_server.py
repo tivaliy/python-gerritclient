@@ -306,3 +306,21 @@ def get_fake_summary_state():
             "site": "/var/gerrit/review_site"
         }
     }
+
+
+def get_fake_task(task_id=None, state=None, delay=None, command=None):
+    """Creates a fake server task."""
+
+    return {
+        "id": task_id or "1e688bea",
+        "state": state or "SLEEPING",
+        "start_time": "2017-07-26 12:58:51.991000000",
+        "delay": delay or 3453,
+        "command": command or "Reload Submit Queue"
+    }
+
+
+def get_fake_tasks(task_count, **kwargs):
+    """Creates a random fake tasks list."""
+
+    return [get_fake_task(**kwargs) for _ in range(task_count)]

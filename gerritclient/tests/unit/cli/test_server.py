@@ -190,3 +190,12 @@ class TestConfigServerCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_summary_state.assert_called_once_with(True, True)
+
+    def test_server_task_list(self):
+        args = 'server task list'
+        fake_task_list = fake_server.get_fake_tasks(5)
+        self.m_client.get_tasks.return_value = fake_task_list
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
+        self.m_client.get_tasks.assert_called_once_with()

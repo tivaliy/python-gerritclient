@@ -193,6 +193,24 @@ class ServerStateSummaryList(ServerMixIn, base.BaseCommand, base.show.ShowOne):
         return self.columns, data
 
 
+class ServerTaskList(ServerMixIn, base.BaseListCommand):
+    """Lists the tasks from the background work queues that the Gerrit daemons
+
+    is currently performing, or will perform in the near future.
+    """
+
+    columns = ('id',
+               'state',
+               'start_time',
+               'delay',
+               'command')
+
+    def take_action(self, parsed_args):
+        response = self.client.get_tasks()
+        data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

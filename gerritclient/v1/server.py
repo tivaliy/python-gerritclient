@@ -79,6 +79,12 @@ class ServerClient(base.BaseV1Client):
         request_path = "{api_path}summary".format(api_path=self.api_path)
         return self.connection.get_request(request_path, params=params)
 
+    def get_tasks(self):
+        """Get all tasks from the background work queues."""
+
+        request_path = "{api_path}tasks".format(api_path=self.api_path)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ServerClient(connection)
