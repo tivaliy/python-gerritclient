@@ -85,6 +85,14 @@ class ServerClient(base.BaseV1Client):
         request_path = "{api_path}tasks".format(api_path=self.api_path)
         return self.connection.get_request(request_path)
 
+    def get_task(self, task_id):
+        """Retrieve a task from the background work queue."""
+
+        request_path = "{api_path}tasks/{task_id}".format(
+            api_path=self.api_path,
+            task_id=task_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ServerClient(connection)

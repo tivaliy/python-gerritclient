@@ -203,11 +203,42 @@ class ServerTaskList(ServerMixIn, base.BaseListCommand):
                'state',
                'start_time',
                'delay',
-               'command')
+               'command',
+               'remote_name',
+               'project')
 
     def take_action(self, parsed_args):
         response = self.client.get_tasks()
         data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
+class ServerTaskShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
+    """Retrieves a task from the background work queue that the Gerrit daemon
+
+    is currently performing, or will perform in the near future.
+    """
+
+    columns = ('id',
+               'state',
+               'start_time',
+               'delay',
+               'command',
+               'remote_name',
+               'project')
+
+    def get_parser(self, prog_name):
+        parser = super(ServerTaskShow, self).get_parser(prog_name)
+        parser.add_argument(
+            'task_id',
+            metavar='task-identifier',
+            help='The ID of the task (hex string).'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_task(parsed_args.task_id)
+        data = utils.get_display_data_single(self.columns, response)
         return self.columns, data
 
 
