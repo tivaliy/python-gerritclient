@@ -93,6 +93,14 @@ class ServerClient(base.BaseV1Client):
             task_id=task_id)
         return self.connection.get_request(request_path)
 
+    def delete_task(self, task_id):
+        """Kill a task from the background work queue."""
+
+        request_path = "{api_path}tasks/{task_id}".format(
+            api_path=self.api_path,
+            task_id=task_id)
+        return self.connection.delete_request(request_path, data={})
+
 
 def get_client(connection):
     return ServerClient(connection)

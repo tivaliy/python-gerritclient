@@ -242,6 +242,27 @@ class ServerTaskShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
         return self.columns, data
 
 
+class ServerTaskDelete(ServerMixIn, base.BaseCommand):
+    """Kills a task from the background work queue that the Gerrit daemon
+
+    is currently performing, or will perform in the near future.
+    """
+
+    def get_parser(self, prog_name):
+        parser = super(ServerTaskDelete, self).get_parser(prog_name)
+        parser.add_argument(
+            'task_id',
+            metavar='task-identifier',
+            help='The ID of the task (hex string).'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_task(parsed_args.task_id)
+        msg = "Task with ID '{0}' was deleted\n".format(parsed_args.task_id)
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

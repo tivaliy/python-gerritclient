@@ -209,3 +209,11 @@ class TestConfigServerCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('server', mock.ANY)
         self.m_client.get_task.assert_called_once_with(task_id)
+
+    def test_server_task_delete(self):
+        task_id = "62dc1cee"
+        args = 'server task delete {task_id}'.format(task_id=task_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('server', mock.ANY)
+        self.m_client.delete_task.assert_called_once_with(task_id)
