@@ -247,6 +247,7 @@ def get_client(resource, version='v1', connection=None):
     version_map = {
         'v1': {
             'account': gerritclient.v1.account,
+            'change': gerritclient.v1.change,
             'group': gerritclient.v1.group,
             'plugin': gerritclient.v1.plugin,
             'project': gerritclient.v1.project,

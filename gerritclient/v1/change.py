@@ -13,17 +13,21 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from gerritclient.v1 import account
-from gerritclient.v1 import change
-from gerritclient.v1 import server
-from gerritclient.v1 import group
-from gerritclient.v1 import plugin
-from gerritclient.v1 import project
+from gerritclient.v1 import base
 
-# Please keeps the list in alphabetical order
-__all__ = ('account',
-           'change',
-           'group',
-           'plugin',
-           'project',
-           'server')
+
+class ChangeClient(base.BaseV1Client):
+
+    api_path = "changes/"
+
+    def get_by_id(self, change_id):
+        """Retrieve a change."""
+
+        request_path = "{api_path}{change_id}".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.get_request(request_path)
+
+
+def get_client(connection):
+    return ChangeClient(connection)
