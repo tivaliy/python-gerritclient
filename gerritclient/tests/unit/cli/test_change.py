@@ -27,13 +27,16 @@ class TestChangeCommand(clibase.BaseCLITest):
 
     def test_change_show_wo_details(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
-        args = 'change show {change_id}'.format(change_id=change_id)
+        args = 'change show {change_id} --max-width 110'.format(
+            change_id=change_id)
         self.m_client.get_by_id.return_value = fake_change.get_fake_change(
             change_id=change_id)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
-        self.m_client.get_by_id.assert_called_once_with(change_id, False)
+        self.m_client.get_by_id.assert_called_once_with(change_id=change_id,
+                                                        detailed=False,
+                                                        options=None)
 
     def test_change_show_w_details(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
@@ -44,4 +47,21 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
-        self.m_client.get_by_id.assert_called_once_with(change_id, True)
+        self.m_client.get_by_id.assert_called_once_with(change_id=change_id,
+                                                        detailed=True,
+                                                        options=None)
+
+    def test_change_show_w_options(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        options = ['LABELS', 'MESSAGES', 'REVIEWED']
+        args = ('change show {change_id} --option {options} '
+                '--max-width 110'.format(change_id=change_id,
+                                         options=' '.join(options)))
+        self.m_client.get_by_id.return_value = fake_change.get_fake_change(
+            change_id=change_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_by_id.assert_called_once_with(change_id=change_id,
+                                                        detailed=False,
+                                                        options=options)

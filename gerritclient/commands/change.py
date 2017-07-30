@@ -27,8 +27,12 @@ class ChangeShow(ChangeMixIn, base.BaseShowCommand):
 
     columns = ('id', 'project', 'branch', 'topic', 'hashtags', 'change_id',
                'subject', 'status', 'created', 'updated', 'submitted',
-               'starred', 'stars', 'submit_type', 'mergeable', 'insertions',
-               'deletions', 'unresolved_comment_count', '_number', 'owner')
+               'starred', 'stars', 'reviewed', 'submit_type', 'mergeable',
+               'submittable', 'insertions', 'deletions',
+               'unresolved_comment_count', '_number', 'owner', 'actions',
+               'labels', 'permitted_labels', 'removable_reviewers',
+               'reviewers', 'reviewer_updates', 'messages', 'current_revision',
+               'revisions', '_more_changes', 'problems')
 
     def get_parser(self, app_name):
         parser = super(ChangeShow, self).get_parser(app_name)
@@ -39,17 +43,24 @@ class ChangeShow(ChangeMixIn, base.BaseShowCommand):
             help='Retrieves a change with labels, detailed labels, '
                  'detailed accounts, reviewer updates, and messages.'
         )
+        parser.add_argument(
+            '-o',
+            '--option',
+            nargs='+',
+            help='Fetch additional data about a change.'
+        )
         return parser
 
     def take_action(self, parsed_args):
-        if parsed_args.all:
-            self.columns += ('labels', 'permitted_labels',
-                             'removable_reviewers', 'reviewers',
-                             'reviewer_updates', 'messages')
-        response = self.client.get_by_id(parsed_args.entity_id,
-                                         parsed_args.all)
-        data = utils.get_display_data_single(self.columns, response)
-        return self.columns, data
+        response = self.client.get_by_id(change_id=parsed_args.entity_id,
+                                         detailed=parsed_args.all,
+                                         options=parsed_args.option)
+        # As the number of columns can greatly very depending on request
+        # let's fetch only those that are in response and print them in
+        # respective (declarative) order
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
 
 
 def debug(argv=None):

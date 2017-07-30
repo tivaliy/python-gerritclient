@@ -20,21 +20,23 @@ class ChangeClient(base.BaseV1Client):
 
     api_path = "changes/"
 
-    def get_by_id(self, change_id, detailed=False):
+    def get_by_id(self, change_id, detailed=False, options=None):
         """Retrieve a change.
 
         :param change_id: Identifier that uniquely identifies one change.
         :param detailed: boolean value, if True then retrieve a change with
                          labels, detailed labels, detailed accounts,
                          reviewer updates, and messages.
+        :param options: List of options to fetch additional data about a change
         :return: ChangeInfo entity is returned that describes the change.
         """
 
+        params = {'o': options}
         request_path = "{api_path}{change_id}/{detail}".format(
             api_path=self.api_path,
             change_id=change_id,
             detail="detail" if detailed else "")
-        return self.connection.get_request(request_path)
+        return self.connection.get_request(request_path, params=params)
 
 
 def get_client(connection):
