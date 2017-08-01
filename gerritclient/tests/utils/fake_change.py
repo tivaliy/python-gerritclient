@@ -214,3 +214,9 @@ def get_fake_change(change_id=None):
             }
         ]
     }
+
+
+def get_fake_changes(change_count, **kwargs):
+    """Creates a random fake list of changes."""
+
+    return [get_fake_change(**kwargs) for _ in range(change_count)]

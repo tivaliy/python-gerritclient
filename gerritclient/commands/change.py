@@ -22,6 +22,49 @@ class ChangeMixIn(object):
     entity_name = 'change'
 
 
+class ChangeList(ChangeMixIn, base.BaseListCommand):
+    """Queries changes visible to the caller. """
+
+    columns = ('id', 'project', 'branch', 'change_id', 'subject', 'status',
+               'created', 'updated', 'mergeable', 'insertions', 'deletions',
+               '_number', 'owner')
+
+    def get_parser(self, prog_name):
+        parser = super(ChangeList, self).get_parser(prog_name)
+        parser.add_argument(
+            'query',
+            nargs='+',
+            help='Query string.'
+        )
+        parser.add_argument(
+            '-l',
+            '--limit',
+            type=int,
+            help='Limit the number of changes to be included in the results.'
+        )
+        parser.add_argument(
+            '-S',
+            '--skip',
+            type=int,
+            help='Skip the given number of changes '
+                 'from the beginning of the list.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_all(query=parsed_args.query,
+                                       limit=parsed_args.limit,
+                                       skip=parsed_args.skip)
+        # Clients are allowed to specify more than one query. In this case
+        # the result is an array of arrays, one per query in the same order
+        # the queries were given in. If the number of queries more then one,
+        # then merge arrays in a single one to display data correctly.
+        if len(parsed_args.query) > 1:
+            response = [item for sublist in response for item in sublist]
+        data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
 class ChangeShow(ChangeMixIn, base.BaseShowCommand):
     """Retrieves a change."""
 

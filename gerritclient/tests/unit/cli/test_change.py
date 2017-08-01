@@ -25,6 +25,57 @@ class TestChangeCommand(clibase.BaseCLITest):
     def setUp(self):
         super(TestChangeCommand, self).setUp()
 
+    def test_change_list_w_single_query(self):
+        query = ['status:open+is:watched']
+        args = 'change list {query} --max-width 110'.format(
+            query=''.join(query))
+        self.m_client.get_all.return_value = fake_change.get_fake_changes(5)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(query=query,
+                                                      limit=None,
+                                                      skip=None)
+
+    def test_change_list_w_multiple_queries(self):
+        query = ['status:open+is:watched', 'is:closed+owner:self+limit:5']
+        args = 'change list {query} --max-width 110'.format(
+            query=' '.join(query))
+        self.m_client.get_all.return_value = [fake_change.get_fake_changes(3),
+                                              fake_change.get_fake_changes(2)]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(query=query,
+                                                      limit=None,
+                                                      skip=None)
+
+    def test_change_list_w_skip(self):
+        skip = 2
+        query = ['status:open+is:watched']
+        args = 'change list {query} --skip {skip} --max-width 110'.format(
+            query=''.join(query), skip=skip)
+        self.m_client.get_all.return_value = fake_change.get_fake_changes(5)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(query=query,
+                                                      limit=None,
+                                                      skip=skip)
+
+    def test_change_list_w_limit(self):
+        limit = 2
+        query = ['status:open+is:watched']
+        args = 'change list {query} --limit {limit} --max-width 110'.format(
+            query=''.join(query), limit=limit)
+        self.m_client.get_all.return_value = fake_change.get_fake_changes(2)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(query=query,
+                                                      limit=limit,
+                                                      skip=None)
+
     def test_change_show_wo_details(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
         args = 'change show {change_id} --max-width 110'.format(

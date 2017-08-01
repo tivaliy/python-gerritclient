@@ -20,6 +20,24 @@ class ChangeClient(base.BaseV1Client):
 
     api_path = "changes/"
 
+    def get_all(self, query, limit=None, skip=None):
+        """Query changes.
+
+        :param query: Queries as a list of string
+        :param limit: Int value that allows to limit the number of changes
+                      to be included in the output results
+        :param skip: Int value that allows to skip the given number of
+                     changes from the beginning of the list
+        :return A list of ChangeInfo entries
+        """
+
+        params = {k: v for k, v in (('n', limit),
+                                    ('S', skip)) if v is not None}
+        request_path = "{api_path}{query}".format(
+            api_path=self.api_path,
+            query="?q={query}".format(query='&q='.join(query)))
+        return self.connection.get_request(request_path, params=params)
+
     def get_by_id(self, change_id, detailed=False, options=None):
         """Retrieve a change.
 
