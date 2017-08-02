@@ -21,13 +21,18 @@ class ChangeMixIn(object):
 
     entity_name = 'change'
 
+    columns = ('id', 'project', 'branch', 'topic', 'hashtags', 'change_id',
+               'subject', 'status', 'created', 'updated', 'submitted',
+               'starred', 'stars', 'reviewed', 'submit_type', 'mergeable',
+               'submittable', 'insertions', 'deletions',
+               'unresolved_comment_count', '_number', 'owner', 'actions',
+               'labels', 'permitted_labels', 'removable_reviewers',
+               'reviewers', 'reviewer_updates', 'messages', 'current_revision',
+               'revisions', '_more_changes', 'problems')
+
 
 class ChangeList(ChangeMixIn, base.BaseListCommand):
     """Queries changes visible to the caller. """
-
-    columns = ('id', 'project', 'branch', 'change_id', 'subject', 'status',
-               'created', 'updated', 'mergeable', 'insertions', 'deletions',
-               '_number', 'owner')
 
     def get_parser(self, prog_name):
         parser = super(ChangeList, self).get_parser(prog_name)
@@ -49,10 +54,17 @@ class ChangeList(ChangeMixIn, base.BaseListCommand):
             help='Skip the given number of changes '
                  'from the beginning of the list.'
         )
+        parser.add_argument(
+            '-o',
+            '--option',
+            nargs='+',
+            help='Fetch additional data about changes.'
+        )
         return parser
 
     def take_action(self, parsed_args):
         response = self.client.get_all(query=parsed_args.query,
+                                       options=parsed_args.option,
                                        limit=parsed_args.limit,
                                        skip=parsed_args.skip)
         # Clients are allowed to specify more than one query. In this case
@@ -61,21 +73,13 @@ class ChangeList(ChangeMixIn, base.BaseListCommand):
         # then merge arrays in a single one to display data correctly.
         if len(parsed_args.query) > 1:
             response = [item for sublist in response for item in sublist]
-        data = utils.get_display_data_multi(self.columns, response)
-        return self.columns, data
+        fetched_columns = [c for c in self.columns if c in response[0]]
+        data = utils.get_display_data_multi(fetched_columns, response)
+        return fetched_columns, data
 
 
 class ChangeShow(ChangeMixIn, base.BaseShowCommand):
     """Retrieves a change."""
-
-    columns = ('id', 'project', 'branch', 'topic', 'hashtags', 'change_id',
-               'subject', 'status', 'created', 'updated', 'submitted',
-               'starred', 'stars', 'reviewed', 'submit_type', 'mergeable',
-               'submittable', 'insertions', 'deletions',
-               'unresolved_comment_count', '_number', 'owner', 'actions',
-               'labels', 'permitted_labels', 'removable_reviewers',
-               'reviewers', 'reviewer_updates', 'messages', 'current_revision',
-               'revisions', '_more_changes', 'problems')
 
     def get_parser(self, app_name):
         parser = super(ChangeShow, self).get_parser(app_name)

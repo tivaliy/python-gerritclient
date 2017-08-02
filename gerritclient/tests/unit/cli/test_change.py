@@ -34,6 +34,7 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.get_all.assert_called_once_with(query=query,
+                                                      options=None,
                                                       limit=None,
                                                       skip=None)
 
@@ -47,6 +48,7 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.get_all.assert_called_once_with(query=query,
+                                                      options=None,
                                                       limit=None,
                                                       skip=None)
 
@@ -60,6 +62,7 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.get_all.assert_called_once_with(query=query,
+                                                      options=None,
                                                       limit=None,
                                                       skip=skip)
 
@@ -73,7 +76,22 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.get_all.assert_called_once_with(query=query,
+                                                      options=None,
                                                       limit=limit,
+                                                      skip=None)
+
+    def test_change_list_w_options(self):
+        options = ['LABELS', 'MESSAGES', 'REVIEWED']
+        query = ['status:open+is:watched']
+        args = 'change list {query} --option {option} --max-width 110'.format(
+            query=''.join(query), option=' '.join(options))
+        self.m_client.get_all.return_value = fake_change.get_fake_changes(2)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_all.assert_called_once_with(query=query,
+                                                      options=options,
+                                                      limit=None,
                                                       skip=None)
 
     def test_change_show_wo_details(self):

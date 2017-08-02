@@ -20,10 +20,11 @@ class ChangeClient(base.BaseV1Client):
 
     api_path = "changes/"
 
-    def get_all(self, query, limit=None, skip=None):
+    def get_all(self, query, options=None, limit=None, skip=None):
         """Query changes.
 
         :param query: Queries as a list of string
+        :param options: List of options to fetch additional data about changes
         :param limit: Int value that allows to limit the number of changes
                       to be included in the output results
         :param skip: Int value that allows to skip the given number of
@@ -31,7 +32,8 @@ class ChangeClient(base.BaseV1Client):
         :return A list of ChangeInfo entries
         """
 
-        params = {k: v for k, v in (('n', limit),
+        params = {k: v for k, v in (('o', options),
+                                    ('n', limit),
                                     ('S', skip)) if v is not None}
         request_path = "{api_path}{query}".format(
             api_path=self.api_path,
