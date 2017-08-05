@@ -58,6 +58,14 @@ class ChangeClient(base.BaseV1Client):
             detail="detail" if detailed else "")
         return self.connection.get_request(request_path, params=params)
 
+    def get_topic(self, change_id):
+        """Retrieve the topic of a change."""
+
+        request_path = "{api_path}{change_id}/topic".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ChangeClient(connection)

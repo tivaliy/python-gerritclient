@@ -110,6 +110,17 @@ class ChangeShow(ChangeMixIn, base.BaseShowCommand):
         return fetched_columns, data
 
 
+class ChangeTopicShow(ChangeMixIn, base.BaseShowCommand):
+    """Retrieves the topic of a change."""
+
+    columns = ('topic',)
+
+    def take_action(self, parsed_args):
+        response = self.client.get_topic(parsed_args.entity_id) or None
+        data = utils.get_display_data_single(self.columns, {'topic': response})
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
