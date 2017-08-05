@@ -155,3 +155,12 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.set_topic.assert_called_once_with(change_id,
                                                         topic)
+
+    def test_change_topic_delete(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change topic delete {change_id}'.format(change_id=change_id)
+        self.m_client.delete_topic.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.delete_topic.assert_called_once_with(change_id)

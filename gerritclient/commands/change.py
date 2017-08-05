@@ -138,7 +138,18 @@ class ChangeTopicSet(ChangeMixIn, base.BaseShowCommand):
 
     def take_action(self, parsed_args):
         response = self.client.set_topic(parsed_args.entity_id,
-                                         parsed_args.topic)
+                                         parsed_args.topic) or None
+        data = utils.get_display_data_single(self.columns, {'topic': response})
+        return self.columns, data
+
+
+class ChangeTopicDelete(ChangeMixIn, base.BaseShowCommand):
+    """Deletes the topic of a change."""
+
+    columns = ('topic',)
+
+    def take_action(self, parsed_args):
+        response = self.client.delete_topic(parsed_args.entity_id) or None
         data = utils.get_display_data_single(self.columns, {'topic': response})
         return self.columns, data
 
