@@ -66,6 +66,15 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.get_request(request_path)
 
+    def set_topic(self, change_id, topic):
+        """Set the topic of a change."""
+
+        data = {'topic': topic}
+        request_path = "{api_path}{change_id}/topic".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.put_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return ChangeClient(connection)

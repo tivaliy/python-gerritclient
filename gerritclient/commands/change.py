@@ -121,6 +121,28 @@ class ChangeTopicShow(ChangeMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ChangeTopicSet(ChangeMixIn, base.BaseShowCommand):
+    """Sets the topic of a change."""
+
+    columns = ('topic',)
+
+    def get_parser(self, app_name):
+        parser = super(ChangeTopicSet, self).get_parser(app_name)
+        parser.add_argument(
+            '-t',
+            '--topic',
+            required=True,
+            help='Topic of a change.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.set_topic(parsed_args.entity_id,
+                                         parsed_args.topic)
+        data = utils.get_display_data_single(self.columns, {'topic': response})
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

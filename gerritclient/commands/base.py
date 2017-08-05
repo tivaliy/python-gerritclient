@@ -38,7 +38,10 @@ class BaseCommand(command.Command):
 
     @abc.abstractproperty
     def entity_name(self):
-        """Name of the Gerrit Code Review entity."""
+        """Name of the Gerrit Code Review entity.
+
+        :rtype: str
+        """
 
 
 @six.add_metaclass(abc.ABCMeta)
