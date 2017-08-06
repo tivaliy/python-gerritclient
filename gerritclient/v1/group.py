@@ -16,7 +16,7 @@
 from gerritclient.v1 import base
 
 
-class GroupClient(base.BaseV1Client):
+class GroupClient(base.BaseV1ClientCreateEntity):
 
     api_path = "groups/"
 

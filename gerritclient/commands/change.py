@@ -13,8 +13,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import argparse
+
 from gerritclient.commands import base
 from gerritclient.common import utils
+from gerritclient import error
 
 
 class ChangeMixIn(object):
@@ -108,6 +111,42 @@ class ChangeShow(ChangeMixIn, base.BaseShowCommand):
         fetched_columns = [c for c in self.columns if c in response]
         data = utils.get_display_data_single(fetched_columns, response)
         return fetched_columns, data
+
+
+class ChangeCreate(ChangeMixIn, base.BaseCommand, base.show.ShowOne):
+    """Creates a new change."""
+
+    columns = ('id', 'project', 'branch', 'topic', 'change_id', 'subject',
+               'status', 'created', 'updated', 'mergeable', 'insertions',
+               'deletions', '_number', 'owner')
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(
+                "File '{0}' does not exist".format(file_path))
+        return file_path
+
+    def get_parser(self, prog_name):
+        parser = super(ChangeCreate, self).get_parser(prog_name)
+        parser.add_argument(
+            'file',
+            type=self.get_file_path,
+            help='File with metadata of a new change.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            data = utils.read_from_file(file_path)
+        except (OSError, IOError):
+            msg = "Could not read metadata at {0}".format(file_path)
+            raise error.InvalidFileException(msg)
+
+        response = self.client.create(data)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
 
 
 class ChangeTopicShow(ChangeMixIn, base.BaseShowCommand):

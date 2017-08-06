@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 import mock
 
 from gerritclient.tests.unit.cli import clibase
@@ -99,7 +100,7 @@ class TestChangeCommand(clibase.BaseCLITest):
         args = 'change show {change_id} --max-width 110'.format(
             change_id=change_id)
         self.m_client.get_by_id.return_value = fake_change.get_fake_change(
-            change_id=change_id)
+            identifier=change_id)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
@@ -112,7 +113,7 @@ class TestChangeCommand(clibase.BaseCLITest):
         args = 'change show {change_id} --all --max-width 110'.format(
             change_id=change_id)
         self.m_client.get_by_id.return_value = fake_change.get_fake_change(
-            change_id=change_id)
+            identifier=change_id)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
@@ -127,13 +128,45 @@ class TestChangeCommand(clibase.BaseCLITest):
                 '--max-width 110'.format(change_id=change_id,
                                          options=' '.join(options)))
         self.m_client.get_by_id.return_value = fake_change.get_fake_change(
-            change_id=change_id)
+            identifier=change_id)
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.get_by_id.assert_called_once_with(change_id=change_id,
                                                         detailed=False,
                                                         options=options)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_change_create(self):
+        test_data = {'project': 'myProject',
+                     'subject': 'Fake subject',
+                     'branch': 'master',
+                     'topic': 'create-change-in-browser'}
+        expected_path = '/tmp/fakes/fake-change.json'
+        args = 'change create {0}'.format(expected_path)
+        self.m_client.create.return_value = fake_change.get_fake_change(
+            **test_data)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.exec_command(args)
+
+        m_open.assert_called_once_with(expected_path, 'r')
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.create.assert_called_once_with(test_data)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_change_create_bad_file_format_fail(self):
+        test_data = {}
+        expected_path = '/tmp/fakes/bad_file.format'
+        args = 'change create {0}'.format(expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.assertRaisesRegexp(ValueError, "Unsupported data format",
+                                    self.exec_command, args)
 
     def test_change_topic_show(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'

@@ -14,12 +14,14 @@
 #    under the License.
 
 import abc
+import six
 
 from requests import utils as requests_utils
 
 from gerritclient import client
 
 
+@six.add_metaclass(abc.ABCMeta)
 class BaseV1Client(object):
 
     @abc.abstractproperty
@@ -31,6 +33,10 @@ class BaseV1Client(object):
             config = client.get_settings()
             connection = client.connect(**config)
         self.connection = connection
+
+
+@six.add_metaclass(abc.ABCMeta)
+class BaseV1ClientCreateEntity(BaseV1Client):
 
     def create(self, entity_id, data=None):
         """Create a new entity."""

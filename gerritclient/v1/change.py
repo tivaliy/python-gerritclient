@@ -58,6 +58,11 @@ class ChangeClient(base.BaseV1Client):
             detail="detail" if detailed else "")
         return self.connection.get_request(request_path, params=params)
 
+    def create(self, data):
+        """Create a new change."""
+
+        return self.connection.post_request(self.api_path, json_data=data)
+
     def get_topic(self, change_id):
         """Retrieve the topic of a change."""
 

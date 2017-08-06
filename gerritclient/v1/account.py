@@ -16,7 +16,7 @@
 from gerritclient.v1 import base
 
 
-class AccountClient(base.BaseV1Client):
+class AccountClient(base.BaseV1ClientCreateEntity):
 
     api_path = "accounts/"
 

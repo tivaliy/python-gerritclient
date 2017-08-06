@@ -14,15 +14,18 @@
 #    under the License.
 
 
-def get_fake_change(change_id=None):
+def get_fake_change(identifier=None, project=None, branch=None,
+                    subject=None, topic=None):
     """Creates a fake change."""
 
     return {
-        "id": change_id or "I8473b95934b5732ac55d26311a706c9c2bde9940",
-        "project": "myProject",
-        "branch": "master",
+        "id": identifier or "myProject~master~"
+                            "I8473b95934b5732ac55d26311a706c9c2bde9940",
+        "project": project or "myProject",
+        "branch": branch or "master",
+        "topic": topic or "Feature X Topic",
         "change_id": "I8473b95934b5732ac55d26311a706c9c2bde9940",
-        "subject": "Implementing Feature X",
+        "subject": subject or "Implementing Feature X",
         "status": "NEW",
         "created": "2017-07-26 09:59:32.126000000",
         "updated": "2013-07-27 11:16:36.775000000",

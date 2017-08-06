@@ -18,7 +18,7 @@ from requests import utils as requests_utils
 from gerritclient.v1 import base
 
 
-class ProjectClient(base.BaseV1Client):
+class ProjectClient(base.BaseV1ClientCreateEntity):
 
     api_path = "projects/"
 
