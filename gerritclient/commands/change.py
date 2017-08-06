@@ -149,6 +149,16 @@ class ChangeCreate(ChangeMixIn, base.BaseCommand, base.show.ShowOne):
         return self.columns, data
 
 
+class ChangeAbandon(ChangeMixIn, base.BaseShowCommand):
+    """Abandons a change."""
+
+    def take_action(self, parsed_args):
+        response = self.client.abandon(parsed_args.entity_id)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
 class ChangeTopicShow(ChangeMixIn, base.BaseShowCommand):
     """Retrieves the topic of a change."""
 

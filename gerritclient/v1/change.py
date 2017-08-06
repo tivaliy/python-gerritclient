@@ -63,6 +63,14 @@ class ChangeClient(base.BaseV1Client):
 
         return self.connection.post_request(self.api_path, json_data=data)
 
+    def abandon(self, change_id):
+        """Abandon a change."""
+
+        request_path = "{api_path}{change_id}/abandon".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.post_request(request_path, json_data={})
+
     def get_topic(self, change_id):
         """Retrieve the topic of a change."""
 
