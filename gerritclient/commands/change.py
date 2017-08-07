@@ -13,7 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import abc
 import argparse
+import six
 
 from gerritclient.commands import base
 from gerritclient.common import utils
@@ -149,14 +151,32 @@ class ChangeCreate(ChangeMixIn, base.BaseCommand, base.show.ShowOne):
         return self.columns, data
 
 
-class ChangeAbandon(ChangeMixIn, base.BaseShowCommand):
-    """Abandons a change."""
+@six.add_metaclass(abc.ABCMeta)
+class BaseChangeAction(ChangeMixIn, base.BaseShowCommand):
+
+    @abc.abstractmethod
+    def action(self, change_id):
+        pass
 
     def take_action(self, parsed_args):
-        response = self.client.abandon(parsed_args.entity_id)
+        response = self.action(parsed_args.entity_id)
         fetched_columns = [c for c in self.columns if c in response]
         data = utils.get_display_data_single(fetched_columns, response)
         return fetched_columns, data
+
+
+class ChangeAbandon(BaseChangeAction):
+    """Abandons a change."""
+
+    def action(self, change_id):
+        return self.client.abandon(change_id)
+
+
+class ChangeRestore(BaseChangeAction):
+    """Restores a change."""
+
+    def action(self, change_id):
+        return self.client.restore(change_id)
 
 
 class ChangeTopicShow(ChangeMixIn, base.BaseShowCommand):

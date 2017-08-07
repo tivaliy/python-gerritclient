@@ -71,6 +71,14 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.post_request(request_path, json_data={})
 
+    def restore(self, change_id):
+        """Restore a change."""
+
+        request_path = "{api_path}{change_id}/restore".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.post_request(request_path, json_data={})
+
     def get_topic(self, change_id):
         """Retrieve the topic of a change."""
 
