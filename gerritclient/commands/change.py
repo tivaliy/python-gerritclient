@@ -232,6 +232,32 @@ class ChangeMove(BaseChangeAction):
         return self.client.move(change_id, branch, message=message)
 
 
+class ChangeSubmit(BaseChangeAction):
+    """Submits a change."""
+
+    parameters = ('on_behalf_of', 'notify')
+
+    def get_parser(self, app_name):
+        parser = super(ChangeSubmit, self).get_parser(app_name)
+        parser.add_argument(
+            '--on-behalf-of',
+            help='Submit the change on behalf of the given user.'
+        )
+        parser.add_argument(
+            '--notify',
+            choices=['NONE', 'OWNER', 'OWNER_REVIEWERS', 'ALL'],
+            default='ALL',
+            help='Notify handling that defines to whom email notifications '
+                 'should be sent after the change is submitted.'
+        )
+        return parser
+
+    def action(self, change_id, on_behalf_of=None, notify=None):
+        return self.client.submit(change_id,
+                                  on_behalf_of=on_behalf_of,
+                                  notify=notify)
+
+
 class ChangeRebase(BaseChangeAction):
     """Rebases a change."""
 

@@ -107,6 +107,17 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.post_request(request_path, json_data=data)
 
+    def submit(self, change_id, on_behalf_of=None, notify=None):
+        """Submit a change."""
+
+        # TODO(vkulanov): add 'notify_details' field (parameter) support
+        data = {k: v for k, v in (('on_behalf_of', on_behalf_of),
+                                  ('notify', notify)) if v is not None}
+        request_path = "{api_path}{change_id}/submit".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.post_request(request_path, json_data=data)
+
     def get_topic(self, change_id):
         """Retrieve the topic of a change."""
 

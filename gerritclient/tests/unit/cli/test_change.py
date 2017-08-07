@@ -226,6 +226,31 @@ class TestChangeCommand(clibase.BaseCLITest):
                                                    branch,
                                                    message=message)
 
+    def test_change_submit_wo_parameters(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change submit {change_id}'.format(change_id=change_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.submit.assert_called_once_with(change_id,
+                                                     on_behalf_of=None,
+                                                     notify='ALL')
+
+    def test_change_submit_w_parameters(self):
+        notify = 'NONE'
+        username = 'jdoe'
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = ('change submit {change_id} --on-behalf-of {username} '
+                '--notify {notify}').format(change_id=change_id,
+                                            username=username,
+                                            notify=notify)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.submit.assert_called_once_with(change_id,
+                                                     on_behalf_of=username,
+                                                     notify=notify)
+
     def test_change_topic_show(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
         args = 'change topic show {change_id}'.format(change_id=change_id)
