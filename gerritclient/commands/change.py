@@ -276,6 +276,24 @@ class ChangeRebase(BaseChangeAction):
         return self.client.rebase(change_id, parent=parent)
 
 
+class ChangeDelete(ChangeMixIn, base.BaseCommand):
+    """Deletes a change."""
+
+    def get_parser(self, prog_name):
+        parser = super(ChangeDelete, self).get_parser(prog_name)
+        parser.add_argument(
+            'change_id',
+            metavar='change-identifier',
+            help='Change identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete(parsed_args.change_id)
+        self.app.stdout.write("Change with ID {0} was successfully "
+                              "deleted.\n".format(parsed_args.change_id))
+
+
 class ChangeTopicShow(ChangeMixIn, base.BaseShowCommand):
     """Retrieves the topic of a change."""
 

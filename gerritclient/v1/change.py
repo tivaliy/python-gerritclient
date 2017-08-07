@@ -63,6 +63,13 @@ class ChangeClient(base.BaseV1Client):
 
         return self.connection.post_request(self.api_path, json_data=data)
 
+    def delete(self, change_id):
+        """Delete a change."""
+
+        request_path = "{api_path}{change_id}".format(api_path=self.api_path,
+                                                      change_id=change_id)
+        return self.connection.delete_request(request_path, data={})
+
     def abandon(self, change_id):
         """Abandon a change."""
 

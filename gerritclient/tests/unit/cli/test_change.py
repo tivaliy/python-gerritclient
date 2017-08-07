@@ -168,6 +168,14 @@ class TestChangeCommand(clibase.BaseCLITest):
             self.assertRaisesRegexp(ValueError, "Unsupported data format",
                                     self.exec_command, args)
 
+    def test_change_delete(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change delete {change_id}'.format(change_id=change_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.delete.assert_called_once_with(change_id)
+
     def test_change_abandon(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
         args = 'change abandon {change_id}'.format(change_id=change_id)
