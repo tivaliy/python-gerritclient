@@ -195,6 +195,24 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.m_client.revert.assert_called_once_with(change_id,
                                                      message=message)
 
+    def test_change_rebase(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change rebase {change_id} '.format(change_id=change_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.rebase.assert_called_once_with(change_id, parent=None)
+
+    def test_change_rebase_w_parent(self):
+        base = '6f0aea35251c48692e7e88ee3bc2bfa53684cd39'
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change rebase {change_id} --parent {base} '.format(
+            change_id=change_id, base=base)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.rebase.assert_called_once_with(change_id, parent=base)
+
     def test_change_topic_show(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
         args = 'change topic show {change_id}'.format(change_id=change_id)

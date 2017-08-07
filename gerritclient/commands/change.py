@@ -208,6 +208,24 @@ class ChangeRevert(BaseChangeAction):
         return self.client.revert(change_id, message=message)
 
 
+class ChangeRebase(BaseChangeAction):
+    """Rebases a change."""
+
+    parameters = ('parent',)
+
+    def get_parser(self, app_name):
+        parser = super(ChangeRebase, self).get_parser(app_name)
+        parser.add_argument(
+            '-p',
+            '--parent',
+            help='The new parent revision.'
+        )
+        return parser
+
+    def action(self, change_id, parent=None):
+        return self.client.rebase(change_id, parent=parent)
+
+
 class ChangeTopicShow(ChangeMixIn, base.BaseShowCommand):
     """Retrieves the topic of a change."""
 
