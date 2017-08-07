@@ -208,6 +208,30 @@ class ChangeRevert(BaseChangeAction):
         return self.client.revert(change_id, message=message)
 
 
+class ChangeMove(BaseChangeAction):
+    """Moves a change."""
+
+    parameters = ('branch', 'message')
+
+    def get_parser(self, app_name):
+        parser = super(ChangeMove, self).get_parser(app_name)
+        parser.add_argument(
+            '-b',
+            '--branch',
+            required=True,
+            help='Destination branch.'
+        )
+        parser.add_argument(
+            '-m',
+            '--message',
+            help="A message to be posted in this change's comments."
+        )
+        return parser
+
+    def action(self, change_id, branch=None, message=None):
+        return self.client.move(change_id, branch, message=message)
+
+
 class ChangeRebase(BaseChangeAction):
     """Rebases a change."""
 

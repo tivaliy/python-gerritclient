@@ -213,6 +213,19 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.rebase.assert_called_once_with(change_id, parent=base)
 
+    def test_change_move(self):
+        message = 'Fake message'
+        branch = 'fake-branch'
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change move {change_id} -b {branch} -m "{message}"'.format(
+            change_id=change_id, branch=branch, message=message)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.move.assert_called_once_with(change_id,
+                                                   branch,
+                                                   message=message)
+
     def test_change_topic_show(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
         args = 'change topic show {change_id}'.format(change_id=change_id)

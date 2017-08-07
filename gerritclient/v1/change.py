@@ -97,6 +97,16 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.post_request(request_path, json_data=data)
 
+    def move(self, change_id, branch, message=None):
+        """Move a change."""
+
+        data = {k: v for k, v in (('destination_branch', branch),
+                                  ('message', message)) if v is not None}
+        request_path = "{api_path}{change_id}/move".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.post_request(request_path, json_data=data)
+
     def get_topic(self, change_id):
         """Retrieve the topic of a change."""
 
