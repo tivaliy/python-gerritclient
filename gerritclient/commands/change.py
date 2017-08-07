@@ -153,13 +153,23 @@ class ChangeCreate(ChangeMixIn, base.BaseCommand, base.show.ShowOne):
 
 @six.add_metaclass(abc.ABCMeta)
 class BaseChangeAction(ChangeMixIn, base.BaseShowCommand):
+    """Base class to perform actions on changes."""
+
+    @property
+    def parameters(self):
+        """Additional parameters to be passed to 'action' method as a tuple."""
+
+        return ()
 
     @abc.abstractmethod
-    def action(self, change_id):
+    def action(self, change_id, **kwargs):
         pass
 
     def take_action(self, parsed_args):
-        response = self.action(parsed_args.entity_id)
+        # Retrieve necessary parameters from argparse.Namespace object
+        params = {k: v for
+                  k, v in vars(parsed_args).items() if k in self.parameters}
+        response = self.action(parsed_args.entity_id, **params)
         fetched_columns = [c for c in self.columns if c in response]
         data = utils.get_display_data_single(fetched_columns, response)
         return fetched_columns, data
@@ -168,15 +178,34 @@ class BaseChangeAction(ChangeMixIn, base.BaseShowCommand):
 class ChangeAbandon(BaseChangeAction):
     """Abandons a change."""
 
-    def action(self, change_id):
+    def action(self, change_id, **kwargs):
         return self.client.abandon(change_id)
 
 
 class ChangeRestore(BaseChangeAction):
     """Restores a change."""
 
-    def action(self, change_id):
+    def action(self, change_id, **kwargs):
         return self.client.restore(change_id)
+
+
+class ChangeRevert(BaseChangeAction):
+    """Reverts a change."""
+
+    parameters = ('message',)
+
+    def get_parser(self, app_name):
+        parser = super(ChangeRevert, self).get_parser(app_name)
+        parser.add_argument(
+            '-m',
+            '--message',
+            help='Message to be added as review '
+                 'comment when reverting the change.'
+        )
+        return parser
+
+    def action(self, change_id, message=None):
+        return self.client.revert(change_id, message=message)
 
 
 class ChangeTopicShow(ChangeMixIn, base.BaseShowCommand):

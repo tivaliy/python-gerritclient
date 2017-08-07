@@ -184,6 +184,17 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.restore.assert_called_once_with(change_id)
 
+    def test_change_revert(self):
+        message = 'Fake message'
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change revert {change_id} --message "{message}"'.format(
+            change_id=change_id, message=message)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.revert.assert_called_once_with(change_id,
+                                                     message=message)
+
     def test_change_topic_show(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
         args = 'change topic show {change_id}'.format(change_id=change_id)

@@ -79,6 +79,15 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.post_request(request_path, json_data={})
 
+    def revert(self, change_id, message=None):
+        """Revert a change."""
+
+        data = {k: v for k, v in (('message', message),) if v is not None}
+        request_path = "{api_path}{change_id}/revert".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.post_request(request_path, json_data=data)
+
     def get_topic(self, change_id):
         """Retrieve the topic of a change."""
 
