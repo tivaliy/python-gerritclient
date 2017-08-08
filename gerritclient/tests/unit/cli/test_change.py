@@ -310,3 +310,19 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.get_assignees.assert_called_once_with(change_id)
+
+    def test_change_assignee_set(self):
+        account = {'_account_id': 26071983,
+                   'name': 'John Doe',
+                   'username': 'jdoe',
+                   'email': 'jdoe@example.com'}
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change assignee set {change_id} --account {account}'.format(
+            change_id=change_id, account=account['username'])
+        account = fake_account.get_fake_account(**account)
+        self.m_client.set_assignee.return_value = account
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.set_assignee.assert_called_once_with(change_id,
+                                                           account['username'])

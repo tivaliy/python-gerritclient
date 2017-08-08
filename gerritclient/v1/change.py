@@ -166,6 +166,15 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.get_request(request_path)
 
+    def set_assignee(self, change_id, account_id):
+        """Set the assignee of a change."""
+
+        data = {'assignee': account_id}
+        request_path = "{api_path}{change_id}/assignee".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.put_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return ChangeClient(connection)

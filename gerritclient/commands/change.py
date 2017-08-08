@@ -373,6 +373,31 @@ class ChangeAssigneeHistoryShow(ChangeMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class ChangeAssigneeSet(ChangeMixIn, base.BaseShowCommand):
+    """Sets the assignee of a change."""
+
+    columns = ('_account_id',
+               'name',
+               'email',
+               'username')
+
+    def get_parser(self, app_name):
+        parser = super(ChangeAssigneeSet, self).get_parser(app_name)
+        parser.add_argument(
+            '-a',
+            '--account',
+            required=True,
+            help='The ID of one account that should be added as assignee.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.set_assignee(parsed_args.entity_id,
+                                            parsed_args.account)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
