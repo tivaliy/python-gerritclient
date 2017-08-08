@@ -338,6 +338,18 @@ class ChangeTopicDelete(ChangeMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ChangeAssigneeShow(BaseChangeAction):
+    """Retrieves the account of the user assigned to a change."""
+
+    columns = ('_account_id',
+               'name',
+               'email',
+               'username')
+
+    def action(self, change_id, **kwargs):
+        return self.client.get_assignee(change_id)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

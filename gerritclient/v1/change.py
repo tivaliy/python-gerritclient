@@ -150,6 +150,14 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.delete_request(request_path, data={})
 
+    def get_assignee(self, change_id):
+        """Retrieve the account of the user assigned to a change."""
+
+        request_path = "{api_path}{change_id}/assignee".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ChangeClient(connection)

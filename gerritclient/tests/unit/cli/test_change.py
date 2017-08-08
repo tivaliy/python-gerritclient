@@ -18,6 +18,7 @@ import mock
 
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_change
+from gerritclient.tests.utils import fake_account
 
 
 class TestChangeCommand(clibase.BaseCLITest):
@@ -288,3 +289,13 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.delete_topic.assert_called_once_with(change_id)
+
+    def test_change_assignee_show(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change assignee show {change_id}'.format(change_id=change_id)
+        account = fake_account.get_fake_account()
+        self.m_client.get_assignee.return_value = account
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_assignee.assert_called_once_with(change_id)
