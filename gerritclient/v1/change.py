@@ -175,6 +175,14 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.put_request(request_path, json_data=data)
 
+    def delete_assignee(self, change_id):
+        """Delete the assignee of a change."""
+
+        request_path = "{api_path}{change_id}/assignee".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.delete_request(request_path, data={})
+
 
 def get_client(connection):
     return ChangeClient(connection)

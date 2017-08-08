@@ -398,6 +398,18 @@ class ChangeAssigneeSet(ChangeMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ChangeAssigneeDelete(BaseChangeAction):
+    """Deletes the assignee of a change."""
+
+    columns = ('_account_id',
+               'name',
+               'email',
+               'username')
+
+    def action(self, change_id, **kwargs):
+        return self.client.delete_assignee(change_id)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
