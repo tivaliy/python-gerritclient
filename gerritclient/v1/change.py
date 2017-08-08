@@ -158,6 +158,14 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.get_request(request_path)
 
+    def get_assignees(self, change_id):
+        """Retrieve a list of every user ever assigned to a change."""
+
+        request_path = "{api_path}{change_id}/past_assignees".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ChangeClient(connection)

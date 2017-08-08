@@ -350,6 +350,29 @@ class ChangeAssigneeShow(BaseChangeAction):
         return self.client.get_assignee(change_id)
 
 
+class ChangeAssigneeHistoryShow(ChangeMixIn, base.BaseListCommand):
+    """Retrieve a list of every user ever assigned to a change."""
+
+    columns = ('_account_id',
+               'name',
+               'email',
+               'username')
+
+    def get_parser(self, prog_name):
+        parser = super(ChangeAssigneeHistoryShow, self).get_parser(prog_name)
+        parser.add_argument(
+            'change_id',
+            metavar='change-identifier',
+            help='Change identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_assignees(parsed_args.change_id)
+        data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
