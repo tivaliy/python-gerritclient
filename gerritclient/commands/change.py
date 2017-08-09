@@ -428,6 +428,17 @@ class ChangeDraftPublish(ChangeMixIn, base.BaseCommand):
                               "published.\n".format(parsed_args.change_id))
 
 
+class ChangeIncludedInSHow(BaseChangeAction):
+    """Retrieves the branches and tags in which a change is included."""
+
+    columns = ('branches',
+               'tags',
+               'external')
+
+    def action(self, change_id, **kwargs):
+        return self.client.get_included(change_id)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
