@@ -410,6 +410,24 @@ class ChangeAssigneeDelete(BaseChangeAction):
         return self.client.delete_assignee(change_id)
 
 
+class ChangeDraftPublish(ChangeMixIn, base.BaseCommand):
+    """Publishes a draft change."""
+
+    def get_parser(self, prog_name):
+        parser = super(ChangeDraftPublish, self).get_parser(prog_name)
+        parser.add_argument(
+            'change_id',
+            metavar='change-identifier',
+            help='Change identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.publish_draft(parsed_args.change_id)
+        self.app.stdout.write("Draft change with ID {0} was successfully "
+                              "published.\n".format(parsed_args.change_id))
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

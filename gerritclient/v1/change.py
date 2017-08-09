@@ -183,6 +183,14 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.delete_request(request_path, data={})
 
+    def publish_draft(self, change_id):
+        """Publish a draft change."""
+
+        request_path = "{api_path}{change_id}/publish".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.post_request(request_path, json_data={})
+
 
 def get_client(connection):
     return ChangeClient(connection)
