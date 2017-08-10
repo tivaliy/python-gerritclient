@@ -199,6 +199,14 @@ class ChangeClient(base.BaseV1Client):
             change_id=change_id)
         return self.connection.get_request(request_path)
 
+    def index(self, change_id):
+        """Add or update the change in the secondary index."""
+
+        request_path = "{api_path}{change_id}/index".format(
+            api_path=self.api_path,
+            change_id=change_id)
+        return self.connection.post_request(request_path, json_data={})
+
 
 def get_client(connection):
     return ChangeClient(connection)
