@@ -78,7 +78,8 @@ class ChangeList(ChangeMixIn, base.BaseListCommand):
         # then merge arrays in a single one to display data correctly.
         if len(parsed_args.query) > 1:
             response = [item for sublist in response for item in sublist]
-        fetched_columns = [c for c in self.columns if c in response[0]]
+        fetched_columns = [c for c in self.columns
+                           if response and c in response[0]]
         data = utils.get_display_data_multi(fetched_columns, response)
         return fetched_columns, data
 
