@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from requests import utils as requests_utils
+
 from gerritclient.v1 import base
 
 
@@ -54,7 +56,7 @@ class ChangeClient(base.BaseV1Client):
         params = {'o': options}
         request_path = "{api_path}{change_id}/{detail}".format(
             api_path=self.api_path,
-            change_id=change_id,
+            change_id=requests_utils.quote(change_id, safe=''),
             detail="detail" if detailed else "")
         return self.connection.get_request(request_path, params=params)
 
@@ -66,8 +68,9 @@ class ChangeClient(base.BaseV1Client):
     def delete(self, change_id):
         """Delete a change."""
 
-        request_path = "{api_path}{change_id}".format(api_path=self.api_path,
-                                                      change_id=change_id)
+        request_path = "{api_path}{change_id}".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.delete_request(request_path, data={})
 
     def abandon(self, change_id):
@@ -75,7 +78,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/abandon".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data={})
 
     def restore(self, change_id):
@@ -83,7 +86,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/restore".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data={})
 
     def revert(self, change_id, message=None):
@@ -92,7 +95,7 @@ class ChangeClient(base.BaseV1Client):
         data = {k: v for k, v in (('message', message),) if v is not None}
         request_path = "{api_path}{change_id}/revert".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data=data)
 
     def rebase(self, change_id, parent=None):
@@ -101,7 +104,7 @@ class ChangeClient(base.BaseV1Client):
         data = {k: v for k, v in (('base', parent),) if v is not None}
         request_path = "{api_path}{change_id}/rebase".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data=data)
 
     def move(self, change_id, branch, message=None):
@@ -111,7 +114,7 @@ class ChangeClient(base.BaseV1Client):
                                   ('message', message)) if v is not None}
         request_path = "{api_path}{change_id}/move".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data=data)
 
     def submit(self, change_id, on_behalf_of=None, notify=None):
@@ -122,7 +125,7 @@ class ChangeClient(base.BaseV1Client):
                                   ('notify', notify)) if v is not None}
         request_path = "{api_path}{change_id}/submit".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data=data)
 
     def get_topic(self, change_id):
@@ -130,7 +133,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/topic".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.get_request(request_path)
 
     def set_topic(self, change_id, topic):
@@ -139,7 +142,7 @@ class ChangeClient(base.BaseV1Client):
         data = {'topic': topic}
         request_path = "{api_path}{change_id}/topic".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.put_request(request_path, json_data=data)
 
     def delete_topic(self, change_id):
@@ -147,7 +150,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/topic".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.delete_request(request_path, data={})
 
     def get_assignee(self, change_id):
@@ -155,7 +158,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/assignee".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.get_request(request_path)
 
     def get_assignees(self, change_id):
@@ -163,7 +166,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/past_assignees".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.get_request(request_path)
 
     def set_assignee(self, change_id, account_id):
@@ -172,7 +175,7 @@ class ChangeClient(base.BaseV1Client):
         data = {'assignee': account_id}
         request_path = "{api_path}{change_id}/assignee".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.put_request(request_path, json_data=data)
 
     def delete_assignee(self, change_id):
@@ -180,7 +183,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/assignee".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.delete_request(request_path, data={})
 
     def publish_draft(self, change_id):
@@ -188,7 +191,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/publish".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data={})
 
     def get_included(self, change_id):
@@ -196,7 +199,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/in".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.get_request(request_path)
 
     def index(self, change_id):
@@ -204,7 +207,7 @@ class ChangeClient(base.BaseV1Client):
 
         request_path = "{api_path}{change_id}/index".format(
             api_path=self.api_path,
-            change_id=change_id)
+            change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data={})
 
 
