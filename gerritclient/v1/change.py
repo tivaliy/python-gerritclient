@@ -210,6 +210,14 @@ class ChangeClient(base.BaseV1Client):
             change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data={})
 
+    def get_comments(self, change_id):
+        """List the published comments of all revisions of the change."""
+
+        request_path = "{api_path}{change_id}/comments".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=''))
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ChangeClient(connection)

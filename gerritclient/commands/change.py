@@ -36,6 +36,24 @@ class ChangeMixIn(object):
                'revisions', '_more_changes', 'problems')
 
 
+class ChangeCommentMixIn(object):
+
+    entity_name = 'change'
+
+    columns = ('patch_set', 'id', 'path', 'side', 'parent', 'line', 'range',
+               'in_reply_to', 'message', 'updated', 'author', 'tag',
+               'unresolved')
+
+    @staticmethod
+    def format_data(data):
+        fetched_data = []
+        for file_path, comment_info in data.items():
+            for item in comment_info:
+                item['path'] = file_path
+                fetched_data.append(item)
+        return fetched_data
+
+
 class ChangeList(ChangeMixIn, base.BaseListCommand):
     """Queries changes visible to the caller. """
 
@@ -457,6 +475,26 @@ class ChangeIndex(ChangeMixIn, base.BaseCommand):
         msg = ("Change with ID {0} was successfully added/updated in the "
                "secondary index.\n".format(parsed_args.change_id))
         self.app.stdout.write(msg)
+
+
+class ChangeCommentList(ChangeCommentMixIn, base.BaseListCommand):
+    """Lists the published comments of all revisions of the change."""
+
+    def get_parser(self, prog_name):
+        parser = super(ChangeCommentList, self).get_parser(prog_name)
+        parser.add_argument(
+            'change_id',
+            metavar='change-identifier',
+            help='Change identifier.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_comments(parsed_args.change_id)
+        data = self.format_data(response)
+        fetched_columns = [c for c in self.columns if c in data[0]]
+        data = utils.get_display_data_multi(fetched_columns, data)
+        return fetched_columns, data
 
 
 def debug(argv=None):

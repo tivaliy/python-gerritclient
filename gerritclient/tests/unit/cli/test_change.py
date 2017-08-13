@@ -19,6 +19,7 @@ import mock
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_account
 from gerritclient.tests.utils import fake_change
+from gerritclient.tests.utils import fake_comment
 
 
 class TestChangeCommand(clibase.BaseCLITest):
@@ -359,3 +360,14 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.index.assert_called_once_with(change_id)
+
+    def test_change_comments_list(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change comment list {change_id} --max-width 110'.format(
+            change_id=change_id)
+        fake_comments = fake_comment.get_fake_comments_in_change(3)
+        self.m_client.get_comments.return_value = fake_comments
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_comments.assert_called_once_with(change_id)
