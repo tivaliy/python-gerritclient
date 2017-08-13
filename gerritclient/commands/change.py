@@ -487,10 +487,17 @@ class ChangeCommentList(ChangeCommentMixIn, base.BaseListCommand):
             metavar='change-identifier',
             help='Change identifier.'
         )
+        parser.add_argument(
+            '-d',
+            '--draft',
+            action='store_true',
+            help='List the draft comments.'
+        )
         return parser
 
     def take_action(self, parsed_args):
-        response = self.client.get_comments(parsed_args.change_id)
+        response = self.client.get_comments(parsed_args.change_id,
+                                            draft=parsed_args.draft)
         data = self.format_data(response)
         fetched_columns = [c for c in self.columns if c in data[0]]
         data = utils.get_display_data_multi(fetched_columns, data)

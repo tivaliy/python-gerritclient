@@ -370,4 +370,17 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
-        self.m_client.get_comments.assert_called_once_with(change_id)
+        self.m_client.get_comments.assert_called_once_with(change_id,
+                                                           draft=False)
+
+    def test_change_draft_comments_list(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = ('change comment list {change_id} --draft '
+                '--max-width 110'.format(change_id=change_id))
+        fake_comments = fake_comment.get_fake_comments_in_change(3)
+        self.m_client.get_comments.return_value = fake_comments
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_comments.assert_called_once_with(change_id,
+                                                           draft=True)
