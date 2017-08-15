@@ -4,3 +4,5 @@
 *.egg-info
 .tox
 .testrepository
+
+docs/build

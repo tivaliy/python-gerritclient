@@ -1,0 +1,124 @@
+CHANGES
+=======
+
+* Update 'gerrit change comments list' command
+* Add option '-d/--draft' to 'gerrit change comment list' command
+* Add new 'gerrit change comment list' command
+* Check the response not empty before fetching columns
+* Replace special characters in {change\_id} using the %xx escape
+* Add new 'gerrit change index' command
+* Add new 'gerrit change included-in show' command
+* Add new 'gerrit change draft publish' command
+* Add new 'gerrit change assignee delete' command
+* Add new 'gerrit change assignee set' command
+* Add new 'gerrit change assignee history show' command
+* Add new 'gerrit change assignee show' command
+* Add new 'gerrit change delete' command
+* Add new 'gerrit change submit' command
+* Add new 'gerrit change move' command
+* Add new 'gerrit change rebase' command
+* Add new 'gerrit change revert' command
+* Add new 'gerrit change restore' command
+* Add new 'gerrit change abandon' command
+* Add new 'gerrit change create' command
+* Add new 'gerrit change topic delete' command
+* Add new 'gerrit change topic set' command
+* Add new 'gerrit change topic show' command
+* Add '-o/--option' to 'gerrit change list' command
+* Add new 'gerrit change list' command
+* Add '-o/--option' to 'gerrit change show' command
+* Add '-a/-all' argument to 'gerrit change show'
+* Add new 'gerrit change show' command
+* Add new 'gerrit server task delete' command
+* Add new 'gerrit server task show' command
+* Add new 'gerrit server task list' command
+* Add new 'gerrit server state show' command
+* Add new 'gerrit server cache flush' command
+* Remove 'gerrit server cache-info download' command
+* Add new 'gerrit server cache show' command
+* Make names of Gerrit server related code more obvious
+* Add new 'gerrit server cache list' command
+* Add new 'gerrit server cache-info download' command
+* Add new 'gerrit server capabilities download' command
+* Add new 'gerrit server configuration download' command
+* Add support for different HTTP authentication schemes
+* Get rid of PATH variable which is redundant
+* Add '-a/--all' argument to 'gerrit project list'
+* Add new 'gerrit group include|exclude' command
+* Pass raw 'query' string to fetch Gerrit accounts
+* Add new 'gerrit group member delete' command
+* Release feature to add several users in group at once
+* Add new 'gerrit group member add' command
+* Add new 'gerrit server version' command
+* Add new 'gerrit plugin install' command
+* Add new 'gerrit plugin reload' command
+* Add commands to enable/disable plugins
+* Add new 'gerrit account set-preferred' command
+* Add new 'gerrit account email delete' command
+* Add new 'gerrit account email add' command
+* Add new 'gerrit account status show' command
+* Add new 'gerrit account membership list' command
+* Add new 'gerrit account ssh-key delete' command
+* Add new 'gerrit account ssh-key add' command
+* Add new 'gerrit account ssh-key show' command
+* Add new 'gerrit account ssh-key list' command
+* Add new 'gerrit account password delete' command
+* Add new 'gerrit account password set' command
+* Add commands to enable/disable accounts
+* Add new 'gerrit account username set' command
+* Align 'test\_group\_set\_description' test case
+* Add new 'gerrit account name set' command
+* Add 'gerrit account create' command
+* Add '-a/--all' optional argument to 'gerrit account show' command
+* Add 'gerrit account show' command
+* Add 'gerrit account list' command
+* Align mocking method name in TestProjectCommand
+* Add 'gerrit group owner set' command
+* Add 'gerrit group options set' command
+* Add 'gerrit group description delete' command
+* Make possible to encode project name
+* Code refactoring for PluginClient and ProjectClient
+* 'gerrit group \*' related command code refactoring
+* Add 'gerrit group description set' command
+* Add 'gerrit group rename' command
+* Add 'gerrit project delete' command
+* Add 'gerrit group create' command
+* Add BaseCreateCommand class to perform create entity action
+* Add 'gerrit project create' command
+* Remove ")]}'" prefix from all responses
+* Add '--type' argument to 'gerrit project list' command
+* Make parameters more 'user-friendly'
+* Add pattern dispatcher to gerrit project list fetcher
+* Add '-r/--regex' argument to 'gerrit project list' command
+* Add '-m/--match' argument to 'gerrit project list' command
+* Add '-p/--prefix' argument to 'gerrit project list' command
+* Add '-S/--skip' argument to 'gerrit project list' command
+* Add '-l/--limit' option to 'gerrit project list' command
+* Update README.md to meet lst changes
+* Add '-s/--sort-columns' argument to list commands
+* BaseListCommand class code refactoring
+* Make URL path to Gerrit Code Review more configurable
+* Add 'gerrit project show' command
+* Align 'gerrit list command' if no WebLinkInfo in project item
+* Add '-b/--branches' option to 'gerrit project list' command
+* Refactor base class for list commands to meet DRY concept
+* Add 'gerrit project list' command
+* Add description about how to use gerritclient as a library
+* Make code more conventional do not break UX
+* Add -a/--all option to 'gerrit plugin list' command
+* Code refactoring for 'list'-like commands
+* Add quick start section in README.md
+* Add 'gerrit group member list' command
+* Add pep8 check procedure in Travis CI
+* Add travis CI support
+* Add basic architecture to perform tests
+* Add '-d/--detail' flag to 'gerrit group show' command
+* Add 'gerrit group show' command
+* Work with server HTTP response properly
+* Add 'gerrit group list' command
+* Add ability to specify configuration in different ways
+* Add 'gerrit plugin show' command
+* Align path to settings.yaml file
+* Align package version number
+* Add basic python-gerritclient project architecture
+* Initial commit
