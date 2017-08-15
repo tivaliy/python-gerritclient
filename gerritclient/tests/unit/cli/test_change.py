@@ -371,16 +371,37 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.get_comments.assert_called_once_with(change_id,
-                                                           draft=False)
+                                                           comment_type=None)
 
     def test_change_draft_comments_list(self):
         change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
-        args = ('change comment list {change_id} --draft '
+        args = ('change comment list {change_id} --type drafts '
                 '--max-width 110'.format(change_id=change_id))
         fake_comments = fake_comment.get_fake_comments_in_change(3)
         self.m_client.get_comments.return_value = fake_comments
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
-        self.m_client.get_comments.assert_called_once_with(change_id,
-                                                           draft=True)
+        self.m_client.get_comments.assert_called_once_with(
+            change_id, comment_type='drafts')
+
+    def test_change_robotcomments_list(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = ('change comment list {change_id} --type robotcomments '
+                '--max-width 110'.format(change_id=change_id))
+        fake_comments = fake_comment.get_fake_comments_in_change(3)
+        self.m_client.get_comments.return_value = fake_comments
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.get_comments.assert_called_once_with(
+            change_id, comment_type='robotcomments')
+
+    @mock.patch('sys.stderr')
+    def test_change_comments_list_w_wrong_type_fail(self, mocked_stderr):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change comment list {change_id} --type bad_comment'.format(
+            change_id=change_id)
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn("invalid choice: 'bad_comment'",
+                      mocked_stderr.write.call_args_list[-1][0][0])

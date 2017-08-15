@@ -210,18 +210,21 @@ class ChangeClient(base.BaseV1Client):
             change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.post_request(request_path, json_data={})
 
-    def get_comments(self, change_id, draft=False):
+    def get_comments(self, change_id, comment_type=None):
         """List the published comments of all revisions of the change.
 
-        :param change_id: Identifier that uniquely identifies one change
-        :param draft: Boolean value, if True then fetch draft comments
-        :return A list of CommentInfo entries
+        :param change_id: Identifier that uniquely identifies one change.
+        :param comment_type: Type of comments (None|'drafts'|'robotcomments')
+                             None - published comments,
+                             'drafts' - draft comments,
+                             'robotcomments' - robotcomments.
+        :return A list of CommentInfo entries.
         """
 
         request_path = "{api_path}{change_id}/{comment_type}".format(
             api_path=self.api_path,
             change_id=requests_utils.quote(change_id, safe=''),
-            comment_type='comments' if not draft else 'drafts')
+            comment_type='comments' if not comment_type else comment_type)
         return self.connection.get_request(request_path)
 
 

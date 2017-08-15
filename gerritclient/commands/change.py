@@ -42,7 +42,8 @@ class ChangeCommentMixIn(object):
 
     columns = ('patch_set', 'id', 'path', 'side', 'parent', 'line', 'range',
                'in_reply_to', 'message', 'updated', 'author', 'tag',
-               'unresolved')
+               'unresolved', 'robot_id', 'robot_run_id', 'url', 'properties',
+               'fix_suggestions')
 
     @staticmethod
     def format_data(data):
@@ -488,18 +489,19 @@ class ChangeCommentList(ChangeCommentMixIn, base.BaseListCommand):
             help='Change identifier.'
         )
         parser.add_argument(
-            '-d',
-            '--draft',
-            action='store_true',
-            help='List the draft comments.'
+            '-t',
+            '--type',
+            choices=['drafts', 'robotcomments'],
+            default=None,
+            help='The type of comments. Defaults to published.'
         )
         return parser
 
     def take_action(self, parsed_args):
         response = self.client.get_comments(parsed_args.change_id,
-                                            draft=parsed_args.draft)
+                                            comment_type=parsed_args.type)
         data = self.format_data(response)
-        fetched_columns = [c for c in self.columns if c in data[0]]
+        fetched_columns = [c for c in self.columns if data and c in data[0]]
         data = utils.get_display_data_multi(fetched_columns, data)
         return fetched_columns, data
 
