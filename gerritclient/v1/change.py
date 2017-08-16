@@ -227,6 +227,14 @@ class ChangeClient(base.BaseV1Client):
             comment_type='comments' if not comment_type else comment_type)
         return self.connection.get_request(request_path)
 
+    def check_consistency(self, change_id):
+        """Perform consistency checks on the change."""
+
+        request_path = "{api_path}{change_id}/check".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=''))
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ChangeClient(connection)

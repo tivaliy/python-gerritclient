@@ -405,3 +405,14 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn("invalid choice: 'bad_comment'",
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_change_consistency_check(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change check {change_id} --max-width 110'.format(
+            change_id=change_id)
+        change = fake_change.get_fake_change(identifier=change_id)
+        self.m_client.check_consistency.return_value = change
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.check_consistency.assert_called_once_with(change_id)

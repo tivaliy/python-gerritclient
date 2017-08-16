@@ -506,6 +506,19 @@ class ChangeCommentList(ChangeCommentMixIn, base.BaseListCommand):
         return fetched_columns, data
 
 
+class ChangeCheck(ChangeMixIn, base.BaseShowCommand):
+    """Performs consistency checks on the change.
+
+    Returns a ChangeInfo entity with the problems field.
+    """
+
+    def take_action(self, parsed_args):
+        response = self.client.check_consistency(parsed_args.entity_id)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

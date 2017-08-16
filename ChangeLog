@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add Sphinx support
 * Update 'gerrit change comments list' command
 * Add option '-d/--draft' to 'gerrit change comment list' command
 * Add new 'gerrit change comment list' command

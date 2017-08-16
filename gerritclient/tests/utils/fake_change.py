@@ -39,6 +39,11 @@ def get_fake_change(identifier=None, project=None, branch=None,
             "email": "john.doe@example.com",
             "username": "jdoe"
         },
+        "problems": [
+            {
+                "message": "Current patch set 1 not found"
+            }
+        ],
         "labels": {
             "Verified": {
                 "all": [
