@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+* Add new 'gerrit change fix' command
+* Add new 'gerrit change check' command
 * Add Sphinx support
 * Update 'gerrit change comments list' command
 * Add option '-d/--draft' to 'gerrit change comment list' command

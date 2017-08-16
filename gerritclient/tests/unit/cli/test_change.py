@@ -416,3 +416,27 @@ class TestChangeCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('change', mock.ANY)
         self.m_client.check_consistency.assert_called_once_with(change_id)
+
+    def test_change_consistency_check_and_fix(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = 'change fix {change_id} --max-width 110'.format(
+            change_id=change_id)
+        change = fake_change.get_fake_change(identifier=change_id)
+        self.m_client.fix_consistency.return_value = change
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.fix_consistency.assert_called_once_with(
+            change_id, is_delete=False, expect_merged_as=False)
+
+    def test_change_consistency_check_and_fix_w_parameters(self):
+        change_id = 'I8473b95934b5732ac55d26311a706c9c2bde9940'
+        args = ('change fix {change_id} --delete-patchset --expect-merged-as '
+                '--max-width 110'.format(change_id=change_id))
+        change = fake_change.get_fake_change(identifier=change_id)
+        self.m_client.fix_consistency.return_value = change
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('change', mock.ANY)
+        self.m_client.fix_consistency.assert_called_once_with(
+            change_id, is_delete=True, expect_merged_as=True)

@@ -235,6 +235,28 @@ class ChangeClient(base.BaseV1Client):
             change_id=requests_utils.quote(change_id, safe=''))
         return self.connection.get_request(request_path)
 
+    def fix_consistency(self, change_id, is_delete=False,
+                        expect_merged_as=False):
+        """Perform consistency checks on the change and fixes any problems.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param is_delete: If True, delete patch sets from the database
+                          if they refer to missing commit options.
+        :param expect_merged_as: If True, check that the change is merged into
+                                 the destination branch as this exact SHA-1.
+                                 If not, insert a new patch set referring to
+                                 this commit.
+        :return Returns a ChangeInfo entity with the problems field values
+                that reflect any fixes.
+        """
+
+        data = {'delete_patch_set_if_commit_missing': is_delete,
+                'expect_merged_as': expect_merged_as}
+        request_path = "{api_path}{change_id}/check".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=''))
+        return self.connection.post_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return ChangeClient(connection)

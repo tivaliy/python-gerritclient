@@ -519,6 +519,41 @@ class ChangeCheck(ChangeMixIn, base.BaseShowCommand):
         return fetched_columns, data
 
 
+class ChangeFix(ChangeMixIn, base.BaseShowCommand):
+    """Performs consistency checks on the change.
+
+    Additionally fixes any problems that can be fixed automatically. The
+    returned field values reflect any fixes. Only the change owner,
+    a project owner, or an administrator may fix changes.
+    """
+
+    def get_parser(self, app_name):
+        parser = super(ChangeFix, self).get_parser(app_name)
+        parser.add_argument(
+            '--delete-patchset',
+            action='store_true',
+            help='Delete patch sets from the database '
+                 'if they refer to missing commit options.'
+        )
+        parser.add_argument(
+            '--expect-merged-as',
+            action='store_true',
+            help='Check that the change is merged into the destination branch '
+                 'as this exact SHA-1. If not, insert a new patch set '
+                 'referring to this commit.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.fix_consistency(
+            parsed_args.entity_id,
+            is_delete=parsed_args.delete_patchset,
+            expect_merged_as=parsed_args.expect_merged_as)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
