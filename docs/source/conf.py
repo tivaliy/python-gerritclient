@@ -29,3 +29,6 @@ source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
+
+# General information about the project.
+project = 'python-gerritclient'

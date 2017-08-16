@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/tivaliy/python-gerritclient.svg?branch=master)](https://travis-ci.org/tivaliy/python-gerritclient)
+[![Documentation Status](https://readthedocs.org/projects/python-gerritclient/badge/?version=latest)](http://python-gerritclient.readthedocs.io/en/latest/?badge=latest)
 
 # python-gerritclient
 CLI tool and Python API wrapper for Gerrit Code Review

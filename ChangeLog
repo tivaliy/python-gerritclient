@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add Documentation Status badge
 * Add new 'gerrit change fix' command
 * Add new 'gerrit change check' command
 * Add Sphinx support
