@@ -289,3 +289,19 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_description.assert_called_once_with(project_name)
+
+    def test_project_description_set(self):
+        project_name = 'fake/fake-project'
+        project_description = 'Fake description'
+        message = 'Fake commit message'
+        args = ('project description set {0} --description "{1}" --message '
+                '"{2}"'.format(project_name, project_description, message))
+        self.m_client.set_description.return_value = project_description
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.set_description.assert_called_once_with(
+            project_name,
+            description=project_description,
+            commit_message=message
+        )

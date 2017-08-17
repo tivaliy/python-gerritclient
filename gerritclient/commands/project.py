@@ -209,6 +209,42 @@ class ProjectDescriptionShow(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write("{description}\n".format(description=response))
 
 
+class ProjectDescriptionSet(ProjectMixIn, base.BaseCommand):
+    """Retrieves the description of a project."""
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectDescriptionSet, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        parser.add_argument(
+            '-d',
+            '--description',
+            help='The project description. The project '
+                 'description will be deleted if not set.'
+        )
+        parser.add_argument(
+            '-m',
+            '--message',
+            help='Message that should be used to commit the change '
+                 'of the project description in the project.config file '
+                 'to the refs/meta/config branch.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.set_description(
+            parsed_args.name,
+            description=parsed_args.description,
+            commit_message=parsed_args.message
+        )
+        msg = "The description for the project '{0}' was {1}\n".format(
+            parsed_args.name,
+            'set: {}'.format(response) if response else 'deleted.')
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

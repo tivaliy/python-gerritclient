@@ -94,6 +94,15 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             name=requests_utils.quote(name, safe=''))
         return self.connection.get_request(request_path)
 
+    def set_description(self, name, description=None, commit_message=None):
+
+        data = {'description': description,
+                'commit_message': commit_message}
+        request_path = "{api_path}{name}/description".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''))
+        return self.connection.put_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return ProjectClient(connection)
