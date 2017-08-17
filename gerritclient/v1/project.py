@@ -86,6 +86,14 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             name=requests_utils.quote(name, safe=''))
         return self.connection.delete_request(request_path, data)
 
+    def get_description(self, name):
+        """Retrieves the description of a project."""
+
+        request_path = "{api_path}{name}/description".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''))
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)

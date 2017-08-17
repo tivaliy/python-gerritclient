@@ -193,6 +193,22 @@ class ProjectDelete(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class ProjectDescriptionShow(ProjectMixIn, base.BaseCommand):
+    """Retrieves the description of a project."""
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectDescriptionShow, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_description(parsed_args.name)
+        self.app.stdout.write("{description}\n".format(description=response))
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
