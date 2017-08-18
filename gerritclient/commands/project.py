@@ -245,6 +245,22 @@ class ProjectDescriptionSet(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class ProjectParentShow(ProjectMixIn, base.BaseCommand):
+    """Retrieves the name of a project\'s parent project."""
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectParentShow, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_parent(parsed_args.name)
+        self.app.stdout.write('{0}\n'.format(response))
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

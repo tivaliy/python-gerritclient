@@ -305,3 +305,12 @@ class TestProjectCommand(clibase.BaseCLITest):
             description=project_description,
             commit_message=message
         )
+
+    def test_project_parent_show(self):
+        project_name = 'fake/fake-project'
+        args = 'project parent show {0}'.format(project_name)
+        self.m_client.get_parent.return_value = 'All-Projects'
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_parent.assert_called_once_with(project_name)
