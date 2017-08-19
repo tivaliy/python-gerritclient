@@ -293,6 +293,22 @@ class ProjectParentSet(ProjectMixIn, base.BaseCommand):
                               "'{1}'.\n".format(response, parsed_args.name))
 
 
+class ProjectHeadShow(ProjectMixIn, base.BaseCommand):
+    """Retrieves for a project the name of the branch to which HEAD points."""
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectHeadShow, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_head(parsed_args.name)
+        self.app.stdout.write('{0}\n'.format(response))
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
