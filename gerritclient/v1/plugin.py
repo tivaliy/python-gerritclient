@@ -18,7 +18,7 @@ from gerritclient.v1 import base
 
 class PluginClient(base.BaseV1Client):
 
-    api_path = "plugins/"
+    api_path = "/plugins/"
 
     def get_all(self, detailed=False):
         request_path = "{api_path}{all}".format(

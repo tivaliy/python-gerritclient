@@ -20,7 +20,7 @@ from gerritclient.v1 import base
 
 class ProjectClient(base.BaseV1ClientCreateEntity):
 
-    api_path = "projects/"
+    api_path = "/projects/"
 
     def get_all(self, is_all=False, limit=None, skip=None,
                 pattern_dispatcher=None, project_type=None,

@@ -18,7 +18,7 @@ from gerritclient.v1 import base
 
 class AccountClient(base.BaseV1ClientCreateEntity):
 
-    api_path = "accounts/"
+    api_path = "/accounts/"
 
     def get_all(self, query, suggested=False, limit=None, skip=None,
                 detailed=False, all_emails=False):

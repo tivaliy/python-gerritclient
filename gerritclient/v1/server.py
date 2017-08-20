@@ -18,7 +18,7 @@ from gerritclient.v1 import base
 
 class ServerClient(base.BaseV1Client):
 
-    api_path = "config/server/"
+    api_path = "/config/server/"
 
     def get_version(self):
         """Return the version of the Gerrit server."""

@@ -126,3 +126,12 @@ def file_exists(path):
     :returns: True if file exists, False otherwise
     """
     return os.path.lexists(path)
+
+
+def urljoin(*args):
+    """Joins given arguments into an URL.
+
+    Trailing, but not leading slashes are stripped for each argument.
+    """
+
+    return "/".join(map(lambda x: str(x).rstrip('/'), args))

@@ -20,7 +20,7 @@ from gerritclient.v1 import base
 
 class ChangeClient(base.BaseV1Client):
 
-    api_path = "changes/"
+    api_path = "/changes/"
 
     def get_all(self, query, options=None, limit=None, skip=None):
         """Query changes.

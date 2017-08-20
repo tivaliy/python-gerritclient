@@ -18,7 +18,7 @@ from gerritclient.v1 import base
 
 class GroupClient(base.BaseV1ClientCreateEntity):
 
-    api_path = "groups/"
+    api_path = "/groups/"
 
     def get_all(self):
         return self.connection.get_request(self.api_path)

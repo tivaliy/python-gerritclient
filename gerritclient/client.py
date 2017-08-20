@@ -57,9 +57,9 @@ class APIClient(object):
             self._auth = auth_types[auth_type](self._username, self._password)
 
         if self.is_authed:
-            self.api_root = self.root + "/a/"
+            self.api_root = utils.urljoin(self.root, "a")
         else:
-            self.api_root = self.root + "/"
+            self.api_root = utils.urljoin(self.root)
 
     @property
     def is_authed(self):
