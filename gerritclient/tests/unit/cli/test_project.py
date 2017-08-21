@@ -336,3 +336,14 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_head.assert_called_once_with(project_name)
+
+    def test_project_head_set(self):
+        project_name = 'fake/fake-project'
+        branch = 'fake-branch'
+        args = 'project head set {0} --branch {1}'.format(project_name, branch)
+        self.m_client.set_head.return_value = 'refs/heads/{0}'.format(branch)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.set_head.assert_called_once_with(project_name,
+                                                       branch=branch)

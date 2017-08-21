@@ -309,6 +309,31 @@ class ProjectHeadShow(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write('{0}\n'.format(response))
 
 
+class ProjectHeadSet(ProjectMixIn, base.BaseCommand):
+    """Sets HEAD for a project."""
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectHeadSet, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        parser.add_argument(
+            '-b',
+            '--branch',
+            required=True,
+            help='The name of the branch to which HEAD should point.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.set_head(parsed_args.name,
+                                        branch=parsed_args.branch)
+        msg = ("HEAD for the project '{0}' was set "
+               "to the branch '{1}'\n".format(parsed_args.name, response))
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
