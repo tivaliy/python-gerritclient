@@ -334,6 +334,23 @@ class ProjectHeadSet(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class ProjectRepoStatisticsShow(ProjectMixIn, base.BaseShowCommand):
+    """Return statistics for the repository of a project."""
+
+    columns = ('number_of_loose_objects',
+               'number_of_loose_refs',
+               'number_of_pack_files',
+               'number_of_packed_objects',
+               'number_of_packed_refs',
+               'size_of_loose_objects',
+               'size_of_packed_objects')
+
+    def take_action(self, parsed_args):
+        response = self.client.get_repo_statistics(parsed_args.entity_id)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

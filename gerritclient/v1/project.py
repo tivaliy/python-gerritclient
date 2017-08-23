@@ -134,6 +134,13 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             name=requests_utils.quote(name, safe=''))
         return self.connection.put_request(request_path, json_data=data)
 
+    def get_repo_statistics(self, name):
+
+        request_path = "{api_path}{name}/statistics.git".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''))
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)

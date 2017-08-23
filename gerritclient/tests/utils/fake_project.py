@@ -60,3 +60,17 @@ def get_fake_projects(projects_count, is_weblinkinfo=True):
                              is_weblinkinfo=is_weblinkinfo)
         )
     return fake_groups
+
+
+def get_fake_repo_statistics():
+    """Creates a random fake repo statistics."""
+
+    return {
+        "number_of_loose_objects": 127,
+        "number_of_loose_refs": 15,
+        "number_of_pack_files": 15,
+        "number_of_packed_objects": 67,
+        "number_of_packed_refs": 0,
+        "size_of_loose_objects": 29466,
+        "size_of_packed_objects": 9646
+    }

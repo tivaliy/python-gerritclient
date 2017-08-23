@@ -347,3 +347,13 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.set_head.assert_called_once_with(project_name,
                                                        branch=branch)
+
+    def test_project_repo_statistics_show(self):
+        project_name = 'fake/fake-project'
+        args = 'project repo-statistics show {0}'.format(project_name)
+        fake_statistics = fake_project.get_fake_repo_statistics()
+        self.m_client.get_repo_statistics.return_value = fake_statistics
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_repo_statistics.assert_called_once_with(project_name)
