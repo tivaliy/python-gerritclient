@@ -1,6 +1,15 @@
 CHANGES
 =======
 
+* Add small changes before package and distribute python-gerritclient
+* Add new 'gerrit project repo-statistics show' command
+* Add new 'gerrit project head set' command
+* Align url path building
+* Add new 'gerrit project head show' command
+* Add new 'gerrit project parent set' command
+* Add new 'gerrit project parent show' command
+* Add new 'gerrit project description set' command
+* Add new 'gerrit project description show' command
 * Add Documentation Status badge
 * Add new 'gerrit change fix' command
 * Add new 'gerrit change check' command

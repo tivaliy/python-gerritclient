@@ -6,3 +6,5 @@
 .testrepository
 
 docs/build
+/dist/
+/build/
