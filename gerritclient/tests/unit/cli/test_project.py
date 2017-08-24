@@ -357,3 +357,13 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_repo_statistics.assert_called_once_with(project_name)
+
+    def test_project_branch_list(self):
+        project_name = 'fake/fake-project'
+        args = 'project branch list {0}'.format(project_name)
+        fake_branches = fake_project.get_fake_project_branches(5)
+        self.m_client.get_branches.return_value = fake_branches
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_branches.assert_called_once_with(project_name)

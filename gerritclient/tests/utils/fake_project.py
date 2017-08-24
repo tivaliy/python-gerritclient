@@ -74,3 +74,23 @@ def get_fake_repo_statistics():
         "size_of_loose_objects": 29466,
         "size_of_packed_objects": 9646
     }
+
+
+def get_fake_project_branch(ref=None, revision=None, can_delete=None):
+    """Creates a random fake BranchInfo entry."""
+
+    return {
+        "ref": ref or "refs/heads/master",
+        "revision": revision or "67ebf73496383c6777035e374d2d664009e2aa5c",
+        "can_delete": can_delete or True,
+        "web_links": [
+            {u'url': u'gitweb?p=fake.git;a=shortlog;h=refs%2Fmeta%2Fconfig',
+             u'name': u'gitweb'}
+        ]
+    }
+
+
+def get_fake_project_branches(branch_count, **kwargs):
+    """Creates a list of BranchInfo entries."""
+
+    return [get_fake_project_branch(**kwargs) for _ in range(branch_count)]

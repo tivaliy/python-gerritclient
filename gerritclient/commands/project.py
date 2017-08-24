@@ -351,6 +351,28 @@ class ProjectRepoStatisticsShow(ProjectMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ProjectBranchList(ProjectMixIn, base.BaseListCommand):
+    """Lists the branches of a project."""
+
+    columns = ('ref',
+               'revision',
+               'can_delete',
+               'web_links')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectBranchList, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_branches(parsed_args.name)
+        data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
