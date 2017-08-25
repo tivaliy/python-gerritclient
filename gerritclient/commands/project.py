@@ -373,6 +373,32 @@ class ProjectBranchList(ProjectMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class ProjectBranchShow(ProjectMixIn, base.BaseShowCommand):
+    """Retrieves a branch of a project."""
+
+    columns = ('ref',
+               'revision',
+               'can_delete',
+               'web_links')
+
+    def get_parser(self, app_name):
+        parser = super(ProjectBranchShow, self).get_parser(app_name)
+        parser.add_argument(
+            '-b',
+            '--branch',
+            required=True,
+            help='The name of a branch or HEAD. '
+                 'The prefix refs/heads/ can be omitted.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_branch(parsed_args.entity_id,
+                                          branch_name=parsed_args.branch)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

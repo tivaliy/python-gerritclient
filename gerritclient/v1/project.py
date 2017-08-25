@@ -148,6 +148,14 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             name=requests_utils.quote(name, safe=''))
         return self.connection.get_request(request_path)
 
+    def get_branch(self, name, branch_name):
+
+        request_path = "{api_path}{name}/branches/{branch_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''),
+            branch_name=requests_utils.quote(branch_name, safe=''))
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)
