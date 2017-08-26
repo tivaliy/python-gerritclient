@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add new 'gerrit project branch create' command
 * Add new 'gerrit project branch show' command
 * Add new 'gerrit project branch list' command
 * Add small changes before package and distribute python-gerritclient

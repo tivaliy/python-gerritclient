@@ -380,3 +380,18 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_branch.assert_called_once_with(
             project_name, branch_name=branch_name)
+
+    def test_project_branch_create(self):
+        project_name = 'fake/fake-project'
+        branch_name = 'refs/heads/fake-branch'
+        revision = '67ebf73496383c6777035e374d2d664009e2aa5c'
+        args = 'project branch create {0} --branch {1} --revision {2}'.format(
+            project_name, branch_name, revision)
+        fake_branch = fake_project.get_fake_project_branch(ref=branch_name,
+                                                           revision=revision)
+        self.m_client.create_branch.return_value = fake_branch
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.create_branch.assert_called_once_with(
+            project_name, branch_name=branch_name, revision=revision)

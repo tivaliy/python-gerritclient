@@ -156,6 +156,23 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             branch_name=requests_utils.quote(branch_name, safe=''))
         return self.connection.get_request(request_path)
 
+    def create_branch(self, name, branch_name, revision=None):
+        """Create a new branch.
+
+        :param name: Name of the project
+        :param branch_name: Name of the branch
+        :param revision: The base revision of the new branch. If not set,
+                         HEAD will be used as base revision.
+        :return: A BranchInfo entity that describes the created branch.
+        """
+
+        data = {'revision': revision}
+        request_path = "{api_path}{name}/branches/{branch_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''),
+            branch_name=requests_utils.quote(branch_name, safe=''))
+        return self.connection.put_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return ProjectClient(connection)
