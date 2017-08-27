@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add new 'gerrit project branch delete' command
 * Add new 'gerrit project branch create' command
 * Add new 'gerrit project branch show' command
 * Add new 'gerrit project branch list' command

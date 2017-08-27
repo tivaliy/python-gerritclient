@@ -173,6 +173,20 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             branch_name=requests_utils.quote(branch_name, safe=''))
         return self.connection.put_request(request_path, json_data=data)
 
+    def delete_branch(self, name, branches):
+        """Delete one or more branches.
+
+        :param name: Name of the project
+        :param branches: A list of branch names that identify the branches
+                         that should be deleted.
+        """
+
+        data = {'branches': branches}
+        request_path = "{api_path}{name}/branches:delete".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''))
+        return self.connection.post_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return ProjectClient(connection)

@@ -395,3 +395,14 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.create_branch.assert_called_once_with(
             project_name, branch_name=branch_name, revision=revision)
+
+    def test_project_branch_delete(self):
+        project_name = 'fake/fake-project'
+        branches = ['refs/heads/fake-branch', 'refs/heads/fake-new-branch']
+        args = 'project branch delete {0} --branch {1}'.format(
+            project_name, ' '.join(branches))
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.delete_branch.assert_called_once_with(
+            project_name, branches)

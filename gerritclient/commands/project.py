@@ -432,6 +432,31 @@ class ProjectBranchCreate(ProjectMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ProjectBranchDelete(ProjectMixIn, base.BaseCommand):
+    """Deletes one or more branches."""
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectBranchDelete, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        parser.add_argument(
+            '-b',
+            '--branch',
+            nargs='+',
+            required=True,
+            help='The branches that should be deleted.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_branch(parsed_args.name, parsed_args.branch)
+        msg = ("The following branches of the project '{0}' were deleted: {1}."
+               "\n".format(parsed_args.name, ', '.join(parsed_args.branch)))
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
