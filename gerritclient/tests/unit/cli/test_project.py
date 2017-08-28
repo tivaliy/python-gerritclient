@@ -406,3 +406,30 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.delete_branch.assert_called_once_with(
             project_name, branches)
+
+    def test_project_child_list(self):
+        project_name = 'fake/fake-project'
+        args = 'project child list {0}'.format(project_name)
+        fake_projects = [fake_project.get_fake_project() for _ in range(5)]
+        self.m_client.get_children.return_value = fake_projects
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_children.assert_called_once_with(project_name,
+                                                           recursively=False)
+
+    def test_project_child_list_recursively(self):
+        project_name = 'fake/fake-project'
+        args = 'project child list {0} --recursively'.format(project_name)
+        fake_projects = [fake_project.get_fake_project() for _ in range(5)]
+        fake_projects.append(fake_project.get_fake_project(
+            project_id="child-project",
+            name="child-project",
+            parent=project_name)
+        )
+        self.m_client.get_children.return_value = fake_projects
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_children.assert_called_once_with(project_name,
+                                                           recursively=True)

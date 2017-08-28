@@ -187,6 +187,15 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             name=requests_utils.quote(name, safe=''))
         return self.connection.post_request(request_path, json_data=data)
 
+    def get_children(self, name, recursively=False):
+        """List the direct child projects of a project."""
+
+        request_path = "{api_path}{name}/children/{recursively}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''),
+            recursively='?recursive' if recursively else '')
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)

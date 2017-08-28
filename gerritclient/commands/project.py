@@ -457,6 +457,39 @@ class ProjectBranchDelete(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class ProjectChildList(ProjectMixIn, base.BaseListCommand):
+    """Lists the direct child projects of a project.
+
+    Child projects that are not visible to the calling user are ignored
+    and are not resolved further.
+    """
+
+    columns = ('id',
+               'name',
+               'parent',
+               'description')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectChildList, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        parser.add_argument(
+            '-r',
+            '--recursively',
+            action='store_true',
+            help='Resolve the child projects of a project recursively.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_children(
+            parsed_args.name, recursively=parsed_args.recursively)
+        data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

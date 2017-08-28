@@ -16,9 +16,10 @@
 from gerritclient.tests.utils import fake_weblinkifno
 
 
-def get_fake_project(project_id="fakes%2Ffake-project",
-                     name="fakes/fake-project",
-                     state="ACTIVE",
+def get_fake_project(project_id=None,
+                     name=None,
+                     state=None,
+                     parent=None,
                      is_weblinkinfo=True,
                      is_single_item=True):
     """Creates a fake project
@@ -28,10 +29,10 @@ def get_fake_project(project_id="fakes%2Ffake-project",
     """
 
     fake_project = {
-        "id": project_id,
-        "parent": "Fake-Projects",
+        "id": project_id or "fakes%2Ffake-project",
+        "parent": parent or "Fake-Projects",
         "description": "{project_name} description".format(project_name=name),
-        "state": state,
+        "state": state or "ACTIVE",
         "branches": {
             "master": "49976b089a75e315233ab251bb9c591cfa5ed86d"
         },
@@ -43,7 +44,7 @@ def get_fake_project(project_id="fakes%2Ffake-project",
     # 'name' key set only for single item, otherwise 'name' key is used
     # as map key if we try to fetch several items
     if is_single_item:
-        fake_project['name'] = name
+        fake_project['name'] = name or "fakes/fake-project"
         return fake_project
     return {name: fake_project}
 
@@ -51,15 +52,15 @@ def get_fake_project(project_id="fakes%2Ffake-project",
 def get_fake_projects(projects_count, is_weblinkinfo=True):
     """Creates a random fake projects map."""
 
-    fake_groups = {}
+    fake_projects = {}
     for item in range(1, projects_count + 1):
-        fake_groups.update(
+        fake_projects.update(
             get_fake_project(project_id="fakes%2project-{0}".format(item),
                              name="fakes/project-{0}".format(item),
                              is_single_item=False,
                              is_weblinkinfo=is_weblinkinfo)
         )
-    return fake_groups
+    return fake_projects
 
 
 def get_fake_repo_statistics():
