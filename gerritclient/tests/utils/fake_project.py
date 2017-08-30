@@ -95,3 +95,19 @@ def get_fake_project_branches(branch_count, **kwargs):
     """Creates a list of BranchInfo entries."""
 
     return [get_fake_project_branch(**kwargs) for _ in range(branch_count)]
+
+
+def get_fake_reflog(old_id=None, new_id=None, who=None, comment=None):
+    """Creates a random fake ReflogEntryInfo entity."""
+
+    return {
+        "old_id": old_id or "976ced8f4fc0909d7e1584d18455299545881d60",
+        "new_id": new_id or "2eaa94bac536654eb592c941e33b91f925698d16",
+        "who": who or {
+            "name": "Jane Roe",
+            "email": "jane.roe@example.com",
+            "date": "2014-06-30 11:53:43.000000000",
+            "tz": 120
+        },
+        "comment": comment or "merged: fast forward"
+    }

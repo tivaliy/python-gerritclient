@@ -457,6 +457,39 @@ class ProjectBranchDelete(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class ProjectBranchReflogShow(ProjectMixIn, base.BaseListCommand):
+    """Gets the reflog of a certain branch.
+
+    The caller must be project owner.
+    """
+
+    columns = ('old_id',
+               'new_id',
+               'who',
+               'comment')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectBranchReflogShow, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of project.'
+        )
+        parser.add_argument(
+            '-b',
+            '--branch',
+            required=True,
+            help='The name of a branch or HEAD. '
+                 'The prefix refs/heads/ can be omitted.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_reflog(parsed_args.name,
+                                          branch=parsed_args.branch)
+        data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
 class ProjectChildList(ProjectMixIn, base.BaseListCommand):
     """Lists the direct child projects of a project.
 

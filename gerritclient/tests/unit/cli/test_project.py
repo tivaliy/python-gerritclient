@@ -407,6 +407,19 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.delete_branch.assert_called_once_with(
             project_name, branches)
 
+    def test_project_branch_reflog_show(self):
+        project_name = 'fake/fake-project'
+        branch = 'fake-branch'
+        args = 'project branch reflog show {0} --branch {1}'.format(
+            project_name, branch)
+        fake_reflog_list = [fake_project.get_fake_reflog() for _ in range(5)]
+        self.m_client.get_reflog.return_value = fake_reflog_list
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_reflog.assert_called_once_with(project_name,
+                                                         branch=branch)
+
     def test_project_child_list(self):
         project_name = 'fake/fake-project'
         args = 'project child list {0}'.format(project_name)

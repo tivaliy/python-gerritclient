@@ -196,6 +196,15 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             recursively='?recursive' if recursively else '')
         return self.connection.get_request(request_path)
 
+    def get_reflog(self, name, branch):
+        """Get the reflog of a certain branch."""
+
+        request_path = "{api_path}{name}/branches/{branch}/reflog".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''),
+            branch=requests_utils.quote(branch, safe=''))
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)
