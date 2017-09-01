@@ -170,7 +170,7 @@ class ProjectDelete(ProjectMixIn, base.BaseCommand):
         parser = super(ProjectDelete, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         parser.add_argument(
             '-f',
@@ -200,7 +200,7 @@ class ProjectDescriptionShow(ProjectMixIn, base.BaseCommand):
         parser = super(ProjectDescriptionShow, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         return parser
 
@@ -216,7 +216,7 @@ class ProjectDescriptionSet(ProjectMixIn, base.BaseCommand):
         parser = super(ProjectDescriptionSet, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         parser.add_argument(
             '-d',
@@ -252,7 +252,7 @@ class ProjectParentShow(ProjectMixIn, base.BaseCommand):
         parser = super(ProjectParentShow, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         return parser
 
@@ -268,7 +268,7 @@ class ProjectParentSet(ProjectMixIn, base.BaseCommand):
         parser = super(ProjectParentSet, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         parser.add_argument(
             '-p',
@@ -300,7 +300,7 @@ class ProjectHeadShow(ProjectMixIn, base.BaseCommand):
         parser = super(ProjectHeadShow, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         return parser
 
@@ -316,7 +316,7 @@ class ProjectHeadSet(ProjectMixIn, base.BaseCommand):
         parser = super(ProjectHeadSet, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         parser.add_argument(
             '-b',
@@ -363,7 +363,7 @@ class ProjectBranchList(ProjectMixIn, base.BaseListCommand):
         parser = super(ProjectBranchList, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         return parser
 
@@ -439,7 +439,7 @@ class ProjectBranchDelete(ProjectMixIn, base.BaseCommand):
         parser = super(ProjectBranchDelete, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         parser.add_argument(
             '-b',
@@ -472,7 +472,7 @@ class ProjectBranchReflogShow(ProjectMixIn, base.BaseListCommand):
         parser = super(ProjectBranchReflogShow, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         parser.add_argument(
             '-b',
@@ -506,7 +506,7 @@ class ProjectChildList(ProjectMixIn, base.BaseListCommand):
         parser = super(ProjectChildList, self).get_parser(prog_name)
         parser.add_argument(
             'name',
-            help='Name of project.'
+            help='Name of the project.'
         )
         parser.add_argument(
             '-r',
@@ -521,6 +521,37 @@ class ProjectChildList(ProjectMixIn, base.BaseListCommand):
             parsed_args.name, recursively=parsed_args.recursively)
         data = utils.get_display_data_multi(self.columns, response)
         return self.columns, data
+
+
+class ProjectGCRun(ProjectMixIn, base.BaseCommand):
+    """Runs the Git garbage collection for the repository of a project.
+
+    In case of asynchronous execution the --show-progress option is ignored.
+    """
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectGCRun, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of the project.'
+        )
+        parser.add_argument(
+            '--show-progress',
+            action='store_true',
+            help='Show progress information.'
+        )
+        parser.add_argument(
+            '--aggressive',
+            action='store_true',
+            help='Do aggressive garbage collection.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.run_gc(parsed_args.name,
+                                      aggressive=parsed_args.aggressive,
+                                      show_progress=parsed_args.show_progress)
+        self.app.stdout.write(response)
 
 
 def debug(argv=None):

@@ -205,6 +205,16 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             branch=requests_utils.quote(branch, safe=''))
         return self.connection.get_request(request_path)
 
+    def run_gc(self, name, aggressive=False, show_progress=False):
+        """Run the Git garbage collection for the repository of a project."""
+
+        data = {"aggressive": aggressive,
+                "show_progress": show_progress}
+        request_path = "{api_path}{name}/gc".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''))
+        return self.connection.post_request(request_path, json_data=data)
+
 
 def get_client(connection):
     return ProjectClient(connection)

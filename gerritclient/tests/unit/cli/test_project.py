@@ -446,3 +446,46 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_children.assert_called_once_with(project_name,
                                                            recursively=True)
+
+    def test_project_run_garbage_collection_wo_parameters(self):
+        project_name = 'fake/fake-project'
+        msg = 'Garbage collection completed successfully.'
+        self.m_client.run_gc.return_value = msg
+        args = 'project gc-run {0}'.format(project_name)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.run_gc.assert_called_once_with(project_name,
+                                                     aggressive=False,
+                                                     show_progress=False)
+
+    def test_project_run_garbage_collection_w_parameters(self):
+        project_name = 'fake/fake-project'
+        msg = ("""
+collecting garbage for '{0}':
+Pack refs:              100% (19/19)
+Counting objects:       15
+Finding sources:        100% (15/15)
+Getting sizes:          100% (9/9)
+Compressing objects:    100% (4877/4877)
+Writing objects:        100% (15/15)
+Selecting commits:      100% (3/3)
+Building bitmaps:       100% (3/3)
+Finding sources:        100% (49/49)
+Getting sizes:          100% (19/19)
+Compressing objects:    100% (5331/5331)
+Writing objects:        100% (49/49)
+Prune loose objects also found in pack files: 100% (16/16)
+Prune loose, unreferenced objects: 100% (16/16)
+done.
+
+Garbage collection completed successfully.""")
+        self.m_client.run_gc.return_value = msg
+        args = 'project gc-run {0} --aggressive --show-progress'.format(
+            project_name)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.run_gc.assert_called_once_with(project_name,
+                                                     aggressive=True,
+                                                     show_progress=True)
