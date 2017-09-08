@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add pypi badge to README.md
 * Add new 'gerrit project gc-run' command
 * Add new 'gerrit project branch reflog show' command
 * Add new 'gerrit project child list' command
