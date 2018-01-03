@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Fix test runner config issues with os-testr 1.0.0
 * Update .gitignore
 * Add pypi badge to README.md
 * Add new 'gerrit project gc-run' command
