@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Bump version to 0.1.0
 * Fix test runner config issues with os-testr 1.0.0
 * Update .gitignore
 * Add pypi badge to README.md
@@ -28,7 +29,7 @@ CHANGES
 * Add option '-d/--draft' to 'gerrit change comment list' command
 * Add new 'gerrit change comment list' command
 * Check the response not empty before fetching columns
-* Replace special characters in {change\_id} using the %xx escape
+* Replace special characters in {change_id} using the %xx escape
 * Add new 'gerrit change index' command
 * Add new 'gerrit change included-in show' command
 * Add new 'gerrit change draft publish' command
@@ -89,7 +90,7 @@ CHANGES
 * Add new 'gerrit account password set' command
 * Add commands to enable/disable accounts
 * Add new 'gerrit account username set' command
-* Align 'test\_group\_set\_description' test case
+* Align 'test_group_set_description' test case
 * Add new 'gerrit account name set' command
 * Add 'gerrit account create' command
 * Add '-a/--all' optional argument to 'gerrit account show' command
@@ -101,7 +102,7 @@ CHANGES
 * Add 'gerrit group description delete' command
 * Make possible to encode project name
 * Code refactoring for PluginClient and ProjectClient
-* 'gerrit group \*' related command code refactoring
+* 'gerrit group *' related command code refactoring
 * Add 'gerrit group description set' command
 * Add 'gerrit group rename' command
 * Add 'gerrit project delete' command

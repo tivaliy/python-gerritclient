@@ -35,7 +35,7 @@ class GerritClient(app.App):
 def main(argv=sys.argv[1:]):
     gerritclient_app = GerritClient(
         description='CLI tool for managing Gerrit Code Review.',
-        version='0.0.1',
+        version='0.1.0',
         command_manager=CommandManager('gerritclient',
                                        convert_underscores=True),
         deferred_help=True
@@ -56,6 +56,6 @@ def debug(name, cmd_class, argv=None):
     cmd_mgr.add_command(name, cmd_class)
     return GerritClient(
         description="CLI tool for managing Gerrit Code Review.",
-        version='0.0.1',
+        version='0.1.0',
         command_manager=cmd_mgr
     ).run(argv)
