@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+* Get rid of gerritclient side sorting procedure
+
+0.1.0
+-----
+
 * Bump version to 0.1.0
 * Fix test runner config issues with os-testr 1.0.0
 * Update .gitignore

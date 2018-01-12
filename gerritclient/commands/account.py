@@ -85,8 +85,7 @@ class AccountList(AccountMixIn, base.BaseListCommand):
                                        skip=parsed_args.skip,
                                        detailed=parsed_args.all,
                                        all_emails=parsed_args.all_emails)
-        data = utils.get_display_data_multi(self.columns, response,
-                                            sort_by=parsed_args.sort_columns)
+        data = utils.get_display_data_multi(self.columns, response)
         return self.columns, data
 
 

@@ -84,33 +84,10 @@ class BaseListCommand(lister.Lister, BaseCommand):
             data[entity_item]['name'] = entity_item
         return data.values()
 
-    def get_parser(self, prog_name):
-        parser = super(BaseListCommand, self).get_parser(prog_name)
-
-        # Add sorting key argument to the 'output formatters' group
-        # (if exists), otherwise add it to the general group
-        matching_groups = (group for group in parser._action_groups
-                           if group.title == 'output formatters')
-
-        group = next(matching_groups, None) or parser
-
-        group.add_argument('-s',
-                           '--sort-columns',
-                           nargs='+',
-                           choices=self.columns,
-                           metavar='SORT_COLUMN',
-                           default=self.default_sorting_by,
-                           help="Space separated list of keys for sorting "
-                                "the data. Defaults to '{}'. Wrong values "
-                                "are ignored.".format(
-                                    ', '.join(self.default_sorting_by)))
-        return parser
-
     def take_action(self, parsed_args):
         data = self.client.get_all()
         data = self._reformat_data(data)
-        data = utils.get_display_data_multi(self.columns, data,
-                                            sort_by=parsed_args.sort_columns)
+        data = utils.get_display_data_multi(self.columns, data)
         return self.columns, data
 
 

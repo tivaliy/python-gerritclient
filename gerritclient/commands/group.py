@@ -241,8 +241,7 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
     def take_action(self, parsed_args):
         data = self.client.get_members(parsed_args.group_id,
                                        detailed=parsed_args.all)
-        data = utils.get_display_data_multi(self.columns, data,
-                                            sort_by=parsed_args.sort_columns)
+        data = utils.get_display_data_multi(self.columns, data)
         return self.columns, data
 
 
