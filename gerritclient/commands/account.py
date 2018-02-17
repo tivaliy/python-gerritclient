@@ -202,6 +202,29 @@ class AccountStateShow(AccountMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class AccountStatusShow(AccountMixIn, base.BaseShowCommand):
+    """Retrieves the status of an account."""
+
+    columns = ('account_identifier',
+               'status')
+
+    def take_action(self, parsed_args):
+        response = self.client.get_status(parsed_args.entity_id)
+        data = {self.columns[0]: parsed_args.entity_id,
+                self.columns[1]: response}
+        data = utils.get_display_data_single(self.columns, data)
+        return self.columns, data
+
+
+class AccountStatusSet(BaseAccountSetCommand):
+    """Sets the status of an account."""
+
+    attribute = "status"
+
+    def action(self, account_id, attribute):
+        return self.client.set_status(account_id, status=attribute)
+
+
 class AccountSetPassword(AccountMixIn, base.BaseShowCommand):
     """Sets/Generates the HTTP password of an account in Gerrit."""
 

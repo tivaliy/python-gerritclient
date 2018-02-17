@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add account status related commands and APIs
 * Change command name for fetching account state
 * Get rid of gerritclient side sorting procedure
 

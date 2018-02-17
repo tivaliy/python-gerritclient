@@ -198,6 +198,41 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.is_active.assert_called_once_with(account_id)
 
+    def test_account_status_show(self):
+        account_id = '69'
+        args = 'account status show {0}'.format(account_id)
+        self.m_client.get_status.return_value = 'Out of Office'
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.get_status.assert_called_once_with(account_id)
+
+    @mock.patch('sys.stderr')
+    def test_account_status_show_fail(self, mocked_stderr):
+        args = 'account status show'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('run account status show: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_account_status_set(self):
+        account_id = '69'
+        status = 'Out of Office'
+        args = 'account status set {0} "{1}"'.format(account_id, status)
+
+        self.m_client.set_status.return_value = status
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.set_status.assert_called_once_with(account_id,
+                                                         status=status)
+
+    @mock.patch('sys.stderr')
+    def test_account_status_set_fail(self, mocked_stderr):
+        args = 'account status set'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('run account status set: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])
+
     def test_account_set_password(self):
         account_id = '69'
         password = 'fake-password'

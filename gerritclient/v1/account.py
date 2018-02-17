@@ -120,6 +120,23 @@ class AccountClient(base.BaseV1ClientCreateEntity):
             account_id=account_id)
         return self.connection.delete_request(request_path, data={})
 
+    def get_status(self, account_id):
+        """Retrieves the status of an account."""
+
+        request_path = "{api_path}{account_id}/status".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.get_request(request_path)
+
+    def set_status(self, account_id, status):
+        """Sets the status of an account."""
+
+        data = {"status": status}
+        request_path = "{api_path}{account_id}/status".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.put_request(request_path,  json_data=data)
+
     def set_password(self, account_id, password=None, generate=False):
         """Set/Generate the HTTP password of an account in Gerrit.
 
