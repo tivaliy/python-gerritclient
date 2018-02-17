@@ -188,8 +188,8 @@ class AccountDisable(AccountMixIn, base.BaseEntitySetState):
     action_type = 'disable'
 
 
-class AccountStatusShow(AccountMixIn, base.BaseShowCommand):
-    """Fetches the status of an account in Gerrit."""
+class AccountStateShow(AccountMixIn, base.BaseShowCommand):
+    """Fetches the state of an account in Gerrit."""
 
     columns = ('account_identifier',
                'is_active')

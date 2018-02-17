@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Change command name for fetching account state
 * Get rid of gerritclient side sorting procedure
 
 0.1.0
