@@ -46,3 +46,16 @@ def get_fake_account_email_info(email="jdoe@example.com", preferred=False,
     return {"email": email,
             "preferred": preferred,
             "no_confirmation": no_confirmation}
+
+
+def get_fake_oauth_token():
+    """Creates a random fake oauth access token of account."""
+
+    return {
+        "username": "johndow",
+        "resource_host": "gerrit.example.org",
+        "access_token": "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOi",
+        "provider_id": "oauth-plugin:oauth-provider",
+        "expires_at": "922337203775807",
+        "type": "bearer"
+    }

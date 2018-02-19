@@ -261,6 +261,14 @@ class AccountClient(base.BaseV1ClientCreateEntity):
             email=email)
         return self.connection.put_request(request_path, json_data={})
 
+    def get_oauth_token(self, account_id):
+        """Returns a previously obtained OAuth access token."""
+
+        request_path = "{api_path}{account_id}/oauthtoken".format(
+            api_path=self.api_path,
+            account_id=account_id)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return AccountClient(connection)

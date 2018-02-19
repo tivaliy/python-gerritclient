@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add new 'gerrit account oauth show' command and API
 * Replace python 3.5 environment with 3.6
 * Add account status related commands and APIs
 * Change command name for fetching account state

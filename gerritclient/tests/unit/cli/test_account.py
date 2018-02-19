@@ -414,3 +414,20 @@ class TestAccountCommand(clibase.BaseCLITest):
         self.m_get_client.assert_called_once_with('account', mock.ANY)
         self.m_client.set_preferred_email.assert_called_once_with(account_id,
                                                                   email=email)
+
+    def test_account_oauth_access_token_show(self):
+        account_id = 'self'
+        args = 'account oauth show {0}'.format(account_id)
+        fake_oauth_token = fake_account.get_fake_oauth_token()
+        self.m_client.get_oauth_token.return_value = fake_oauth_token
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('account', mock.ANY)
+        self.m_client.get_oauth_token.assert_called_once_with(account_id)
+
+    @mock.patch('sys.stderr')
+    def test_account_oauth_access_token_fail(self, mocked_stderr):
+        args = 'account oauth show'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('account oauth show: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

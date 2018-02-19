@@ -24,7 +24,6 @@ from gerritclient import error
 
 
 class AccountMixIn(object):
-
     entity_name = 'account'
 
 
@@ -502,6 +501,27 @@ class AccountPreferredEmailSet(BaseAccountSetCommand):
 
     def action(self, account_id, attribute):
         return self.client.set_preferred_email(account_id, email=attribute)
+
+
+class AccountOAuthShow(AccountMixIn, base.BaseShowCommand):
+    """Returns a previously obtained OAuth access token.
+
+    If there is no token available, or the token has already expired,
+    "404 Not Found" is returned as response. Requests to obtain an access
+    token of another user are rejected with "403 Forbidden".
+    """
+
+    columns = ('username',
+               'resource_host',
+               'access_token',
+               'provider_id',
+               'expires_at',
+               'type')
+
+    def take_action(self, parsed_args):
+        response = self.client.get_oauth_token(parsed_args.entity_id)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
 
 
 def debug(argv=None):
