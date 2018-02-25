@@ -94,7 +94,8 @@ class AccountShow(AccountMixIn, base.BaseShowCommand):
     columns = ('_account_id',
                'name',
                'email',
-               'username')
+               'username',
+               'status')
 
     def get_parser(self, prog_name):
         parser = super(AccountShow, self).get_parser(prog_name)
