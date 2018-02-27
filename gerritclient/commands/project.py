@@ -553,6 +553,34 @@ class ProjectGCRun(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write(response)
 
 
+class ProjectTagList(ProjectMixIn, base.BaseListCommand):
+    """Lists the tags of a project.
+
+    Only includes tags under the refs/tags/ namespace.
+    """
+
+    columns = ('ref',
+               'revision',
+               'object',
+               'message',
+               'tagger',
+               'can_delete',
+               'web_links')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectTagList, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of the project.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_tags(parsed_args.name)
+        data = utils.get_display_data_multi(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

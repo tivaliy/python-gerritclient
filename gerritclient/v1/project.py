@@ -215,6 +215,14 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             name=requests_utils.quote(name, safe=''))
         return self.connection.post_request(request_path, json_data=data)
 
+    def get_tags(self, name):
+        """Get the tags for a project."""
+
+        request_path = "{api_path}{name}/tags".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''))
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)

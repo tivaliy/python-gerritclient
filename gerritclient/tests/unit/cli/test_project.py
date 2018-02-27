@@ -18,6 +18,7 @@ import mock
 
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_project
+from gerritclient.tests.utils import fake_tag
 
 
 class TestProjectCommand(clibase.BaseCLITest):
@@ -489,3 +490,12 @@ Garbage collection completed successfully.""")
         self.m_client.run_gc.assert_called_once_with(project_name,
                                                      aggressive=True,
                                                      show_progress=True)
+
+    def test_project_tag_list(self):
+        project_name = 'fake/fake-project'
+        args = 'project tag list {0}'.format(project_name)
+        self.m_client.get_tags.return_value = fake_tag.get_fake_tags(5)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_tags.assert_called_once_with(project_name)
