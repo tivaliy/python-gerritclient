@@ -606,6 +606,31 @@ class ProjectTagShow(ProjectMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ProjectTagDelete(ProjectMixIn, base.BaseCommand):
+    """Deletes one or more tags of the project."""
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectTagDelete, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of the project.'
+        )
+        parser.add_argument(
+            '-t',
+            '--tag',
+            nargs='+',
+            required=True,
+            help='The tags to be deleted.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_tag(parsed_args.name, parsed_args.tag)
+        msg = ("The following tags of the project '{0}' were deleted: {1}."
+               "\n".format(parsed_args.name, ', '.join(parsed_args.tag)))
+        self.app.stdout.write(msg)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
