@@ -499,3 +499,13 @@ Garbage collection completed successfully.""")
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_tags.assert_called_once_with(project_name)
+
+    def test_project_tag_show(self):
+        project_name = 'fake/fake-project'
+        tag_id = 'refs/tags/9.2'
+        args = 'project tag show {0} {1}'.format(project_name, tag_id)
+        self.m_client.get_tag.return_value = fake_tag.get_fake_tag()
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_tag.assert_called_once_with(project_name, tag_id)

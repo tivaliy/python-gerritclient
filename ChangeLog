@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add new 'gerrit project tag show' command and API
 * Add new 'gerrit project tag list' command and API
 * Add 'status' field to 'gerrit account show' command
 * Add new 'gerrit account oauth show' command and API

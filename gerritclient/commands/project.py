@@ -581,6 +581,31 @@ class ProjectTagList(ProjectMixIn, base.BaseListCommand):
         return self.columns, data
 
 
+class ProjectTagShow(ProjectMixIn, base.BaseShowCommand):
+    """Retrieves a tag of a project."""
+
+    columns = ('ref',
+               'revision',
+               'object',
+               'message',
+               'tagger',
+               'can_delete',
+               'web_links')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectTagShow, self).get_parser(prog_name)
+        parser.add_argument(
+            'tag',
+            help='Name of the tag.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_tag(parsed_args.entity_id, parsed_args.tag)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
