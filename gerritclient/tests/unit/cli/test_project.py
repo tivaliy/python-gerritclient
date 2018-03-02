@@ -498,7 +498,34 @@ Garbage collection completed successfully.""")
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
-        self.m_client.get_tags.assert_called_once_with(project_name)
+        self.m_client.get_tags.assert_called_once_with(project_name,
+                                                       limit=None, skip=None)
+
+    def test_project_tag_list_limit(self):
+        project_name = 'fake/fake-project'
+        list_limit = 5
+        args = 'project tag list {0} --limit {1}'.format(project_name,
+                                                         list_limit)
+        self.m_client.get_tags.return_value = fake_tag.get_fake_tags(10)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_tags.assert_called_once_with(project_name,
+                                                       limit=list_limit,
+                                                       skip=None)
+
+    def test_project_tag_list_skip_first(self):
+        project_name = 'fake/fake-project'
+        list_skip = 5
+        args = 'project tag list {0} --skip {1}'.format(project_name,
+                                                        list_skip)
+        self.m_client.get_tags.return_value = fake_tag.get_fake_tags(10)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_tags.assert_called_once_with(project_name,
+                                                       limit=None,
+                                                       skip=list_skip)
 
     def test_project_tag_show(self):
         project_name = 'fake/fake-project'

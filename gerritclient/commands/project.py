@@ -573,10 +573,25 @@ class ProjectTagList(ProjectMixIn, base.BaseListCommand):
             'name',
             help='Name of the project.'
         )
+        parser.add_argument(
+            '-l',
+            '--limit',
+            type=int,
+            help='Limit the number of tags to be included in the results.'
+        )
+        parser.add_argument(
+            '-S',
+            '--skip',
+            type=int,
+            help='Skip the given number of tags '
+                 'from the beginning of the list.'
+        )
         return parser
 
     def take_action(self, parsed_args):
-        response = self.client.get_tags(parsed_args.name)
+        response = self.client.get_tags(parsed_args.name,
+                                        limit=parsed_args.limit,
+                                        skip=parsed_args.skip)
         data = utils.get_display_data_multi(self.columns, response)
         return self.columns, data
 

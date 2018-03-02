@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add skip and limit parameters to tag list related command
 * Add new 'gerrit project tag delete' command and API
 * Add new 'gerrit project tag show' command and API
 * Add new 'gerrit project tag list' command and API

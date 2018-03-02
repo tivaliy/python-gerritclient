@@ -215,13 +215,23 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             name=requests_utils.quote(name, safe=''))
         return self.connection.post_request(request_path, json_data=data)
 
-    def get_tags(self, name):
-        """Get the tags for a project."""
+    def get_tags(self, name, limit=None, skip=None):
+        """Get the tags for a project.
+
+        :param name: Name of the project.
+        :param limit: Int value that allows to limit the number of tags
+                      to be included in the output results.
+        :param skip: Int value that allows to skip the given number of tags
+                     from the beginning of the list
+        """
+
+        params = {k: v for k, v in (('n', limit),
+                                    ('s', skip)) if v is not None}
 
         request_path = "{api_path}{name}/tags".format(
             api_path=self.api_path,
             name=requests_utils.quote(name, safe=''))
-        return self.connection.get_request(request_path)
+        return self.connection.get_request(request_path, params=params)
 
     def get_tag(self, name, tag_id):
         """Retrieve a tag of a project."""
