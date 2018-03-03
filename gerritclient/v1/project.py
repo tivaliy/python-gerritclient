@@ -215,7 +215,7 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             name=requests_utils.quote(name, safe=''))
         return self.connection.post_request(request_path, json_data=data)
 
-    def get_tags(self, name, limit=None, skip=None):
+    def get_tags(self, name, limit=None, skip=None, pattern_dispatcher=None):
         """Get the tags for a project.
 
         :param name: Name of the project.
@@ -223,10 +223,25 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
                       to be included in the output results.
         :param skip: Int value that allows to skip the given number of tags
                      from the beginning of the list
+        :param pattern_dispatcher: Pattern type (as a dict) with respective
+                                   pattern value: {('match'|'regex') : value}
         """
 
+        pattern_types = {'match': 'm', 'regex': 'r'}
+
+        p, v = None, None
+        if pattern_dispatcher is not None and pattern_dispatcher:
+            for item in pattern_types:
+                if item in pattern_dispatcher:
+                    p, v = pattern_types[item], pattern_dispatcher[item]
+                    break
+            else:
+                raise ValueError("Pattern types can be either "
+                                 "'match' or 'regex'.")
+
         params = {k: v for k, v in (('n', limit),
-                                    ('s', skip)) if v is not None}
+                                    ('s', skip),
+                                    (p, v)) if v is not None}
 
         request_path = "{api_path}{name}/tags".format(
             api_path=self.api_path,

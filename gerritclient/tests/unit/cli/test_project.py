@@ -499,7 +499,9 @@ Garbage collection completed successfully.""")
 
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_tags.assert_called_once_with(project_name,
-                                                       limit=None, skip=None)
+                                                       limit=None,
+                                                       skip=None,
+                                                       pattern_dispatcher=None)
 
     def test_project_tag_list_limit(self):
         project_name = 'fake/fake-project'
@@ -512,7 +514,8 @@ Garbage collection completed successfully.""")
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_tags.assert_called_once_with(project_name,
                                                        limit=list_limit,
-                                                       skip=None)
+                                                       skip=None,
+                                                       pattern_dispatcher=None)
 
     def test_project_tag_list_skip_first(self):
         project_name = 'fake/fake-project'
@@ -525,7 +528,39 @@ Garbage collection completed successfully.""")
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_tags.assert_called_once_with(project_name,
                                                        limit=None,
-                                                       skip=list_skip)
+                                                       skip=list_skip,
+                                                       pattern_dispatcher=None)
+
+    def test_project_tag_list_w_match(self):
+        project_name = 'fake/fake-project'
+        dispatcher = {'match': 'ref'}
+        args = 'project tag list {0} --match {1}'.format(project_name,
+                                                         dispatcher['match'])
+        self.m_client.get_tags.return_value = fake_tag.get_fake_tags(3)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_tags.assert_called_once_with(
+            project_name, limit=None, skip=None, pattern_dispatcher=dispatcher)
+
+    def test_project_tag_list_w_regex(self):
+        project_name = 'fake/fake-project'
+        dispatcher = {'regex': 'refs*'}
+        args = 'project tag list {0} --regex {1}'.format(project_name,
+                                                         dispatcher['regex'])
+        self.m_client.get_tags.return_value = fake_tag.get_fake_tags(3)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_tags.assert_called_once_with(
+            project_name, limit=None, skip=None, pattern_dispatcher=dispatcher)
+
+    @mock.patch('sys.stderr')
+    def test_project_tag_list_w_mutually_exclusive_params(self, mocked_stderr):
+        args = 'project list --match some --regex fake*.*'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('not allowed',
+                      mocked_stderr.write.call_args_list[-1][0][0])
 
     def test_project_tag_show(self):
         project_name = 'fake/fake-project'

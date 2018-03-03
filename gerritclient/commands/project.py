@@ -586,12 +586,29 @@ class ProjectTagList(ProjectMixIn, base.BaseListCommand):
             help='Skip the given number of tags '
                  'from the beginning of the list.'
         )
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
+            '-m',
+            '--match',
+            help='Limit the results to those tags that match the '
+                 'specified substring. The match is case insensitive.'
+        )
+        group.add_argument(
+            '-r',
+            '--regex',
+            help='Limit the results to those tags that match the '
+                 'specified regex. The match is case sensitive.'
+        )
         return parser
 
     def take_action(self, parsed_args):
+        fetched_pattern = {k: v for k, v in (('match', parsed_args.match),
+                                             ('regex', parsed_args.regex))
+                           if v is not None} or None
         response = self.client.get_tags(parsed_args.name,
                                         limit=parsed_args.limit,
-                                        skip=parsed_args.skip)
+                                        skip=parsed_args.skip,
+                                        pattern_dispatcher=fetched_pattern)
         data = utils.get_display_data_multi(self.columns, response)
         return self.columns, data
 
