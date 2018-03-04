@@ -16,6 +16,7 @@
 import functools
 import json
 import os
+import re
 import six
 import yaml
 
@@ -135,3 +136,9 @@ def urljoin(*args):
     """
 
     return "/".join(map(lambda x: str(x).rstrip('/'), args))
+
+
+def normalize(string, replacer='_'):
+    """Replaces special characters from string."""
+
+    return re.sub('[^a-zA-Z0-9.]', replacer, string)

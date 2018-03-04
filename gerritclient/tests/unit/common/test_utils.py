@@ -69,3 +69,11 @@ class TestUtils(oslo_base.BaseTestCase):
              [17, 'facebook', 'note'],
              [15, 'google', 'warning']]
         )
+
+    def test_normalize(self):
+        self.assertEqual(
+            utils.normalize('#/foo+bar_$!str.', ''), 'foobarstr.')
+
+    def test_normalize_w_default_replacer(self):
+        self.assertEqual(
+            utils.normalize('#Some/foo+bar_$!str.'), '_Some_foo_bar___str.')

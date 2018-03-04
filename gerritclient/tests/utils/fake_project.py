@@ -111,3 +111,61 @@ def get_fake_reflog(old_id=None, new_id=None, who=None, comment=None):
         },
         "comment": comment or "merged: fast forward"
     }
+
+
+def get_fake_config(name=None):
+    """Creates a random fake ConfigInfo entry."""
+
+    return {
+        "description": name or "demo project",
+        "use_contributor_agreements": {
+            "value": True,
+            "configured_value": "TRUE",
+            "inherited_value": False
+        },
+        "use_content_merge": {
+            "value": True,
+            "configured_value": "INHERIT",
+            "inherited_value": True
+        },
+        "use_signed_off_by": {
+            "value": False,
+            "configured_value": "INHERIT",
+            "inherited_value": False
+        },
+        "create_new_change_for_all_not_in_target": {
+            "value": False,
+            "configured_value": "INHERIT",
+            "inherited_value": False
+        },
+        "require_change_id": {
+            "value": False,
+            "configured_value": "FALSE",
+            "inherited_value": True
+        },
+        "max_object_size_limit": {
+            "value": "15m",
+            "configured_value": "15m",
+            "inherited_value": "20m"
+        },
+        "submit_type": "MERGE_IF_NECESSARY",
+        "state": "ACTIVE",
+        "commentlinks": {},
+        "plugin_config": {
+            "helloworld": {
+                "language": {
+                    "display_name": "Preferred Language",
+                    "type": "STRING",
+                    "value": "en"
+                }
+            }
+        },
+        "actions": {
+            "cookbook~hello-project": {
+                "method": "POST",
+                "label": "Say hello",
+                "title": "Say hello in different languages",
+                "enabled": True
+            }
+        }
+    }

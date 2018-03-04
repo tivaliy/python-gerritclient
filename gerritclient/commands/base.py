@@ -15,6 +15,7 @@
 
 import abc
 import argparse
+import os
 import six
 
 from cliff import command
@@ -186,3 +187,24 @@ class BaseEntitySetState(BaseCommand):
             parsed_args.entity_id,
             self.action_type))
         self.app.stdout.write(msg)
+
+
+@six.add_metaclass(abc.ABCMeta)
+class BaseDownloadCommand(BaseCommand):
+
+    def get_parser(self, prog_name):
+        parser = super(BaseDownloadCommand, self).get_parser(prog_name)
+        parser.add_argument(
+            '-f', '--format',
+            default='json',
+            choices=utils.SUPPORTED_FILE_FORMATS,
+            help='Format of serialization.'
+        )
+        parser.add_argument(
+            '-d', '--directory',
+            required=False,
+            default=os.path.curdir,
+            help='Destination directory. Defaults to '
+                 'the current directory.'
+        )
+        return parser

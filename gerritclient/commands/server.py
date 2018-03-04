@@ -35,32 +35,16 @@ class ServerVersionShow(ServerMixIn, base.BaseCommand):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class ServerBaseDownload(ServerMixIn, base.BaseCommand):
+class ServerBaseDownload(ServerMixIn, base.BaseDownloadCommand):
     """Base Download class Gerrit server configuration."""
 
     @abc.abstractproperty
     def attribute(self):
-        """Type of attribute: ('configuration'|'capabilities'|'caches')
+        """Type of attribute: ('configuration'|'capabilities')
 
         :rtype: str
         """
         pass
-
-    def get_parser(self, prog_name):
-        parser = super(ServerBaseDownload, self).get_parser(prog_name)
-        parser.add_argument('-f',
-                            '--format',
-                            default='json',
-                            choices=utils.SUPPORTED_FILE_FORMATS,
-                            help='Format of serialized {} '
-                                 'configuration.'.format(self.attribute))
-        parser.add_argument('-d',
-                            '--directory',
-                            required=False,
-                            default=os.path.curdir,
-                            help='Destination directory. Defaults to '
-                                 'the current directory.')
-        return parser
 
     def take_action(self, parsed_args):
         attributes = {'configuration': self.client.get_config,

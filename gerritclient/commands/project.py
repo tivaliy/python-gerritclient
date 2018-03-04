@@ -13,8 +13,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import os
+
 from gerritclient.commands import base
 from gerritclient.common import utils
+from gerritclient import error
 
 
 class ProjectMixIn(object):
@@ -660,6 +663,42 @@ class ProjectTagDelete(ProjectMixIn, base.BaseCommand):
         self.client.delete_tag(parsed_args.name, parsed_args.tag)
         msg = ("The following tags of the project '{0}' were deleted: {1}."
                "\n".format(parsed_args.name, ', '.join(parsed_args.tag)))
+        self.app.stdout.write(msg)
+
+
+class ProjectConfigDownload(ProjectMixIn, base.BaseDownloadCommand):
+    """Gets some configuration information about a project.
+
+    Note that this config info is not simply the contents of project.config;
+    it generally contains fields that may have been inherited from parent
+    projects.
+    """
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectConfigDownload, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of the project.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_name = '{}.{}'.format(utils.normalize(parsed_args.name),
+                                   parsed_args.format)
+        file_path = os.path.join(os.path.abspath(parsed_args.directory),
+                                 file_name)
+        response_data = self.client.get_config(parsed_args.name)
+        try:
+            if not os.path.exists(parsed_args.directory):
+                os.makedirs(parsed_args.directory)
+            with open(file_path, 'w') as stream:
+                utils.safe_dump(parsed_args.format, stream, response_data)
+        except (OSError, IOError) as e:
+            msg = ("Could not store {0} data at {1}. "
+                   "{2}".format(self.entity_name, file_path, e))
+            raise error.InvalidFileException(msg)
+        msg = "Information about the {} was stored in '{}' file.\n".format(
+            self.entity_name, file_path)
         self.app.stdout.write(msg)
 
 
