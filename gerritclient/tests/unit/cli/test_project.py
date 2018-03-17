@@ -633,3 +633,45 @@ Garbage collection completed successfully.""")
                                             default_flow_style=False)
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_config.assert_called_once_with(project_name)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_project_configuration_set(self):
+        project_name = 'fakes/fake-project'
+        test_data = {
+            "description": "demo project",
+            "use_contributor_agreements": "FALSE"
+        }
+        expected_path = '/tmp/fakes/fake-project.yaml'
+        args = 'project configuration set {0} --file {1}'.format(project_name,
+                                                                 expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.exec_command(args)
+
+        m_open.assert_called_once_with(expected_path, 'r')
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.set_config.assert_called_once_with(project_name,
+                                                         data=test_data)
+
+    @mock.patch('gerritclient.common.utils.file_exists',
+                mock.Mock(return_value=True))
+    def test_project_configuration_set_from_bad_file_format_fail(self):
+        project_name = 'fakes/fake-project'
+        test_data = {}
+        expected_path = '/tmp/fakes/bad_file.format'
+        args = 'project configuration set {0} --file {1}'.format(project_name,
+                                                                 expected_path)
+
+        m_open = mock.mock_open(read_data=json.dumps(test_data))
+        with mock.patch('gerritclient.common.utils.open', m_open, create=True):
+            self.assertRaisesRegexp(ValueError, "Unsupported data format",
+                                    self.exec_command, args)
+
+    @mock.patch('sys.stderr')
+    def test_project_configuration_set_fail(self, mocked_stderr):
+        args = 'project configuration set'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('project configuration set: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

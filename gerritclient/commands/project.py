@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import argparse
 import os
 
 from gerritclient.commands import base
@@ -699,6 +700,45 @@ class ProjectConfigDownload(ProjectMixIn, base.BaseDownloadCommand):
             raise error.InvalidFileException(msg)
         msg = "Information about the {} was stored in '{}' file.\n".format(
             self.entity_name, file_path)
+        self.app.stdout.write(msg)
+
+
+class ProjectConfigSet(ProjectMixIn, base.BaseCommand):
+    """Sets the configuration of a project."""
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(
+                "File '{0}' does not exist".format(file_path))
+        return file_path
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectConfigSet, self).get_parser(prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of the project.'
+        )
+        parser.add_argument(
+            '--file',
+            type=self.get_file_path,
+            required=True,
+            help='File with metadata to be uploaded.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            data = utils.read_from_file(file_path)
+        except (OSError, IOError):
+            msg = ("Could not read configuration metadata for the project "
+                   "'{0}' at {1}".format(parsed_args.name, file_path))
+            raise error.InvalidFileException(msg)
+
+        self.client.set_config(parsed_args.name, data=data)
+        msg = ("Configuration of the project '{0}' was successfully "
+               "updated.\n".format(parsed_args.name))
         self.app.stdout.write(msg)
 
 
