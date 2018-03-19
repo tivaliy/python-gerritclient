@@ -642,6 +642,49 @@ class ProjectTagShow(ProjectMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ProjectTagCreate(ProjectMixIn, base.BaseShowCommand):
+    """Creates a new tag on the project.
+
+    If a message is provided in the input, the tag is created as an annotated
+    tag with the current user as tagger. Signed tags are not supported.
+    """
+
+    columns = ('ref',
+               'revision',
+               'object',
+               'message',
+               'tagger',
+               'can_delete',
+               'web_links')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectTagCreate, self).get_parser(prog_name)
+        parser.add_argument(
+            '-t', '--tag',
+            required=True,
+            help='The name of the tag. The leading refs/tags/ is optional.'
+        )
+        parser.add_argument(
+            '-r', '--revision',
+            help="The revision to which the tag should point. "
+                 "If not specified, the project's HEAD will be used."
+        )
+        parser.add_argument(
+            '-m', '--message',
+            help='The tag message. When set, the tag '
+                 'will be created as an annotated tag.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.create_tag(parsed_args.entity_id,
+                                          parsed_args.tag,
+                                          revision=parsed_args.revision,
+                                          message=parsed_args.message)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 class ProjectTagDelete(ProjectMixIn, base.BaseCommand):
     """Deletes one or more tags of the project."""
 

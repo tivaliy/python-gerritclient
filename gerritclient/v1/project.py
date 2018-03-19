@@ -257,6 +257,17 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             tag_id=requests_utils.quote(tag_id, safe=''))
         return self.connection.get_request(request_path)
 
+    def create_tag(self, name, tag_id, revision=None, message=None):
+        """Create a new tag on the project."""
+
+        data = {'revision': revision,
+                'message': message}
+        request_path = "{api_path}{name}/tags/{tag_id}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''),
+            tag_id=tag_id)
+        return self.connection.put_request(request_path, json_data=data)
+
     def delete_tag(self, name, tags):
         """Delete one or more tags.
 

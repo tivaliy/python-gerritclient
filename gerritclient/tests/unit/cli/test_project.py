@@ -573,6 +573,21 @@ Garbage collection completed successfully.""")
         self.m_get_client.assert_called_once_with('project', mock.ANY)
         self.m_client.get_tag.assert_called_once_with(project_name, tag_id)
 
+    def test_project_tag_create(self):
+        project_name = 'fake/fake-project'
+        tag_id = 'refs/tags/v1.0'
+        revision = '49ce77fdcfd3398dc0dedbe016d1a425fd52d666'
+        message = 'Annotated tag'
+        args = "project tag create {0} --tag {1} -r {2} -m '{3}'".format(
+            project_name, tag_id, revision, message)
+        self.m_client.get_tag.return_value = fake_tag.get_fake_tag()
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.create_tag.assert_called_once_with(project_name, tag_id,
+                                                         revision=revision,
+                                                         message=message)
+
     def test_project_tag_delete(self):
         project_name = 'fake/fake-project'
         tags = ['refs/tags/9.2', 'refs/tags/9.1']
