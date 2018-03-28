@@ -18,6 +18,7 @@ import mock
 
 from gerritclient.common import utils
 from gerritclient.tests.unit.cli import clibase
+from gerritclient.tests.utils import fake_commit
 from gerritclient.tests.utils import fake_project
 from gerritclient.tests.utils import fake_tag
 
@@ -689,4 +690,24 @@ Garbage collection completed successfully.""")
         args = 'project configuration set'
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('project configuration set: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_project_commit_show(self):
+        commit_id = "184ebe53805e102605d11f6b143486d15c23a09c"
+        project_name = 'fake/fake-project'
+        args = 'project commit show {0} --commit {1}'.format(project_name,
+                                                             commit_id)
+        self.m_client.get_commit.return_value = fake_commit.get_fake_commit(
+            commit_id=commit_id)
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_commit.assert_called_once_with(project_name,
+                                                         commit_id)
+
+    @mock.patch('sys.stderr')
+    def test_project_commit_show_fail(self, mocked_stderr):
+        args = 'project commit show'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('project commit show: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])

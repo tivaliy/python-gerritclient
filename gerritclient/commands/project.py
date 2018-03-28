@@ -785,6 +785,35 @@ class ProjectConfigSet(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write(msg)
 
 
+class ProjectCommitShow(ProjectMixIn, base.BaseShowCommand):
+    """Retrieves a commit of a project.
+
+    The commit must be visible to the caller.
+    """
+
+    columns = ('commit',
+               'parents',
+               'author',
+               'committer',
+               'subject',
+               'message')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectCommitShow, self).get_parser(prog_name)
+        parser.add_argument(
+            '--commit',
+            required=True,
+            help='Commit ID.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_commit(parsed_args.entity_id,
+                                          parsed_args.commit)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

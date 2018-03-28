@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add new 'gerrit project commit show' command and API
 * Add new 'gerrit project tag create' command and API
 * Add new 'gerrit project configuration set' command and API
 * Add new 'gerrit project configuration download' command and API
