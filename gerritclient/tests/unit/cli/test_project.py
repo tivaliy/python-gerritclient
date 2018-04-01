@@ -711,3 +711,23 @@ Garbage collection completed successfully.""")
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('project commit show: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_project_commit_affiliation_show(self):
+        commit_id = "184ebe53805e102605d11f6b143486d15c23a09c"
+        project_name = 'fake/fake-project'
+        args = 'project commit included-in {0} --commit {1}'.format(
+            project_name, commit_id)
+        commit_affiliation = fake_commit.get_fake_commit_affiliation()
+        self.m_client.get_commit_affiliation.return_value = commit_affiliation
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_commit_affiliation.assert_called_once_with(
+            project_name, commit_id)
+
+    @mock.patch('sys.stderr')
+    def test_project_commit_affiliation_show_fail(self, mocked_stderr):
+        args = 'project commit included-in'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('project commit included-in: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])

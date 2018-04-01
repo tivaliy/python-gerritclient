@@ -39,3 +39,10 @@ def get_fake_commit(commit_id=None):
         "message": "Use an EventBus to manage star icons\n\n"
                    "Image widgets that need to ..."
     }
+
+
+def get_fake_commit_affiliation():
+    return {
+        "branches": ["master", "fake/branch"],
+        "tags": ["fake_tag"]
+    }

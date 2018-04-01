@@ -306,6 +306,15 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             commit=commit)
         return self.connection.get_request(request_path)
 
+    def get_commit_affiliation(self, name, commit):
+        """Retrieve the branches and tags in which a change is included."""
+
+        request_path = "{api_path}{name}/commits/{commit}/in".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=''),
+            commit=commit)
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)

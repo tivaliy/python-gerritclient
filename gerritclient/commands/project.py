@@ -814,6 +814,29 @@ class ProjectCommitShow(ProjectMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ProjectCommitIncludedIn(ProjectMixIn, base.BaseShowCommand):
+    """Retrieves the branches and tags in which a change is included."""
+
+    columns = ('branches',
+               'tag',
+               'external')
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectCommitIncludedIn, self).get_parser(prog_name)
+        parser.add_argument(
+            '--commit',
+            required=True,
+            help='Commit ID.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_commit_affiliation(parsed_args.entity_id,
+                                                      parsed_args.commit)
+        data = utils.get_display_data_single(self.columns, response)
+        return self.columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
