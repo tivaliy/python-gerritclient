@@ -315,6 +315,16 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
             commit=commit)
         return self.connection.get_request(request_path)
 
+    def get_file_content(self, name, commit, file_id):
+        request_path = (
+            "{api_path}{name}/commits/{commit}/files/{file_id}/content".format(
+                api_path=self.api_path,
+                name=requests_utils.quote(name, safe=''),
+                commit=commit,
+                file_id=requests_utils.quote(file_id, safe=''))
+        )
+        return self.connection.get_request(request_path)
+
 
 def get_client(connection):
     return ProjectClient(connection)

@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add new 'gerrit project commit file-content show' command and API
 * Add new 'gerrit project commit included-in' command and API
 * Add new 'gerrit project commit show' command and API
 * Add new 'gerrit project tag create' command and API

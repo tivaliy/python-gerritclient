@@ -837,6 +837,35 @@ class ProjectCommitIncludedIn(ProjectMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+class ProjectCommitFileContentShow(ProjectMixIn, base.BaseCommand):
+    """Gets the content of a file from a certain commit."""
+
+    def get_parser(self, prog_name):
+        parser = super(ProjectCommitFileContentShow, self).get_parser(
+            prog_name)
+        parser.add_argument(
+            'name',
+            help='Name of the project.'
+        )
+        parser.add_argument(
+            '--commit',
+            required=True,
+            help='Commit ID.'
+        )
+        parser.add_argument(
+            '--file-id',
+            required=True,
+            help='The path to the file.'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_file_content(parsed_args.name,
+                                                parsed_args.commit,
+                                                parsed_args.file_id)
+        self.app.stdout.write(response)
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

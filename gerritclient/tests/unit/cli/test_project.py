@@ -731,3 +731,25 @@ Garbage collection completed successfully.""")
         self.assertRaises(SystemExit, self.exec_command, args)
         self.assertIn('project commit included-in: error:',
                       mocked_stderr.write.call_args_list[-1][0][0])
+
+    def test_project_commit_file_content_show(self):
+        commit_id = "184ebe53805e102605d11f6b143486d15c23a09c"
+        project_name = 'fake/fake-project'
+        file_id = 'foo/bar/file.vhd'
+        fake_file_content = 'Some fake file content'
+        args = ('project commit file-content show {0} '
+                '--commit {1} --file-id {2}'.format(project_name,
+                                                    commit_id, file_id))
+        self.m_client.get_file_content.return_value = fake_file_content
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with('project', mock.ANY)
+        self.m_client.get_file_content.assert_called_once_with(
+            project_name, commit_id, file_id)
+
+    @mock.patch('sys.stderr')
+    def test_project_commit_file_content_show_fail(self, mocked_stderr):
+        args = 'project commit file-content show'
+        self.assertRaises(SystemExit, self.exec_command, args)
+        self.assertIn('project commit file-content show: error:',
+                      mocked_stderr.write.call_args_list[-1][0][0])
