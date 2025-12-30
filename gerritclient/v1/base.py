@@ -14,17 +14,15 @@
 #    under the License.
 
 import abc
-import six
 
 from requests import utils as requests_utils
 
 from gerritclient import client
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseV1Client(object):
-
-    @abc.abstractproperty
+class BaseV1Client(abc.ABC):
+    @property
+    @abc.abstractmethod
     def api_path(self):
         pass
 
@@ -35,14 +33,12 @@ class BaseV1Client(object):
         self.connection = connection
 
 
-@six.add_metaclass(abc.ABCMeta)
 class BaseV1ClientCreateEntity(BaseV1Client):
-
     def create(self, entity_id, data=None):
         """Create a new entity."""
 
         data = data if data else {}
         request_path = "{api_path}{entity_id}".format(
-            api_path=self.api_path,
-            entity_id=requests_utils.quote(entity_id, safe=''))
+            api_path=self.api_path, entity_id=requests_utils.quote(entity_id, safe="")
+        )
         return self.connection.put_request(request_path, json_data=data)

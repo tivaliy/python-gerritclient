@@ -17,11 +17,17 @@ from gerritclient.v1 import base
 
 
 class AccountClient(base.BaseV1ClientCreateEntity):
-
     api_path = "/accounts/"
 
-    def get_all(self, query, suggested=False, limit=None, skip=None,
-                detailed=False, all_emails=False):
+    def get_all(
+        self,
+        query,
+        suggested=False,
+        limit=None,
+        skip=None,
+        detailed=False,
+        all_emails=False,
+    ):
         """Get list of all available accounts visible by the caller.
 
         :param query: Query string
@@ -40,16 +46,19 @@ class AccountClient(base.BaseV1ClientCreateEntity):
         :return: List of accounts as a list of dicts
         """
 
-        option = filter(None, ['DETAILS' if detailed else None,
-                               'ALL_EMAILS' if all_emails else None])
+        option = filter(
+            None,
+            ["DETAILS" if detailed else None, "ALL_EMAILS" if all_emails else None],
+        )
         option = None if not option else option
-        params = {k: v for k, v in (('n', limit),
-                                    ('S', skip),
-                                    ('o', option)) if v is not None}
+        params = {
+            k: v for k, v in (("n", limit), ("S", skip), ("o", option)) if v is not None
+        }
         request_path = "{api_path}{suggest}{query}".format(
             api_path=self.api_path,
             suggest="?suggest&" if suggested else "?",
-            query="q={query}".format(query=query))
+            query=f"q={query}",
+        )
         return self.connection.get_request(request_path, params=params)
 
     def get_by_id(self, account_id, detailed=False):
@@ -63,7 +72,8 @@ class AccountClient(base.BaseV1ClientCreateEntity):
         request_path = "{api_path}{account_id}/{detail}".format(
             api_path=self.api_path,
             account_id=account_id,
-            detail="detail" if detailed else "")
+            detail="detail" if detailed else "",
+        )
         return self.connection.get_request(request_path)
 
     def set_name(self, account_id, name):
@@ -75,9 +85,7 @@ class AccountClient(base.BaseV1ClientCreateEntity):
         """
 
         data = {"name": name}
-        request_path = "{api_path}{account_id}/name".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/name"
         return self.connection.put_request(request_path, json_data=data)
 
     def set_username(self, account_id, username):
@@ -90,52 +98,40 @@ class AccountClient(base.BaseV1ClientCreateEntity):
         :return: response username as a string
         """
         data = {"username": username}
-        request_path = "{api_path}{account_id}/username".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/username"
         return self.connection.put_request(request_path, json_data=data)
 
     def is_active(self, account_id):
         """Check the status of an account in Gerrit."""
 
-        request_path = "{api_path}{account_id}/active".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/active"
         result = self.connection.get_request(request_path)
         return True if result else False
 
     def enable(self, account_id):
         """Enable account in Gerrit."""
 
-        request_path = "{api_path}{account_id}/active".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/active"
         return self.connection.put_request(request_path, json_data={})
 
     def disable(self, account_id):
         """Disable account in Gerrit."""
 
-        request_path = "{api_path}{account_id}/active".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/active"
         return self.connection.delete_request(request_path, data={})
 
     def get_status(self, account_id):
         """Retrieves the status of an account."""
 
-        request_path = "{api_path}{account_id}/status".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/status"
         return self.connection.get_request(request_path)
 
     def set_status(self, account_id, status):
         """Sets the status of an account."""
 
         data = {"status": status}
-        request_path = "{api_path}{account_id}/status".format(
-            api_path=self.api_path,
-            account_id=account_id)
-        return self.connection.put_request(request_path,  json_data=data)
+        request_path = f"{self.api_path}{account_id}/status"
+        return self.connection.put_request(request_path, json_data=data)
 
     def set_password(self, account_id, password=None, generate=False):
         """Set/Generate the HTTP password of an account in Gerrit.
@@ -151,28 +147,24 @@ class AccountClient(base.BaseV1ClientCreateEntity):
                  empty dict {} if password is deleted
         """
 
-        data = {k: v for
-                k, v in (('generate', generate),
-                         ('http_password', password)) if v is not None}
-        request_path = "{api_path}{account_id}/password.http".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        data = {
+            k: v
+            for k, v in (("generate", generate), ("http_password", password))
+            if v is not None
+        }
+        request_path = f"{self.api_path}{account_id}/password.http"
         return self.connection.put_request(request_path, json_data=data)
 
     def delete_password(self, account_id):
         """Delete the HTTP password of an account in Gerrit."""
 
-        request_path = "{api_path}{account_id}/password.http".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/password.http"
         return self.connection.delete_request(request_path, data={})
 
     def get_ssh_keys(self, account_id):
         """Get list of SSH keys of an account in Gerrit."""
 
-        request_path = "{api_path}{account_id}/sshkeys".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/sshkeys"
         return self.connection.get_request(request_path)
 
     def get_ssh_key(self, account_id, sequence_id):
@@ -183,40 +175,30 @@ class AccountClient(base.BaseV1ClientCreateEntity):
         :return: dict that describes the SSH key
         """
 
-        request_path = "{api_path}{account_id}/sshkeys/{sequence_id}".format(
-            api_path=self.api_path,
-            account_id=account_id,
-            sequence_id=sequence_id)
+        request_path = f"{self.api_path}{account_id}/sshkeys/{sequence_id}"
         return self.connection.get_request(request_path)
 
     def add_ssh_key(self, account_id, ssh_key):
         """Add an SSH key for a user."""
 
-        request_path = "{api_path}{account_id}/sshkeys".format(
-            api_path=self.api_path,
-            account_id=account_id)
-        return self.connection.post_request(request_path, data=ssh_key,
-                                            content_type='plain/text')
+        request_path = f"{self.api_path}{account_id}/sshkeys"
+        return self.connection.post_request(
+            request_path, data=ssh_key, content_type="plain/text"
+        )
 
     def delete_ssh_key(self, account_id, ssh_key_id):
         """Delete an SSH key of a user."""
 
-        request_path = "{api_path}{account_id}/sshkeys/{ssh_key_id}".format(
-            api_path=self.api_path,
-            account_id=account_id,
-            ssh_key_id=ssh_key_id)
+        request_path = f"{self.api_path}{account_id}/sshkeys/{ssh_key_id}"
         return self.connection.delete_request(request_path)
 
     def get_membership(self, account_id):
         """Lists all groups that contain the specified user as a member."""
 
-        request_path = "{api_path}{account_id}/groups".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/groups"
         return self.connection.get_request(request_path)
 
-    def add_email(self, account_id, email, preferred=False,
-                  no_confirmation=False):
+    def add_email(self, account_id, email, preferred=False, no_confirmation=False):
         """Register a new email address for the user in Gerrit.
 
         :param account_id: (account_ID|username|email|name) as a string value
@@ -234,39 +216,30 @@ class AccountClient(base.BaseV1ClientCreateEntity):
                  about an email address of a user.
         """
 
-        data = {'email': email,
-                'preferred': preferred,
-                'no_confirmation': no_confirmation}
-        request_path = "{api_path}{account_id}/emails/{email}".format(
-            api_path=self.api_path,
-            account_id=account_id,
-            email=email)
+        data = {
+            "email": email,
+            "preferred": preferred,
+            "no_confirmation": no_confirmation,
+        }
+        request_path = f"{self.api_path}{account_id}/emails/{email}"
         return self.connection.put_request(request_path, json_data=data)
 
     def delete_email(self, account_id, email):
         """Delete an email address of an account."""
 
-        request_path = "{api_path}{account_id}/emails/{email}".format(
-            api_path=self.api_path,
-            account_id=account_id,
-            email=email)
+        request_path = f"{self.api_path}{account_id}/emails/{email}"
         return self.connection.delete_request(request_path)
 
     def set_preferred_email(self, account_id, email):
         """Set an email address as preferred one for an account."""
 
-        request_path = "{api}{account_id}/emails/{email}/preferred".format(
-            api=self.api_path,
-            account_id=account_id,
-            email=email)
+        request_path = f"{self.api_path}{account_id}/emails/{email}/preferred"
         return self.connection.put_request(request_path, json_data={})
 
     def get_oauth_token(self, account_id):
         """Returns a previously obtained OAuth access token."""
 
-        request_path = "{api_path}{account_id}/oauthtoken".format(
-            api_path=self.api_path,
-            account_id=account_id)
+        request_path = f"{self.api_path}{account_id}/oauthtoken"
         return self.connection.get_request(request_path)
 
 

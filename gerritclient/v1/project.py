@@ -19,12 +19,18 @@ from gerritclient.v1 import base
 
 
 class ProjectClient(base.BaseV1ClientCreateEntity):
-
     api_path = "/projects/"
 
-    def get_all(self, is_all=False, limit=None, skip=None,
-                pattern_dispatcher=None, project_type=None,
-                description=False, branches=None):
+    def get_all(
+        self,
+        is_all=False,
+        limit=None,
+        skip=None,
+        pattern_dispatcher=None,
+        project_type=None,
+        description=False,
+        branches=None,
+    ):
         """Get list of all available projects accessible by the caller.
 
         :param is_all: boolean value, if True then all projects (including
@@ -45,9 +51,7 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
         :return: A map (dict) that maps entity names to respective entries
         """
 
-        pattern_types = {'prefix': 'p',
-                         'match': 'm',
-                         'regex': 'r'}
+        pattern_types = {"prefix": "p", "match": "m", "regex": "r"}
 
         p, v = None, None
         if pattern_dispatcher is not None and pattern_dispatcher:
@@ -56,104 +60,101 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
                     p, v = pattern_types[item], pattern_dispatcher[item]
                     break
             else:
-                raise ValueError("Pattern types can be either "
-                                 "'prefix', 'match' or 'regex'.")
+                raise ValueError(
+                    "Pattern types can be either 'prefix', 'match' or 'regex'."
+                )
 
-        params = {k: v for k, v in (('n', limit),
-                                    ('S', skip),
-                                    (p, v),
-                                    ('type', project_type),
-                                    ('b', branches)) if v is not None}
-        params['all'] = int(is_all)
-        params['d'] = int(description)
+        params = {
+            k: v
+            for k, v in (
+                ("n", limit),
+                ("S", skip),
+                (p, v),
+                ("type", project_type),
+                ("b", branches),
+            )
+            if v is not None
+        }
+        params["all"] = int(is_all)
+        params["d"] = int(description)
         return self.connection.get_request(self.api_path, params=params)
 
     def get_by_name(self, name):
         """Get detailed info about specified project."""
 
         request_path = "{api_path}{name}".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.get_request(request_path)
 
     def delete(self, name, force=False, preserve=False):
         """Delete specified project."""
 
-        data = {"force": force,
-                "preserve": preserve}
+        data = {"force": force, "preserve": preserve}
         request_path = "{api_path}{name}".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.delete_request(request_path, data)
 
     def get_description(self, name):
         """Retrieves the description of a project."""
 
         request_path = "{api_path}{name}/description".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.get_request(request_path)
 
     def set_description(self, name, description=None, commit_message=None):
-
-        data = {'description': description,
-                'commit_message': commit_message}
+        data = {"description": description, "commit_message": commit_message}
         request_path = "{api_path}{name}/description".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.put_request(request_path, json_data=data)
 
     def get_parent(self, name):
-
         request_path = "{api_path}{name}/parent".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.get_request(request_path)
 
     def set_parent(self, name, parent, commit_message=None):
-
-        data = {'parent': parent,
-                'commit_message': commit_message}
+        data = {"parent": parent, "commit_message": commit_message}
         request_path = "{api_path}{name}/parent".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.put_request(request_path, json_data=data)
 
     def get_head(self, name):
-
         request_path = "{api_path}{name}/HEAD".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.get_request(request_path)
 
     def set_head(self, name, branch):
-
-        data = {'ref': branch}
+        data = {"ref": branch}
         request_path = "{api_path}{name}/HEAD".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.put_request(request_path, json_data=data)
 
     def get_repo_statistics(self, name):
-
         request_path = "{api_path}{name}/statistics.git".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.get_request(request_path)
 
     def get_branches(self, name):
-
         request_path = "{api_path}{name}/branches".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.get_request(request_path)
 
     def get_branch(self, name, branch_name):
-
         request_path = "{api_path}{name}/branches/{branch_name}".format(
             api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''),
-            branch_name=requests_utils.quote(branch_name, safe=''))
+            name=requests_utils.quote(name, safe=""),
+            branch_name=requests_utils.quote(branch_name, safe=""),
+        )
         return self.connection.get_request(request_path)
 
     def create_branch(self, name, branch_name, revision=None):
@@ -166,11 +167,12 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
         :return: A BranchInfo entity that describes the created branch.
         """
 
-        data = {'revision': revision}
+        data = {"revision": revision}
         request_path = "{api_path}{name}/branches/{branch_name}".format(
             api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''),
-            branch_name=requests_utils.quote(branch_name, safe=''))
+            name=requests_utils.quote(name, safe=""),
+            branch_name=requests_utils.quote(branch_name, safe=""),
+        )
         return self.connection.put_request(request_path, json_data=data)
 
     def delete_branch(self, name, branches):
@@ -181,10 +183,10 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
                          that should be deleted.
         """
 
-        data = {'branches': branches}
+        data = {"branches": branches}
         request_path = "{api_path}{name}/branches:delete".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.post_request(request_path, json_data=data)
 
     def get_children(self, name, recursively=False):
@@ -192,8 +194,9 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
 
         request_path = "{api_path}{name}/children/{recursively}".format(
             api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''),
-            recursively='?recursive' if recursively else '')
+            name=requests_utils.quote(name, safe=""),
+            recursively="?recursive" if recursively else "",
+        )
         return self.connection.get_request(request_path)
 
     def get_reflog(self, name, branch):
@@ -201,18 +204,18 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
 
         request_path = "{api_path}{name}/branches/{branch}/reflog".format(
             api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''),
-            branch=requests_utils.quote(branch, safe=''))
+            name=requests_utils.quote(name, safe=""),
+            branch=requests_utils.quote(branch, safe=""),
+        )
         return self.connection.get_request(request_path)
 
     def run_gc(self, name, aggressive=False, show_progress=False):
         """Run the Git garbage collection for the repository of a project."""
 
-        data = {"aggressive": aggressive,
-                "show_progress": show_progress}
+        data = {"aggressive": aggressive, "show_progress": show_progress}
         request_path = "{api_path}{name}/gc".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.post_request(request_path, json_data=data)
 
     def get_tags(self, name, limit=None, skip=None, pattern_dispatcher=None):
@@ -227,7 +230,7 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
                                    pattern value: {('match'|'regex') : value}
         """
 
-        pattern_types = {'match': 'm', 'regex': 'r'}
+        pattern_types = {"match": "m", "regex": "r"}
 
         p, v = None, None
         if pattern_dispatcher is not None and pattern_dispatcher:
@@ -236,16 +239,13 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
                     p, v = pattern_types[item], pattern_dispatcher[item]
                     break
             else:
-                raise ValueError("Pattern types can be either "
-                                 "'match' or 'regex'.")
+                raise ValueError("Pattern types can be either 'match' or 'regex'.")
 
-        params = {k: v for k, v in (('n', limit),
-                                    ('s', skip),
-                                    (p, v)) if v is not None}
+        params = {k: v for k, v in (("n", limit), ("s", skip), (p, v)) if v is not None}
 
         request_path = "{api_path}{name}/tags".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.get_request(request_path, params=params)
 
     def get_tag(self, name, tag_id):
@@ -253,19 +253,20 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
 
         request_path = "{api_path}{name}/tags/{tag_id}".format(
             api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''),
-            tag_id=requests_utils.quote(tag_id, safe=''))
+            name=requests_utils.quote(name, safe=""),
+            tag_id=requests_utils.quote(tag_id, safe=""),
+        )
         return self.connection.get_request(request_path)
 
     def create_tag(self, name, tag_id, revision=None, message=None):
         """Create a new tag on the project."""
 
-        data = {'revision': revision,
-                'message': message}
+        data = {"revision": revision, "message": message}
         request_path = "{api_path}{name}/tags/{tag_id}".format(
             api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''),
-            tag_id=tag_id)
+            name=requests_utils.quote(name, safe=""),
+            tag_id=tag_id,
+        )
         return self.connection.put_request(request_path, json_data=data)
 
     def delete_tag(self, name, tags):
@@ -275,26 +276,26 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
         :param tags: A list of tags to be deleted.
         """
 
-        data = {'tags': tags}
+        data = {"tags": tags}
         request_path = "{api_path}{name}/tags:delete".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.post_request(request_path, json_data=data)
 
     def get_config(self, name):
         """Get some configuration information about a project."""
 
         request_path = "{api_path}{name}/config".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.get_request(request_path)
 
     def set_config(self, name, data):
         """Set the configuration of a project."""
 
         request_path = "{api_path}{name}/config".format(
-            api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''))
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
         return self.connection.put_request(request_path, json_data=data)
 
     def get_commit(self, name, commit):
@@ -302,8 +303,9 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
 
         request_path = "{api_path}{name}/commits/{commit}".format(
             api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''),
-            commit=commit)
+            name=requests_utils.quote(name, safe=""),
+            commit=commit,
+        )
         return self.connection.get_request(request_path)
 
     def get_commit_affiliation(self, name, commit):
@@ -311,17 +313,19 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
 
         request_path = "{api_path}{name}/commits/{commit}/in".format(
             api_path=self.api_path,
-            name=requests_utils.quote(name, safe=''),
-            commit=commit)
+            name=requests_utils.quote(name, safe=""),
+            commit=commit,
+        )
         return self.connection.get_request(request_path)
 
     def get_file_content(self, name, commit, file_id):
         request_path = (
             "{api_path}{name}/commits/{commit}/files/{file_id}/content".format(
                 api_path=self.api_path,
-                name=requests_utils.quote(name, safe=''),
+                name=requests_utils.quote(name, safe=""),
                 commit=commit,
-                file_id=requests_utils.quote(file_id, safe=''))
+                file_id=requests_utils.quote(file_id, safe=""),
+            )
         )
         return self.connection.get_request(request_path)
 

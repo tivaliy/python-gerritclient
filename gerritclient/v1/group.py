@@ -17,7 +17,6 @@ from gerritclient.v1 import base
 
 
 class GroupClient(base.BaseV1ClientCreateEntity):
-
     api_path = "/groups/"
 
     def get_all(self):
@@ -27,14 +26,16 @@ class GroupClient(base.BaseV1ClientCreateEntity):
         request_path = "{api_path}{group_id}/{detail}".format(
             api_path=self.api_path,
             group_id=group_id,
-            detail="detail" if detailed else "")
+            detail="detail" if detailed else "",
+        )
         return self.connection.get_request(request_path)
 
     def get_members(self, group_id, detailed=False):
         request_path = "{api_path}{group_id}/members/{all}".format(
             api_path=self.api_path,
             group_id=group_id,
-            all="?recursive" if detailed else "")
+            all="?recursive" if detailed else "",
+        )
         return self.connection.get_request(request_path)
 
     def add_members(self, group_id, accounts_ids):
@@ -46,10 +47,8 @@ class GroupClient(base.BaseV1ClientCreateEntity):
                  the group members that were specified
         """
 
-        data = {'members': accounts_ids}
-        request_path = "{api_path}{group_id}/members".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        data = {"members": accounts_ids}
+        request_path = f"{self.api_path}{group_id}/members"
         return self.connection.post_request(request_path, json_data=data)
 
     def delete_members(self, group_id, accounts_ids):
@@ -59,30 +58,22 @@ class GroupClient(base.BaseV1ClientCreateEntity):
         :param accounts_ids: A list of accounts identifiers
         """
 
-        data = {'members': accounts_ids}
-        request_path = "{api_path}{group_id}/members.delete".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        data = {"members": accounts_ids}
+        request_path = f"{self.api_path}{group_id}/members.delete"
         return self.connection.post_request(request_path, json_data=data)
 
     def rename(self, group_id, new_name):
         data = {"name": new_name}
-        request_path = "{api_path}{group_id}/name".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        request_path = f"{self.api_path}{group_id}/name"
         return self.connection.put_request(request_path, json_data=data)
 
     def set_description(self, group_id, description):
         data = {"description": description}
-        request_path = "{api_path}{group_id}/description".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        request_path = f"{self.api_path}{group_id}/description"
         return self.connection.put_request(request_path, json_data=data)
 
     def delete_description(self, group_id):
-        request_path = "{api_path}{group_id}/description".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        request_path = f"{self.api_path}{group_id}/description"
         return self.connection.delete_request(request_path, data={})
 
     def set_options(self, group_id, visibility):
@@ -96,18 +87,13 @@ class GroupClient(base.BaseV1ClientCreateEntity):
         :return The new group options are returned as a dict
         """
 
-        data = {'visible_to_all': visibility}
-        request_path = "{api_path}{group_id}/options".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        data = {"visible_to_all": visibility}
+        request_path = f"{self.api_path}{group_id}/options"
         return self.connection.put_request(request_path, json_data=data)
 
     def set_owner_group(self, group_id, owner_group):
-
-        data = {'owner': owner_group}
-        request_path = "{api_path}{group_id}/owner".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        data = {"owner": owner_group}
+        request_path = f"{self.api_path}{group_id}/owner"
         return self.connection.put_request(request_path, json_data=data)
 
     def include(self, group_id, included_groups):
@@ -121,9 +107,7 @@ class GroupClient(base.BaseV1ClientCreateEntity):
         """
 
         data = {"groups": included_groups}
-        request_path = "{api_path}{group_id}/groups".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        request_path = f"{self.api_path}{group_id}/groups"
         return self.connection.post_request(request_path, json_data=data)
 
     def exclude(self, group_id, excluded_groups):
@@ -137,9 +121,7 @@ class GroupClient(base.BaseV1ClientCreateEntity):
         """
 
         data = {"groups": excluded_groups}
-        request_path = "{api_path}{group_id}/groups.delete".format(
-            api_path=self.api_path,
-            group_id=group_id)
+        request_path = f"{self.api_path}{group_id}/groups.delete"
         return self.connection.post_request(request_path, json_data=data)
 
 

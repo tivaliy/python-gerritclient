@@ -14,13 +14,14 @@
 #    under the License.
 
 
-def get_fake_change(identifier=None, project=None, branch=None,
-                    subject=None, topic=None):
+def get_fake_change(
+    identifier=None, project=None, branch=None, subject=None, topic=None
+):
     """Creates a fake change."""
 
     return {
-        "id": identifier or "myProject~master~"
-                            "I8473b95934b5732ac55d26311a706c9c2bde9940",
+        "id": identifier
+        or "myProject~master~I8473b95934b5732ac55d26311a706c9c2bde9940",
         "project": project or "myProject",
         "branch": branch or "master",
         "topic": topic or "Feature X Topic",
@@ -37,13 +38,9 @@ def get_fake_change(identifier=None, project=None, branch=None,
             "_account_id": 1000096,
             "name": "John Doe",
             "email": "john.doe@example.com",
-            "username": "jdoe"
+            "username": "jdoe",
         },
-        "problems": [
-            {
-                "message": "Current patch set 1 not found"
-            }
-        ],
+        "problems": [{"message": "Current patch set 1 not found"}],
         "labels": {
             "Verified": {
                 "all": [
@@ -52,28 +49,24 @@ def get_fake_change(identifier=None, project=None, branch=None,
                         "_account_id": 1000096,
                         "name": "John Doe",
                         "email": "john.doe@example.com",
-                        "username": "jdoe"
+                        "username": "jdoe",
                     },
                     {
                         "value": 0,
                         "_account_id": 1000097,
                         "name": "Jane Roe",
                         "email": "jane.roe@example.com",
-                        "username": "jroe"
-                    }
+                        "username": "jroe",
+                    },
                 ],
-                "values": {
-                    "-1": "Fails",
-                    " 0": "No score",
-                    "+1": "Verified"
-                }
+                "values": {"-1": "Fails", " 0": "No score", "+1": "Verified"},
             },
             "Code-Review": {
                 "disliked": {
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
                 "all": [
                     {
@@ -81,52 +74,42 @@ def get_fake_change(identifier=None, project=None, branch=None,
                         "_account_id": 1000096,
                         "name": "John Doe",
                         "email": "john.doe@example.com",
-                        "username": "jdoe"
+                        "username": "jdoe",
                     },
                     {
                         "value": 1,
                         "_account_id": 1000097,
                         "name": "Jane Roe",
                         "email": "jane.roe@example.com",
-                        "username": "jroe"
-                    }
+                        "username": "jroe",
+                    },
                 ],
                 "values": {
                     "-2": "This shall not be merged",
                     "-1": "I would prefer this is not merged as is",
                     " 0": "No score",
                     "+1": "Looks good to me, but someone else must approve",
-                    "+2": "Looks good to me, approved"
-                }
-            }
+                    "+2": "Looks good to me, approved",
+                },
+            },
         },
         "permitted_labels": {
-            "Verified": [
-                "-1",
-                " 0",
-                "+1"
-            ],
-            "Code-Review": [
-                "-2",
-                "-1",
-                " 0",
-                "+1",
-                "+2"
-            ]
+            "Verified": ["-1", " 0", "+1"],
+            "Code-Review": ["-2", "-1", " 0", "+1", "+2"],
         },
         "removable_reviewers": [
             {
                 "_account_id": 1000096,
                 "name": "John Doe",
                 "email": "john.doe@example.com",
-                "username": "jdoe"
+                "username": "jdoe",
             },
             {
                 "_account_id": 1000097,
                 "name": "Jane Roe",
                 "email": "jane.roe@example.com",
-                "username": "jroe"
-            }
+                "username": "jroe",
+            },
         ],
         "reviewers": {
             "REVIEWER": [
@@ -134,14 +117,14 @@ def get_fake_change(identifier=None, project=None, branch=None,
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
                 {
                     "_account_id": 1000097,
                     "name": "Jane Roe",
                     "email": "jane.roe@example.com",
-                    "username": "jroe"
-                }
+                    "username": "jroe",
+                },
             ]
         },
         "reviewer_updates": [
@@ -151,15 +134,15 @@ def get_fake_change(identifier=None, project=None, branch=None,
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
                 "updated_by": {
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
-                "updated": "2016-07-21 20:12:39.000000000"
+                "updated": "2016-07-21 20:12:39.000000000",
             },
             {
                 "state": "REMOVED",
@@ -167,15 +150,15 @@ def get_fake_change(identifier=None, project=None, branch=None,
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
                 "updated_by": {
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
-                "updated": "2016-07-21 20:12:33.000000000"
+                "updated": "2016-07-21 20:12:33.000000000",
             },
             {
                 "state": "CC",
@@ -183,13 +166,13 @@ def get_fake_change(identifier=None, project=None, branch=None,
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
                 "updated_by": {
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
                 "updated": "2016-03-23 21:34:02.419000000",
             },
@@ -201,11 +184,11 @@ def get_fake_change(identifier=None, project=None, branch=None,
                     "_account_id": 1000096,
                     "name": "John Doe",
                     "email": "john.doe@example.com",
-                    "username": "jdoe"
+                    "username": "jdoe",
                 },
                 "updated": "2013-03-23 21:34:02.419000000",
                 "message": "Patch Set 1:\n\nThis is the first message.",
-                "revision_number": 1
+                "revision_number": 1,
             },
             {
                 "id": "WEEdhU",
@@ -213,14 +196,14 @@ def get_fake_change(identifier=None, project=None, branch=None,
                     "_account_id": 1000097,
                     "name": "Jane Roe",
                     "email": "jane.roe@example.com",
-                    "username": "jroe"
+                    "username": "jroe",
                 },
                 "updated": "2013-03-23 21:36:52.332000000",
                 "message": "Patch Set 1:\n\nThis is the second message."
-                           "\n\nWith a line break.",
-                "revision_number": 1
-            }
-        ]
+                "\n\nWith a line break.",
+                "revision_number": 1,
+            },
+        ],
     }
 
 

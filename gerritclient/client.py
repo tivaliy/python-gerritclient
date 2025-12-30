@@ -15,17 +15,16 @@
 
 import json
 import os
+
 import requests
-
-import gerritclient
-
 from requests import auth
 
-from gerritclient.common import utils
+import gerritclient
 from gerritclient import error
+from gerritclient.common import utils
 
 
-class APIClient(object):
+class APIClient:
     """This class handles API requests."""
 
     def __init__(self, url, auth_type=None, username=None, password=None):
@@ -49,11 +48,10 @@ class APIClient(object):
         self._auth = None
         if auth_type:
             if not all((self._username, self._password)):
-                raise ValueError('Username and password must be specified.')
-            auth_types = {'basic': auth.HTTPBasicAuth,
-                          'digest': auth.HTTPDigestAuth}
+                raise ValueError("Username and password must be specified.")
+            auth_types = {"basic": auth.HTTPBasicAuth, "digest": auth.HTTPDigestAuth}
             if auth_type not in auth_types:
-                raise ValueError('Unsupported auth_type {}'.format(auth_type))
+                raise ValueError(f"Unsupported auth_type {auth_type}")
             self._auth = auth_types[auth_type](self._username, self._password)
 
         if self.is_authed:
@@ -71,8 +69,7 @@ class APIClient(object):
     def _make_common_headers():
         """Returns a dict of HTTP headers common for all requests."""
 
-        return {'Content-Type': 'application/json',
-                'Accept': 'application/json'}
+        return {"Content-Type": "application/json", "Accept": "application/json"}
 
     def _make_session(self):
         """Initializes a HTTP session."""
@@ -135,8 +132,7 @@ class APIClient(object):
         self._raise_for_status_with_info(resp)
         return self._decode_content(resp)
 
-    def post_request_raw(self, api, data=None, json_data=None,
-                         content_type=None):
+    def post_request_raw(self, api, data=None, json_data=None, content_type=None):
         """Make a POST request to specific API and return raw response.
 
         :param api: API endpoint (path)
@@ -150,12 +146,11 @@ class APIClient(object):
         # Some POST requests require 'Content-Type' value other
         # than default 'application/json'
         if content_type is not None:
-            self.session.headers.update({'Content-Type': content_type})
+            self.session.headers.update({"Content-Type": content_type})
 
         return self.session.post(url, data=data, json=json_data)
 
-    def post_request(self, api, data=None, json_data=None,
-                     content_type=None):
+    def post_request(self, api, data=None, json_data=None, content_type=None):
         """Make POST request to specific API with some data."""
 
         resp = self.post_request_raw(api, data, json_data, content_type)
@@ -175,7 +170,7 @@ class APIClient(object):
             return {}
 
         # Some responses can be of 'text/plain' Content-Type
-        if 'text/plain' in response.headers.get('Content-Type'):
+        if "text/plain" in response.headers.get("Content-Type"):
             return response.text
 
         # Remove ")]}'" prefix from response, that is used to prevent XSSI
@@ -194,9 +189,10 @@ def get_settings(file_path=None):
 
     config = None
 
-    user_config = os.path.join(os.path.expanduser('~'), '.config',
-                               'gerritclient', 'settings.yaml')
-    local_config = os.path.join(os.path.dirname(__file__), 'settings.yaml')
+    user_config = os.path.join(
+        os.path.expanduser("~"), ".config", "gerritclient", "settings.yaml"
+    )
+    local_config = os.path.join(os.path.dirname(__file__), "settings.yaml")
 
     if file_path is not None:
         config = file_path
@@ -211,8 +207,8 @@ def get_settings(file_path=None):
 
     try:
         config_data = utils.read_from_file(config)
-    except (OSError, IOError):
-        msg = "Could not read settings from {0}".format(file_path)
+    except OSError:
+        msg = f"Could not read settings from {file_path}"
         raise error.InvalidFileException(msg)
     return config_data
 
@@ -220,13 +216,10 @@ def get_settings(file_path=None):
 def connect(url, auth_type=None, username=None, password=None):
     """Creates API connection."""
 
-    return APIClient(url,
-                     auth_type=auth_type,
-                     username=username,
-                     password=password)
+    return APIClient(url, auth_type=auth_type, username=username, password=password)
 
 
-def get_client(resource, version='v1', connection=None):
+def get_client(resource, version="v1", connection=None):
     """Gets an API client for a resource
 
     python-gerritclient provides access to Gerrit Code Review's API
@@ -245,13 +238,13 @@ def get_client(resource, version='v1', connection=None):
     """
 
     version_map = {
-        'v1': {
-            'account': gerritclient.v1.account,
-            'change': gerritclient.v1.change,
-            'group': gerritclient.v1.group,
-            'plugin': gerritclient.v1.plugin,
-            'project': gerritclient.v1.project,
-            'server': gerritclient.v1.server
+        "v1": {
+            "account": gerritclient.v1.account,
+            "change": gerritclient.v1.change,
+            "group": gerritclient.v1.group,
+            "plugin": gerritclient.v1.plugin,
+            "project": gerritclient.v1.project,
+            "server": gerritclient.v1.server,
         }
     }
 

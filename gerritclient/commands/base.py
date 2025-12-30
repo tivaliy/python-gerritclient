@@ -16,28 +16,24 @@
 import abc
 import argparse
 import os
-import six
 
-from cliff import command
-from cliff import lister
-from cliff import show
+from cliff import command, lister, show
 
-from gerritclient import client
+from gerritclient import client, error
 from gerritclient.common import utils
-from gerritclient import error
 
-VERSION = 'v1'
+VERSION = "v1"
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseCommand(command.Command):
+class BaseCommand(command.Command, abc.ABC):
     """Base Gerrit Code Review Client command."""
 
     def __init__(self, *args, **kwargs):
         super(BaseCommand, self).__init__(*args, **kwargs)
         self.client = client.get_client(self.entity_name, VERSION)
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def entity_name(self):
         """Name of the Gerrit Code Review entity.
 
@@ -45,8 +41,7 @@ class BaseCommand(command.Command):
         """
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseListCommand(lister.Lister, BaseCommand):
+class BaseListCommand(lister.Lister, BaseCommand, abc.ABC):
     """Lists all entities."""
 
     @property
@@ -54,7 +49,8 @@ class BaseListCommand(lister.Lister, BaseCommand):
         """The first column in resulting table is default sorting field."""
         return [self.columns[0]]
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def columns(self):
         """Names of columns in the resulting table as a tuple."""
         pass
@@ -82,8 +78,8 @@ class BaseListCommand(lister.Lister, BaseCommand):
         :return:     List of dictionaries containing values of entries.
         """
         for entity_item in data:
-            data[entity_item]['name'] = entity_item
-        return data.values()
+            data[entity_item]["name"] = entity_item
+        return list(data.values())
 
     def take_action(self, parsed_args):
         data = self.client.get_all()
@@ -92,11 +88,11 @@ class BaseListCommand(lister.Lister, BaseCommand):
         return self.columns, data
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseShowCommand(show.ShowOne, BaseCommand):
+class BaseShowCommand(show.ShowOne, BaseCommand, abc.ABC):
     """Shows detailed information about the entity."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def columns(self):
         """Names of columns in the resulting table."""
         pass
@@ -105,10 +101,10 @@ class BaseShowCommand(show.ShowOne, BaseCommand):
         parser = super(BaseShowCommand, self).get_parser(app_name)
 
         parser.add_argument(
-            'entity_id',
-            metavar='{0}-identifier'.format(self.entity_name),
+            "entity_id",
+            metavar=f"{self.entity_name}-identifier",
             type=str,
-            help='{0} identifier.'.format(self.entity_name.capitalize())
+            help=f"{self.entity_name.capitalize()} identifier.",
         )
 
         return parser
@@ -120,23 +116,21 @@ class BaseShowCommand(show.ShowOne, BaseCommand):
         return self.columns, data
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseCreateCommand(BaseShowCommand):
+class BaseCreateCommand(BaseShowCommand, abc.ABC):
     """Creates entity."""
 
     @staticmethod
     def get_file_path(file_path):
         if not utils.file_exists(file_path):
             raise argparse.ArgumentTypeError(
-                "File '{0}' does not exist".format(file_path))
+                f"File '{file_path}' does not exist"
+            )
         return file_path
 
     def get_parser(self, prog_name):
         parser = super(BaseCreateCommand, self).get_parser(prog_name)
         parser.add_argument(
-            '--file',
-            type=self.get_file_path,
-            help='File with metadata to be uploaded.'
+            "--file", type=self.get_file_path, help="File with metadata to be uploaded."
         )
         return parser
 
@@ -146,22 +140,22 @@ class BaseCreateCommand(BaseShowCommand):
             # If no additional data specified in the file,
             # then create a entity with default parameters
             data = utils.read_from_file(file_path) if file_path else None
-        except (OSError, IOError):
-            msg = "Could not read metadata for {0} '{1}' at {2}".format(
-                self.entity_name, parsed_args.entity_id, file_path)
+        except OSError:
+            msg = f"Could not read metadata for {self.entity_name} '{parsed_args.entity_id}' at {file_path}"
             raise error.InvalidFileException(msg)
 
         response = self.client.create(parsed_args.entity_id, data=data)
         response = utils.get_display_data_single(self.columns, response)
-        self.app.stdout.write("{0} '{1}' was successfully created.\n".format(
-            self.entity_name.capitalize(), parsed_args.entity_id))
+        self.app.stdout.write(
+            f"{self.entity_name.capitalize()} '{parsed_args.entity_id}' was successfully created.\n"
+        )
 
         return self.columns, response
 
 
-class BaseEntitySetState(BaseCommand):
-
-    @abc.abstractproperty
+class BaseEntitySetState(BaseCommand, abc.ABC):
+    @property
+    @abc.abstractmethod
     def action_type(self):
         """Type of action: ('enable'|'disable').
 
@@ -172,39 +166,34 @@ class BaseEntitySetState(BaseCommand):
     def get_parser(self, prog_name):
         parser = super(BaseEntitySetState, self).get_parser(prog_name)
         parser.add_argument(
-            'entity_id',
-            metavar='{0}-identifier'.format(self.entity_name),
-            help='{0} identifier.'.format(self.entity_name.capitalize())
+            "entity_id",
+            metavar=f"{self.entity_name}-identifier",
+            help=f"{self.entity_name.capitalize()} identifier.",
         )
         return parser
 
     def take_action(self, parsed_args):
-        actions = {'enable': self.client.enable,
-                   'disable': self.client.disable}
+        actions = {"enable": self.client.enable, "disable": self.client.disable}
         actions[self.action_type](parsed_args.entity_id)
-        msg = ("{0} with identifier '{1}' was successfully {2}d.\n".format(
-            self.entity_name.capitalize(),
-            parsed_args.entity_id,
-            self.action_type))
+        msg = f"{self.entity_name.capitalize()} with identifier '{parsed_args.entity_id}' was successfully {self.action_type}d.\n"
         self.app.stdout.write(msg)
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseDownloadCommand(BaseCommand):
-
+class BaseDownloadCommand(BaseCommand, abc.ABC):
     def get_parser(self, prog_name):
         parser = super(BaseDownloadCommand, self).get_parser(prog_name)
         parser.add_argument(
-            '-f', '--format',
-            default='json',
+            "-f",
+            "--format",
+            default="json",
             choices=utils.SUPPORTED_FILE_FORMATS,
-            help='Format of serialization.'
+            help="Format of serialization.",
         )
         parser.add_argument(
-            '-d', '--directory',
+            "-d",
+            "--directory",
             required=False,
             default=os.path.curdir,
-            help='Destination directory. Defaults to '
-                 'the current directory.'
+            help="Destination directory. Defaults to the current directory.",
         )
         return parser

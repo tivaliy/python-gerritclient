@@ -26,8 +26,8 @@ def get_fake_tag():
             "name": "John Doe",
             "email": "j.doe@example.com",
             "date": "2014-10-06 07:35:03.000000000",
-            "tz": 540
-        }
+            "tz": 540,
+        },
     }
 
 

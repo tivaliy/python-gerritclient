@@ -14,8 +14,8 @@
 #    under the License.
 
 import shlex
+from unittest import mock
 
-import mock
 from oslotest import base as oslo_base
 
 from gerritclient import client
@@ -28,8 +28,7 @@ class BaseCLITest(oslo_base.BaseTestCase):
     def setUp(self):
         super(BaseCLITest, self).setUp()
 
-        self._get_client_patcher = mock.patch.object(client,
-                                                     'get_client')
+        self._get_client_patcher = mock.patch.object(client, "get_client")
         self.m_get_client = self._get_client_patcher.start()
 
         self.m_client = mock.MagicMock()
@@ -37,11 +36,11 @@ class BaseCLITest(oslo_base.BaseTestCase):
         self.addCleanup(self._get_client_patcher.stop)
 
     @staticmethod
-    def exec_command(command=''):
+    def exec_command(command=""):
         """Executes gerrit with the specified arguments."""
 
         argv = shlex.split(command)
-        if '--debug' not in argv:
-            argv = argv + ['--debug']
+        if "--debug" not in argv:
+            argv = argv + ["--debug"]
 
         return main_mod.main(argv=argv)

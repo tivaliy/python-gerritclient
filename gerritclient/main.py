@@ -19,7 +19,6 @@ import sys
 from cliff import app
 from cliff.commandmanager import CommandManager
 
-
 LOG = logging.getLogger(__name__)
 
 
@@ -28,17 +27,17 @@ class GerritClient(app.App):
 
     Initialization of the command manager and configuration of basic engines.
     """
+
     def run(self, argv):
         return super(GerritClient, self).run(argv)
 
 
 def main(argv=sys.argv[1:]):
     gerritclient_app = GerritClient(
-        description='CLI tool for managing Gerrit Code Review.',
-        version='0.1.1',
-        command_manager=CommandManager('gerritclient',
-                                       convert_underscores=True),
-        deferred_help=True
+        description="CLI tool for managing Gerrit Code Review.",
+        version="0.1.1",
+        command_manager=CommandManager("gerritclient", convert_underscores=True),
+        deferred_help=True,
     )
     return gerritclient_app.run(argv)
 
@@ -56,6 +55,6 @@ def debug(name, cmd_class, argv=None):
     cmd_mgr.add_command(name, cmd_class)
     return GerritClient(
         description="CLI tool for managing Gerrit Code Review.",
-        version='0.1.1',
-        command_manager=cmd_mgr
+        version="0.1.1",
+        command_manager=cmd_mgr,
     ).run(argv)

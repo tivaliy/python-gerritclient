@@ -15,30 +15,28 @@
 
 import abc
 import os
-import six
 
+from gerritclient import error
 from gerritclient.commands import base
 from gerritclient.common import utils
-from gerritclient import error
 
 
-class ServerMixIn(object):
-
-    entity_name = 'server'
+class ServerMixIn:
+    entity_name = "server"
 
 
 class ServerVersionShow(ServerMixIn, base.BaseCommand):
     """Returns the version of the Gerrit server."""
 
     def take_action(self, parsed_args):
-        self.app.stdout.write(self.client.get_version() + '\n')
+        self.app.stdout.write(self.client.get_version() + "\n")
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ServerBaseDownload(ServerMixIn, base.BaseDownloadCommand):
+class ServerBaseDownload(ServerMixIn, base.BaseDownloadCommand, abc.ABC):
     """Base Download class Gerrit server configuration."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def attribute(self):
         """Type of attribute: ('configuration'|'capabilities')
 
@@ -47,46 +45,43 @@ class ServerBaseDownload(ServerMixIn, base.BaseDownloadCommand):
         pass
 
     def take_action(self, parsed_args):
-        attributes = {'configuration': self.client.get_config,
-                      'capabilities': self.client.get_capabilities}
-        file_path = os.path.join(os.path.abspath(parsed_args.directory),
-                                 '{}.{}'.format(self.attribute,
-                                                parsed_args.format))
+        attributes = {
+            "configuration": self.client.get_config,
+            "capabilities": self.client.get_capabilities,
+        }
+        file_path = os.path.join(
+            os.path.abspath(parsed_args.directory),
+            f"{self.attribute}.{parsed_args.format}",
+        )
         response_data = attributes[self.attribute]()
         try:
             if not os.path.exists(parsed_args.directory):
                 os.makedirs(parsed_args.directory)
-            with open(file_path, 'w') as stream:
+            with open(file_path, "w") as stream:
                 utils.safe_dump(parsed_args.format, stream, response_data)
-        except (OSError, IOError) as e:
-            msg = ("Could not store {} data at {}. "
-                   "{}".format(self.attribute, file_path, e))
+        except OSError as e:
+            msg = f"Could not store {self.attribute} data at {file_path}. {e}"
             raise error.InvalidFileException(msg)
-        msg = "Information about {} was stored in {}\n".format(self.attribute,
-                                                               file_path)
+        msg = f"Information about {self.attribute} was stored in {file_path}\n"
         self.app.stdout.write(msg)
 
 
 class ServerConfigDownload(ServerBaseDownload):
     """Downloads the information about the Gerrit server configuration."""
 
-    attribute = 'configuration'
+    attribute = "configuration"
 
 
 class ServerCapabilitiesDownload(ServerBaseDownload):
     """Downloads a list of the capabilities available in the system."""
 
-    attribute = 'capabilities'
+    attribute = "capabilities"
 
 
 class ServerCacheList(ServerMixIn, base.BaseListCommand):
     """Show the cache names as a list."""
 
-    columns = ('name',
-               'type',
-               'entries',
-               'average_get',
-               'hit_ratio')
+    columns = ("name", "type", "entries", "average_get", "hit_ratio")
 
     def take_action(self, parsed_args):
         response = self.client.get_caches()
@@ -98,18 +93,11 @@ class ServerCacheList(ServerMixIn, base.BaseListCommand):
 class ServerCacheShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
     """Retrieves information about a cache."""
 
-    columns = ('name',
-               'type',
-               'entries',
-               'average_get',
-               'hit_ratio')
+    columns = ("name", "type", "entries", "average_get", "hit_ratio")
 
     def get_parser(self, app_name):
         parser = super(ServerCacheShow, self).get_parser(app_name)
-        parser.add_argument(
-            'name',
-            help='Cache name.'
-        )
+        parser.add_argument("name", help="Cache name.")
         return parser
 
     def take_action(self, parsed_args):
@@ -125,54 +113,41 @@ class ServerCacheFlush(ServerMixIn, base.BaseCommand):
         parser = super(ServerCacheFlush, self).get_parser(prog_name)
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument(
-            '-a',
-            '--all',
-            action='store_true',
-            help='All available caches.'
+            "-a", "--all", action="store_true", help="All available caches."
         )
-        group.add_argument(
-            '-n',
-            '--name',
-            nargs='+',
-            help='Caches names.'
-        )
+        group.add_argument("-n", "--name", nargs="+", help="Caches names.")
         return parser
 
     def take_action(self, parsed_args):
-        self.client.flush_caches(is_all=parsed_args.all,
-                                 names=parsed_args.name)
+        self.client.flush_caches(is_all=parsed_args.all, names=parsed_args.name)
         msg = "The following caches were flushed: {}\n".format(
-            'ALL' if parsed_args.all else ', '.join(parsed_args.name))
+            "ALL" if parsed_args.all else ", ".join(parsed_args.name)
+        )
         self.app.stdout.write(msg)
 
 
 class ServerStateSummaryList(ServerMixIn, base.BaseCommand, base.show.ShowOne):
     """Retrieves a summary of the current server state."""
 
-    columns = ('task_summary',
-               'mem_summary',
-               'thread_summary')
+    columns = ("task_summary", "mem_summary", "thread_summary")
 
     def get_parser(self, prog_name):
         parser = super(ServerStateSummaryList, self).get_parser(prog_name)
         parser.add_argument(
-            '--jvm',
-            action='store_true',
-            help='Includes a JVM summary.'
+            "--jvm", action="store_true", help="Includes a JVM summary."
         )
         parser.add_argument(
-            '--gc',
-            action='store_true',
-            help='Requests a Java garbage collection before computing '
-                 'the information about the Java memory heap.'
+            "--gc",
+            action="store_true",
+            help="Requests a Java garbage collection before computing "
+            "the information about the Java memory heap.",
         )
         return parser
 
     def take_action(self, parsed_args):
-        response = self.client.get_summary_state(parsed_args.jvm,
-                                                 parsed_args.gc)
+        response = self.client.get_summary_state(parsed_args.jvm, parsed_args.gc)
         if parsed_args.jvm:
-            self.columns += ('jvm_summary',)
+            self.columns += ("jvm_summary",)
         data = utils.get_display_data_single(self.columns, response)
         return self.columns, data
 
@@ -183,13 +158,15 @@ class ServerTaskList(ServerMixIn, base.BaseListCommand):
     is currently performing, or will perform in the near future.
     """
 
-    columns = ('id',
-               'state',
-               'start_time',
-               'delay',
-               'command',
-               'remote_name',
-               'project')
+    columns = (
+        "id",
+        "state",
+        "start_time",
+        "delay",
+        "command",
+        "remote_name",
+        "project",
+    )
 
     def take_action(self, parsed_args):
         response = self.client.get_tasks()
@@ -203,20 +180,22 @@ class ServerTaskShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
     is currently performing, or will perform in the near future.
     """
 
-    columns = ('id',
-               'state',
-               'start_time',
-               'delay',
-               'command',
-               'remote_name',
-               'project')
+    columns = (
+        "id",
+        "state",
+        "start_time",
+        "delay",
+        "command",
+        "remote_name",
+        "project",
+    )
 
     def get_parser(self, prog_name):
         parser = super(ServerTaskShow, self).get_parser(prog_name)
         parser.add_argument(
-            'task_id',
-            metavar='task-identifier',
-            help='The ID of the task (hex string).'
+            "task_id",
+            metavar="task-identifier",
+            help="The ID of the task (hex string).",
         )
         return parser
 
@@ -235,15 +214,15 @@ class ServerTaskDelete(ServerMixIn, base.BaseCommand):
     def get_parser(self, prog_name):
         parser = super(ServerTaskDelete, self).get_parser(prog_name)
         parser.add_argument(
-            'task_id',
-            metavar='task-identifier',
-            help='The ID of the task (hex string).'
+            "task_id",
+            metavar="task-identifier",
+            help="The ID of the task (hex string).",
         )
         return parser
 
     def take_action(self, parsed_args):
         self.client.delete_task(parsed_args.task_id)
-        msg = "Task with ID '{0}' was deleted\n".format(parsed_args.task_id)
+        msg = f"Task with ID '{parsed_args.task_id}' was deleted\n"
         self.app.stdout.write(msg)
 
 
@@ -251,6 +230,7 @@ def debug(argv=None):
     """Helper to debug the required command."""
 
     from gerritclient.main import debug
+
     debug("version", ServerVersionShow, argv)
 
 
