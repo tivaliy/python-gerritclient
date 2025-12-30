@@ -191,6 +191,7 @@ ignore = [
     "B904",  # exception chaining (would change error behavior)
     "F401",  # unused imports in __init__.py (used for re-exports)
     "SIM105", # contextlib.suppress (setup.py compatibility)
+    "UP015", # unnecessary open mode argument (explicit is better for test compatibility)
 ]
 
 [tool.ruff.format]
