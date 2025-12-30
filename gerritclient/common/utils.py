@@ -95,7 +95,7 @@ def safe_dump(data_format, stream, data):
 
 def read_from_file(file_path):
     data_format = os.path.splitext(file_path)[1].lstrip(".")
-    with open(file_path) as stream:
+    with open(file_path, "r") as stream:
         return safe_load(data_format, stream)
 
 
