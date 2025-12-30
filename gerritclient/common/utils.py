@@ -17,12 +17,12 @@ import functools
 import json
 import os
 import re
-import six
+
 import yaml
 
 from gerritclient import error
 
-SUPPORTED_FILE_FORMATS = ('json', 'yaml')
+SUPPORTED_FILE_FORMATS = ("json", "yaml")
 
 
 def get_display_data_single(fields, data, missing_field_value=None):
@@ -61,42 +61,45 @@ def get_display_data_multi(fields, data, sort_by=None):
 
 
 def safe_load(data_format, stream):
-    loaders = {'json': safe_deserialize(json.load),
-               'yaml': safe_deserialize(yaml.safe_load)}
+    loaders = {
+        "json": safe_deserialize(json.load),
+        "yaml": safe_deserialize(yaml.safe_load),
+    }
 
     if data_format not in loaders:
-        raise ValueError('Unsupported data format. Available formats are: '
-                         '{0}'.format(SUPPORTED_FILE_FORMATS))
+        raise ValueError(
+            f"Unsupported data format. Available formats are: {SUPPORTED_FILE_FORMATS}"
+        )
 
     loader = loaders[data_format]
     return loader(stream)
 
 
 def safe_dump(data_format, stream, data):
-    yaml_dumper = lambda data, stream: yaml.safe_dump(data,
-                                                      stream,
-                                                      default_flow_style=False)
+    yaml_dumper = lambda data, stream: yaml.safe_dump(
+        data, stream, default_flow_style=False
+    )
     json_dumper = lambda data, stream: json.dump(data, stream, indent=4)
-    dumpers = {'json': json_dumper,
-               'yaml': yaml_dumper}
+    dumpers = {"json": json_dumper, "yaml": yaml_dumper}
 
     if data_format not in dumpers:
-        raise ValueError('Unsupported data format. Available formats are: '
-                         '{0}'.format(SUPPORTED_FILE_FORMATS))
+        raise ValueError(
+            f"Unsupported data format. Available formats are: {SUPPORTED_FILE_FORMATS}"
+        )
 
     dumper = dumpers[data_format]
     dumper(data, stream)
 
 
 def read_from_file(file_path):
-    data_format = os.path.splitext(file_path)[1].lstrip('.')
-    with open(file_path, 'r') as stream:
+    data_format = os.path.splitext(file_path)[1].lstrip(".")
+    with open(file_path) as stream:
         return safe_load(data_format, stream)
 
 
 def write_to_file(file_path, data):
-    data_format = os.path.splitext(file_path)[1].lstrip('.')
-    with open(file_path, 'w') as stream:
+    data_format = os.path.splitext(file_path)[1].lstrip(".")
+    with open(file_path, "w") as stream:
         safe_dump(data_format, stream, data)
 
 
@@ -109,14 +112,16 @@ def safe_deserialize(loader):
     :param loader: deserializer function
     :return: wrapped loader
     """
+
     @functools.wraps(loader)
     def wrapper(data):
         try:
             return loader(data)
         except (ValueError, TypeError, yaml.error.YAMLError) as e:
-            raise error.BadDataException('{0}: {1}'
-                                         ''.format(e.__class__.__name__,
-                                                   six.text_type(e)))
+            raise error.BadDataException(
+                f"{e.__class__.__name__}: {e!s}"
+            )
+
     return wrapper
 
 
@@ -135,10 +140,10 @@ def urljoin(*args):
     Trailing, but not leading slashes are stripped for each argument.
     """
 
-    return "/".join(map(lambda x: str(x).rstrip('/'), args))
+    return "/".join(map(lambda x: str(x).rstrip("/"), args))
 
 
-def normalize(string, replacer='_'):
+def normalize(string, replacer="_"):
     """Replaces special characters from string."""
 
-    return re.sub('[^a-zA-Z0-9.]', replacer, string)
+    return re.sub("[^a-zA-Z0-9.]", replacer, string)

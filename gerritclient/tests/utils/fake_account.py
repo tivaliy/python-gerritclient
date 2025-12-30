@@ -14,8 +14,9 @@
 #    under the License.
 
 
-def get_fake_account(_account_id=1000226, name="John Doe",
-                     email="john.doe@example.com", username="john"):
+def get_fake_account(
+    _account_id=1000226, name="John Doe", email="john.doe@example.com", username="john"
+):
     """Creates a fake account
 
     Returns the serialized and parametrized representation of a dumped
@@ -28,25 +29,26 @@ def get_fake_account(_account_id=1000226, name="John Doe",
         "email": email,
         "username": username,
         "status": "Out of Office",
-        "secondary_emails": ['fake-email@example.com'],
-        "registered_on": "2017-02-16 07:33:57.000000000"
+        "secondary_emails": ["fake-email@example.com"],
+        "registered_on": "2017-02-16 07:33:57.000000000",
     }
 
 
 def get_fake_accounts(account_count):
     """Creates a random fake list of accounts."""
 
-    return [get_fake_account(_account_id=i, username='john-{}'.format(i))
-            for i in range(1, account_count+1)]
+    return [
+        get_fake_account(_account_id=i, username=f"john-{i}")
+        for i in range(1, account_count + 1)
+    ]
 
 
-def get_fake_account_email_info(email="jdoe@example.com", preferred=False,
-                                no_confirmation=False):
+def get_fake_account_email_info(
+    email="jdoe@example.com", preferred=False, no_confirmation=False
+):
     """Creates a random fake email info of accounts."""
 
-    return {"email": email,
-            "preferred": preferred,
-            "no_confirmation": no_confirmation}
+    return {"email": email, "preferred": preferred, "no_confirmation": no_confirmation}
 
 
 def get_fake_oauth_token():
@@ -58,5 +60,5 @@ def get_fake_oauth_token():
         "access_token": "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOi",
         "provider_id": "oauth-plugin:oauth-provider",
         "expires_at": "922337203775807",
-        "type": "bearer"
+        "type": "bearer",
     }

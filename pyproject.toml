@@ -1,0 +1,120 @@
+[project]
+name = "python-gerritclient"
+version = "1.0.0"
+description = "CLI tool and Python API wrapper for Gerrit Code Review"
+authors = [
+    {name = "Vitalii Kulanov", email = "vitaliy@kulanov.org.ua"}
+]
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+readme = "README.md"
+keywords = ["gerrit", "code-review", "cli", "rest-api"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    "cliff>=4.0.0",
+    "requests>=2.28.0",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.14.0",
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "mypy>=1.8.0",
+]
+test = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "fixtures>=4.0.0",
+    "oslotest>=5.0.0",
+    "testtools>=2.5.0",
+]
+
+[project.scripts]
+gerrit = "gerritclient.main:main"
+
+[project.urls]
+Homepage = "https://github.com/tivaliy/python-gerritclient"
+Repository = "https://github.com/tivaliy/python-gerritclient"
+Issues = "https://github.com/tivaliy/python-gerritclient/issues"
+
+[build-system]
+requires = ["setuptools>=40.6.0", "pbr>=6.0.0"]
+build-backend = "pbr.build"
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.14.0",
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "mypy>=1.8.0",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "F",     # pyflakes
+    "I",     # isort
+    "N",     # pep8-naming
+    "UP",    # pyupgrade
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "SIM",   # flake8-simplify
+    "TCH",   # flake8-type-checking
+    "RUF",   # Ruff-specific rules
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "N802",  # function name should be lowercase (cliff uses mixedCase)
+    "N806",  # variable in function should be lowercase
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+testpaths = ["gerritclient/tests"]
+python_files = ["test_*.py"]
+addopts = "--cov=gerritclient --cov-report=term-missing --cov-report=html"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Start permissive, tighten later
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["gerritclient"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

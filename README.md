@@ -5,32 +5,84 @@
 # python-gerritclient
 CLI tool and Python API wrapper for Gerrit Code Review
 
+## Requirements
+
+**Python 3.11+** is required. This project uses modern Python features and tooling.
+
 ## Quick Start
 
-### Command Line Tool
-1. Clone `python-gerritclient` repository: `git clone https://github.com/tivaliy/python-gerritclient.git`.
-2. Configure `settings.yaml` file (in `gerritclient/settings.yaml`) to meet your requirements.
+### Command Line Tool (Recommended: Using UV)
 
+[UV](https://docs.astral.sh/uv/) is a fast, modern Python package manager. Recommended for the best experience.
+
+1. Install UV (if not already installed):
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/tivaliy/python-gerritclient.git
+   cd python-gerritclient
+   ```
+
+3. Configure `settings.yaml` file (in `gerritclient/settings.yaml`):
     ```yaml
-       url: http://review.example.com
-       auth_type: basic
-       username: admin
-       password: "1234567890aaWmmflSl+ZlOPs23Dffn"
+    url: http://review.example.com
+    auth_type: basic
+    username: admin
+    password: "1234567890aaWmmflSl+ZlOPs23Dffn"
     ```
 
-    * `url` can be specified according to the following format `<scheme>://<host>:<port>`, e.g. `https://review.openstack.org`
-    * `auth_type` specifies HTTP authentication scheme (`basic` or `digest`), can be omitted, then all requests will be anonymous with respective restrictions
-    * `username` and `password` - user credentials from Gerrit system (Settings &#8594; HTTP Password)
+    * `url` - Gerrit server URL in format `<scheme>://<host>:<port>` (e.g., `https://review.openstack.org`)
+    * `auth_type` - HTTP authentication scheme (`basic` or `digest`), omit for anonymous access
+    * `username` and `password` - user credentials from Gerrit (Settings → HTTP Password)
 
-3. Create isolated Python environment `virtualenv gerritclient_venv` and activate it `source gerritclient_venv/bin/activate`.
-4. Install `python-gerritclient` with all necessary dependencies: `pip install python-gerritclient/.`.
-5. (Optional) Add gerrit command bash completion `gerrit complete | sudo tee /etc/bash_completion.d/gc.bash_completion > /dev/null`
-6. Run `gerrit` command with required options, e.g. `gerrit plugin list`. To see all available commands run `gerrit --help`.
+4. Install dependencies and run:
+   ```bash
+   uv sync
+   uv run gerrit --help
+   ```
 
-### Library
-1. Clone `python-gerritclient` repository: `git clone https://github.com/tivaliy/python-gerritclient.git`.
-2. Create isolated Python environment `virtualenv gerritclient_venv` and activate it `source gerritclient_venv/bin/activate`.
-3. Install `python-gerritclient` with all necessary dependencies: `pip install python-gerritclient/.`.
+5. Run commands:
+   ```bash
+   uv run gerrit plugin list
+   uv run gerrit account list "john"
+   ```
+
+### Command Line Tool (Alternative: Using pip)
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/tivaliy/python-gerritclient.git
+   cd python-gerritclient
+   ```
+
+2. Configure `settings.yaml` (same as above)
+
+3. Install with pip:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -e .
+   ```
+
+4. Run commands:
+   ```bash
+   gerrit --help
+   gerrit plugin list
+   ```
+
+### Library Usage
+
+Install the package:
+```bash
+# With UV
+uv add python-gerritclient
+
+# With pip
+pip install python-gerritclient
+```
 
 ```python
 from gerritclient import client

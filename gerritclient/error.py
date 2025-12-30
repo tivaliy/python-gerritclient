@@ -21,6 +21,7 @@ class GerritClientException(Exception):
 
     All child classes must be instantiated before raising.
     """
+
     def __init__(self, *args, **kwargs):
         super(GerritClientException, self).__init__(*args, **kwargs)
         self.message = args[0]
@@ -44,11 +45,11 @@ class HTTPError(GerritClientException):
 
 def get_error_body(error):
     try:
-        error_body = json.loads(error.response.text)['message']
+        error_body = json.loads(error.response.text)["message"]
     except (ValueError, TypeError, KeyError):
         error_body = error.response.text
     return error_body
 
 
 def get_full_error_message(error):
-    return "{} ({})".format(error, get_error_body(error))
+    return f"{error} ({get_error_body(error)})"

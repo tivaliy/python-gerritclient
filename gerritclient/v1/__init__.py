@@ -13,17 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from gerritclient.v1 import account
-from gerritclient.v1 import change
-from gerritclient.v1 import server
-from gerritclient.v1 import group
-from gerritclient.v1 import plugin
-from gerritclient.v1 import project
+from gerritclient.v1 import account, change, group, plugin, project, server
 
 # Please keeps the list in alphabetical order
-__all__ = ('account',
-           'change',
-           'group',
-           'plugin',
-           'project',
-           'server')
+__all__ = ("account", "change", "group", "plugin", "project", "server")

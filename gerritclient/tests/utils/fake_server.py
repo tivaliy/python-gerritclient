@@ -29,123 +29,93 @@ def get_fake_config():
                 {
                     "name": "Individual",
                     "description": "If you are going to be contributing code "
-                                   "on your own, this is the one you want. "
-                                   "You can sign this one online.",
-                    "url": "static/cla_individual.html"
+                    "on your own, this is the one you want. "
+                    "You can sign this one online.",
+                    "url": "static/cla_individual.html",
                 }
             ],
-            "editable_account_fields": [
-                "FULL_NAME",
-                "REGISTER_NEW_EMAIL"
-            ]
+            "editable_account_fields": ["FULL_NAME", "REGISTER_NEW_EMAIL"],
         },
         "download": {
             "schemes": {
                 "anonymous http": {
                     "url": "http://gerrithost:8080/${project}",
                     "commands": {
-                        "Checkout":
-                            "git fetch http://gerrithost:8080/${project} "
-                            "${ref} \u0026\u0026 git checkout FETCH_HEAD",
-                        "Format Patch":
-                            "git fetch http://gerrithost:8080/${project} "
-                            "${ref} \u0026\u0026 git format-patch -1 "
-                            "--stdout FETCH_HEAD",
-                        "Pull":
-                            "git pull http://gerrithost:8080/${project} "
-                            "${ref}",
-                        "Cherry Pick":
-                            "git fetch http://gerrithost:8080/${project} "
-                            "${ref} \u0026\u0026 git cherry-pick FETCH_HEAD"
+                        "Checkout": "git fetch http://gerrithost:8080/${project} "
+                        "${ref} \u0026\u0026 git checkout FETCH_HEAD",
+                        "Format Patch": "git fetch http://gerrithost:8080/${project} "
+                        "${ref} \u0026\u0026 git format-patch -1 "
+                        "--stdout FETCH_HEAD",
+                        "Pull": "git pull http://gerrithost:8080/${project} ${ref}",
+                        "Cherry Pick": "git fetch http://gerrithost:8080/${project} "
+                        "${ref} \u0026\u0026 git cherry-pick FETCH_HEAD",
                     },
                     "clone_commands": {
                         "Clone": "git clone http://gerrithost:8080/${project}",
-                        "Clone with commit-msg hook":
-                            "git clone http://gerrithost:8080/${project} "
-                            "\u0026\u0026 scp -p -P 29418 "
-                            "jdoe@gerrithost:hooks/commit-msg "
-                            "${project}/.git/hooks/"
-                    }
+                        "Clone with commit-msg hook": "git clone http://gerrithost:8080/${project} "
+                        "\u0026\u0026 scp -p -P 29418 "
+                        "jdoe@gerrithost:hooks/commit-msg "
+                        "${project}/.git/hooks/",
+                    },
                 },
                 "http": {
                     "url": "http://jdoe@gerrithost:8080/${project}",
                     "is_auth_required": True,
                     "is_auth_supported": True,
                     "commands": {
-                        "Checkout":
-                            "git fetch http://jdoe@gerrithost:8080/${project} "
-                            "${ref} \u0026\u0026 git checkout FETCH_HEAD",
-                        "Format Patch":
-                            "git fetch http://jdoe@gerrithost:8080/${project} "
-                            "${ref} \u0026\u0026 git format-patch -1 "
-                            "--stdout FETCH_HEAD",
-                        "Pull":
-                            "git pull http://jdoe@gerrithost:8080/${project} "
-                            "${ref}",
-                        "Cherry Pick":
-                            "git fetch http://jdoe@gerrithost:8080/${project} "
-                            "${ref} \u0026\u0026 git cherry-pick FETCH_HEAD"
+                        "Checkout": "git fetch http://jdoe@gerrithost:8080/${project} "
+                        "${ref} \u0026\u0026 git checkout FETCH_HEAD",
+                        "Format Patch": "git fetch http://jdoe@gerrithost:8080/${project} "
+                        "${ref} \u0026\u0026 git format-patch -1 "
+                        "--stdout FETCH_HEAD",
+                        "Pull": "git pull http://jdoe@gerrithost:8080/${project} "
+                        "${ref}",
+                        "Cherry Pick": "git fetch http://jdoe@gerrithost:8080/${project} "
+                        "${ref} \u0026\u0026 git cherry-pick FETCH_HEAD",
                     },
                     "clone_commands": {
-                        "Clone":
-                            "git clone http://jdoe@gerrithost:8080/${project}",
-                        "Clone with commit-msg hook":
-                            "git clone http://jdoe@gerrithost:8080/${project} "
-                            "\u0026\u0026 scp -p -P 29418 "
-                            "jdoe@gerrithost:hooks/commit-msg "
-                            "${project}/.git/hooks/"
-                    }
+                        "Clone": "git clone http://jdoe@gerrithost:8080/${project}",
+                        "Clone with commit-msg hook": "git clone http://jdoe@gerrithost:8080/${project} "
+                        "\u0026\u0026 scp -p -P 29418 "
+                        "jdoe@gerrithost:hooks/commit-msg "
+                        "${project}/.git/hooks/",
+                    },
                 },
                 "ssh": {
                     "url": "ssh://jdoe@gerrithost:29418/${project}",
                     "is_auth_required": True,
                     "is_auth_supported": True,
                     "commands": {
-                        "Checkout":
-                            "git fetch ssh://jdoe@gerrithost:29418/${project} "
-                            "${ref} \u0026\u0026 git checkout FETCH_HEAD",
-                        "Format Patch":
-                            "git fetch ssh://jdoe@gerrithost:29418/${project} "
-                            "${ref} \u0026\u0026 git format-patch -1 "
-                            "--stdout FETCH_HEAD",
-                        "Pull":
-                            "git pull ssh://jdoe@gerrithost:29418/${project} "
-                            "${ref}",
-                        "Cherry Pick":
-                            "git fetch ssh://jdoe@gerrithost:29418/${project} "
-                            "${ref} \u0026\u0026 git cherry-pick FETCH_HEAD"
+                        "Checkout": "git fetch ssh://jdoe@gerrithost:29418/${project} "
+                        "${ref} \u0026\u0026 git checkout FETCH_HEAD",
+                        "Format Patch": "git fetch ssh://jdoe@gerrithost:29418/${project} "
+                        "${ref} \u0026\u0026 git format-patch -1 "
+                        "--stdout FETCH_HEAD",
+                        "Pull": "git pull ssh://jdoe@gerrithost:29418/${project} "
+                        "${ref}",
+                        "Cherry Pick": "git fetch ssh://jdoe@gerrithost:29418/${project} "
+                        "${ref} \u0026\u0026 git cherry-pick FETCH_HEAD",
                     },
                     "clone_commands": {
-                        "Clone":
-                            "git clone ssh://jdoe@gerrithost:29418/${project}",
-                        "Clone with commit-msg hook":
-                            "git clone ssh://jdoe@gerrithost:29418/${project} "
-                            "\u0026\u0026 scp -p -P 29418 "
-                            "jdoe@gerrithost:hooks/commit-msg "
-                            "${project}/.git/hooks/"
-                    }
-                }
+                        "Clone": "git clone ssh://jdoe@gerrithost:29418/${project}",
+                        "Clone with commit-msg hook": "git clone ssh://jdoe@gerrithost:29418/${project} "
+                        "\u0026\u0026 scp -p -P 29418 "
+                        "jdoe@gerrithost:hooks/commit-msg "
+                        "${project}/.git/hooks/",
+                    },
+                },
             },
-            "archives": [
-                "tgz",
-                "tar",
-                "tbz2",
-                "txz"
-            ]
+            "archives": ["tgz", "tar", "tbz2", "txz"],
         },
         "gerrit": {
             "all_projects": "All-Projects",
             "all_users": "All-Users",
             "doc_search": True,
-            "web_uis": ["gwt"]
+            "web_uis": ["gwt"],
         },
         "sshd": {},
-        "suggest": {
-            "from": 0
-        },
-        "user": {
-            "anonymous_coward_name": "Anonymous Coward"
-        }
+        "suggest": {"from": 0},
+        "user": {"anonymous_coward_name": "Anonymous Coward"},
     }
 
 
@@ -157,91 +127,41 @@ def get_fake_capabilities():
     """
 
     return {
-        "accessDatabase": {
-            "id": "accessDatabase",
-            "name": "Access Database"
-        },
+        "accessDatabase": {"id": "accessDatabase", "name": "Access Database"},
         "administrateServer": {
             "id": "administrateServer",
-            "name": "Administrate Server"
+            "name": "Administrate Server",
         },
-        "createAccount": {
-            "id": "createAccount",
-            "name": "Create Account"
-        },
-        "createGroup": {
-            "id": "createGroup",
-            "name": "Create Group"
-        },
-        "createProject": {
-            "id": "createProject",
-            "name": "Create Project"
-        },
-        "emailReviewers": {
-            "id": "emailReviewers",
-            "name": "Email Reviewers"
-        },
-        "flushCaches": {
-            "id": "flushCaches",
-            "name": "Flush Caches"
-        },
-        "killTask": {
-            "id": "killTask",
-            "name": "Kill Task"
-        },
-        "priority": {
-            "id": "priority",
-            "name": "Priority"
-        },
-        "queryLimit": {
-            "id": "queryLimit",
-            "name": "Query Limit"
-        },
-        "runGC": {
-            "id": "runGC",
-            "name": "Run Garbage Collection"
-        },
-        "streamEvents": {
-            "id": "streamEvents",
-            "name": "Stream Events"
-        },
-        "viewCaches": {
-            "id": "viewCaches",
-            "name": "View Caches"
-        },
-        "viewConnections": {
-            "id": "viewConnections",
-            "name": "View Connections"
-        },
-        "viewPlugins": {
-            "id": "viewPlugins",
-            "name": "View Plugins"
-        },
-        "viewQueue": {
-            "id": "viewQueue",
-            "name": "View Queue"
-        }
+        "createAccount": {"id": "createAccount", "name": "Create Account"},
+        "createGroup": {"id": "createGroup", "name": "Create Group"},
+        "createProject": {"id": "createProject", "name": "Create Project"},
+        "emailReviewers": {"id": "emailReviewers", "name": "Email Reviewers"},
+        "flushCaches": {"id": "flushCaches", "name": "Flush Caches"},
+        "killTask": {"id": "killTask", "name": "Kill Task"},
+        "priority": {"id": "priority", "name": "Priority"},
+        "queryLimit": {"id": "queryLimit", "name": "Query Limit"},
+        "runGC": {"id": "runGC", "name": "Run Garbage Collection"},
+        "streamEvents": {"id": "streamEvents", "name": "Stream Events"},
+        "viewCaches": {"id": "viewCaches", "name": "View Caches"},
+        "viewConnections": {"id": "viewConnections", "name": "View Connections"},
+        "viewPlugins": {"id": "viewPlugins", "name": "View Plugins"},
+        "viewQueue": {"id": "viewQueue", "name": "View Queue"},
     }
 
 
-def get_fake_cache_info(name="fake_cache", cache_type=None,
-                        is_single_item=True):
+def get_fake_cache_info(name="fake_cache", cache_type=None, is_single_item=True):
     """Creates a fake cache info data."""
 
     fake_cache = {
         "type": cache_type or "MEM",
-        "entries": {
-            "mem": 4
-        },
+        "entries": {"mem": 4},
         "average_get": "2.5ms",
-        "hit_ratio": {
-            "mem": 94
-        }
+        "hit_ratio": {"mem": 94},
     }
     # 'name' key set only for single item, otherwise 'name' key is used
     # as map key if we try to fetch several items
     if is_single_item:
-        fake_cache['name'] = name
+        fake_cache["name"] = name
         return fake_cache
     return {name: fake_cache}
 
@@ -251,8 +171,9 @@ def get_fake_caches_info(caches_count):
 
     fake_caches = {}
     for i in range(1, caches_count + 1):
-        fake_caches.update(get_fake_cache_info(name="fake-cache-{}".format(i),
-                                               is_single_item=False))
+        fake_caches.update(
+            get_fake_cache_info(name=f"fake-cache-{i}", is_single_item=False)
+        )
     return fake_caches
 
 
@@ -260,38 +181,23 @@ def get_fake_summary_state():
     """Creates a fake server state data."""
 
     return {
-        "task_summary": {
-            "total": 1,
-            "sleeping": 1
-        },
+        "task_summary": {"total": 1, "sleeping": 1},
         "mem_summary": {
             "total": "495.50m",
             "used": "220.50m",
             "free": "275.00m",
             "buffers": "0.00k",
-            "max": "3.45g"
+            "max": "3.45g",
         },
         "thread_summary": {
             "cpus": 2,
             "threads": 60,
             "counts": {
-                "SshCommandStart": {
-                    "WAITING": 2
-                },
-                "sshd-SshServer": {
-                    "TIMED_WAITING": 1,
-                    "WAITING": 3
-                },
-                "HTTP": {
-                    "TIMED_WAITING": 2,
-                    "RUNNABLE": 3
-                },
-                "Other": {
-                    "TIMED_WAITING": 17,
-                    "WAITING": 10,
-                    "RUNNABLE": 2
-                }
-            }
+                "SshCommandStart": {"WAITING": 2},
+                "sshd-SshServer": {"TIMED_WAITING": 1, "WAITING": 3},
+                "HTTP": {"TIMED_WAITING": 2, "RUNNABLE": 3},
+                "Other": {"TIMED_WAITING": 17, "WAITING": 10, "RUNNABLE": 2},
+            },
         },
         "jvm_summary": {
             "vm_vendor": "Oracle Corporation",
@@ -303,8 +209,8 @@ def get_fake_summary_state():
             "user": "gerrit2",
             "host": "d4e1ae041cca",
             "current_working_directory": "/var/gerrit/review_site",
-            "site": "/var/gerrit/review_site"
-        }
+            "site": "/var/gerrit/review_site",
+        },
     }
 
 
@@ -316,7 +222,7 @@ def get_fake_task(task_id=None, state=None, delay=None, command=None):
         "state": state or "SLEEPING",
         "start_time": "2017-07-26 12:58:51.991000000",
         "delay": delay or 3453,
-        "command": command or "Reload Submit Queue"
+        "command": command or "Reload Submit Queue",
     }
 
 
