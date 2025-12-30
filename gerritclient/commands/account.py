@@ -316,7 +316,7 @@ class AccountSSHKeyAdd(AccountMixIn, base.BaseShowCommand):
         ssh_key = parsed_args.ssh_key
         if file_path:
             try:
-                with open(file_path) as stream:
+                with open(file_path, "r") as stream:
                     ssh_key = stream.read()
             except OSError:
                 msg = f"Could not read file '{file_path}'"
