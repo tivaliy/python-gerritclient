@@ -99,7 +99,7 @@ class ChangeList(ChangeMixIn, base.BaseListCommand):
     """Queries changes visible to the caller."""
 
     def get_parser(self, prog_name):
-        parser = super(ChangeList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("query", nargs="+", help="Query string.")
         parser.add_argument(
             "-l",
@@ -140,7 +140,7 @@ class ChangeShow(ChangeMixIn, base.BaseShowCommand):
     """Retrieves a change."""
 
     def get_parser(self, app_name):
-        parser = super(ChangeShow, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "-a",
             "--all",
@@ -190,13 +190,11 @@ class ChangeCreate(ChangeMixIn, base.BaseCommand, base.show.ShowOne):
     @staticmethod
     def get_file_path(file_path):
         if not utils.file_exists(file_path):
-            raise argparse.ArgumentTypeError(
-                f"File '{file_path}' does not exist"
-            )
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
         return file_path
 
     def get_parser(self, prog_name):
-        parser = super(ChangeCreate, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "file", type=self.get_file_path, help="File with metadata of a new change."
         )
@@ -257,7 +255,7 @@ class ChangeRevert(BaseChangeAction):
     parameters = ("message",)
 
     def get_parser(self, app_name):
-        parser = super(ChangeRevert, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "-m",
             "--message",
@@ -275,7 +273,7 @@ class ChangeMove(BaseChangeAction):
     parameters = ("branch", "message")
 
     def get_parser(self, app_name):
-        parser = super(ChangeMove, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument("-b", "--branch", required=True, help="Destination branch.")
         parser.add_argument(
             "-m", "--message", help="A message to be posted in this change's comments."
@@ -292,7 +290,7 @@ class ChangeSubmit(BaseChangeAction):
     parameters = ("on_behalf_of", "notify")
 
     def get_parser(self, app_name):
-        parser = super(ChangeSubmit, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "--on-behalf-of", help="Submit the change on behalf of the given user."
         )
@@ -315,7 +313,7 @@ class ChangeRebase(BaseChangeAction):
     parameters = ("parent",)
 
     def get_parser(self, app_name):
-        parser = super(ChangeRebase, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument("-p", "--parent", help="The new parent revision.")
         return parser
 
@@ -327,7 +325,7 @@ class ChangeDelete(ChangeMixIn, base.BaseCommand):
     """Deletes a change."""
 
     def get_parser(self, prog_name):
-        parser = super(ChangeDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "change_id", metavar="change-identifier", help="Change identifier."
         )
@@ -357,7 +355,7 @@ class ChangeTopicSet(ChangeMixIn, base.BaseShowCommand):
     columns = ("topic",)
 
     def get_parser(self, app_name):
-        parser = super(ChangeTopicSet, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument("-t", "--topic", required=True, help="Topic of a change.")
         return parser
 
@@ -395,7 +393,7 @@ class ChangeAssigneeHistoryShow(ChangeMixIn, base.BaseListCommand):
     columns = ("_account_id", "name", "email", "username")
 
     def get_parser(self, prog_name):
-        parser = super(ChangeAssigneeHistoryShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "change_id", metavar="change-identifier", help="Change identifier."
         )
@@ -413,7 +411,7 @@ class ChangeAssigneeSet(ChangeMixIn, base.BaseShowCommand):
     columns = ("_account_id", "name", "email", "username")
 
     def get_parser(self, app_name):
-        parser = super(ChangeAssigneeSet, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "-a",
             "--account",
@@ -441,7 +439,7 @@ class ChangeDraftPublish(ChangeMixIn, base.BaseCommand):
     """Publishes a draft change."""
 
     def get_parser(self, prog_name):
-        parser = super(ChangeDraftPublish, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "change_id", metavar="change-identifier", help="Change identifier."
         )
@@ -467,7 +465,7 @@ class ChangeIndex(ChangeMixIn, base.BaseCommand):
     """Adds or updates the change in the secondary index."""
 
     def get_parser(self, prog_name):
-        parser = super(ChangeIndex, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "change_id", metavar="change-identifier", help="Change identifier."
         )
@@ -486,7 +484,7 @@ class ChangeCommentList(ChangeCommentMixIn, base.BaseListCommand):
     """Lists the published comments of all revisions of the change."""
 
     def get_parser(self, prog_name):
-        parser = super(ChangeCommentList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "change_id", metavar="change-identifier", help="Change identifier."
         )
@@ -531,7 +529,7 @@ class ChangeFix(ChangeMixIn, base.BaseShowCommand):
     """
 
     def get_parser(self, app_name):
-        parser = super(ChangeFix, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "--delete-patchset",
             action="store_true",

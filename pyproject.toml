@@ -187,6 +187,10 @@ ignore = [
     "E501",  # line too long (handled by formatter)
     "N802",  # function name should be lowercase (cliff uses mixedCase)
     "N806",  # variable in function should be lowercase
+    "N818",  # exception naming (GerritClientException is established pattern)
+    "B904",  # exception chaining (would change error behavior)
+    "F401",  # unused imports in __init__.py (used for re-exports)
+    "SIM105", # contextlib.suppress (setup.py compatibility)
 ]
 
 [tool.ruff.format]

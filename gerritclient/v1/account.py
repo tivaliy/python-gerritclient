@@ -50,7 +50,7 @@ class AccountClient(base.BaseV1ClientCreateEntity):
             None,
             ["DETAILS" if detailed else None, "ALL_EMAILS" if all_emails else None],
         )
-        option = None if not option else option
+        option = option if option else None
         params = {
             k: v for k, v in (("n", limit), ("S", skip), ("o", option)) if v is not None
         }
@@ -106,7 +106,7 @@ class AccountClient(base.BaseV1ClientCreateEntity):
 
         request_path = f"{self.api_path}{account_id}/active"
         result = self.connection.get_request(request_path)
-        return True if result else False
+        return bool(result)
 
     def enable(self, account_id):
         """Enable account in Gerrit."""

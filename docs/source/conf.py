@@ -15,20 +15,16 @@
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'cliff.sphinxext'
-]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.viewcode", "cliff.sphinxext"]
 
 # Options for cliff.sphinxext plugin
-autoprogram_cliff_application = 'gerrit'
+autoprogram_cliff_application = "gerrit"
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = 'python-gerritclient'
+project = "python-gerritclient"

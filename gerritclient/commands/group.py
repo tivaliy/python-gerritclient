@@ -53,7 +53,7 @@ class GroupShow(GroupMixIn, base.BaseShowCommand):
     )
 
     def get_parser(self, prog_name):
-        parser = super(GroupShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "-a", "--all", action="store_true", help="Show more details about group."
         )
@@ -91,7 +91,7 @@ class GroupRename(GroupMixIn, base.BaseCommand):
     """Renames a Gerrit internal group."""
 
     def get_parser(self, prog_name):
-        parser = super(GroupRename, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "group_id", metavar="group-identifier", help="Group identifier."
         )
@@ -108,7 +108,7 @@ class GroupSetDescription(GroupMixIn, base.BaseCommand):
     """Sets the description of a specified Gerrit internal group."""
 
     def get_parser(self, prog_name):
-        parser = super(GroupSetDescription, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "group_id", metavar="group-identifier", help="Group identifier."
         )
@@ -128,7 +128,7 @@ class GroupDeleteDescription(GroupMixIn, base.BaseCommand):
     """Deletes the description of a specified Gerrit internal group."""
 
     def get_parser(self, prog_name):
-        parser = super(GroupDeleteDescription, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "group_id", metavar="group-identifier", help="Group identifier."
         )
@@ -149,7 +149,7 @@ class GroupSetOptions(GroupMixIn, base.BaseShowCommand):
     columns = ("visible_to_all",)
 
     def get_parser(self, prog_name):
-        parser = super(GroupSetOptions, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument(
             "--visible",
@@ -183,7 +183,7 @@ class GroupSetOwner(GroupMixIn, base.BaseCommand):
     """Sets the owner group of a Gerrit internal group."""
 
     def get_parser(self, prog_name):
-        parser = super(GroupSetOwner, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "group_id", metavar="group-identifier", help="Group identifier."
         )
@@ -193,8 +193,8 @@ class GroupSetOwner(GroupMixIn, base.BaseCommand):
     def take_action(self, parsed_args):
         response = self.client.set_owner_group(parsed_args.group_id, parsed_args.owner)
         msg = (
-            "Owner group '{0}' with id '{1}' was successfully assigned to "
-            "the group with id '{2}':\n".format(
+            "Owner group '{}' with id '{}' was successfully assigned to "
+            "the group with id '{}':\n".format(
                 response["name"], response["group_id"], parsed_args.group_id
             )
         )
@@ -207,7 +207,7 @@ class GroupMemberList(GroupMixIn, base.BaseListCommand):
     columns = ("_account_id", "username", "name", "email")
 
     def get_parser(self, app_name):
-        parser = super(GroupMemberList, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
 
         parser.add_argument(
             "group_id", metavar="group-identifier", help="Group identifier."
@@ -247,7 +247,7 @@ class BaseGroupAction(GroupMixIn, base.BaseCommand, abc.ABC):
         pass
 
     def get_parser(self, app_name):
-        parser = super(BaseGroupAction, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "group_id", metavar="group-identifier", help="Group identifier."
         )

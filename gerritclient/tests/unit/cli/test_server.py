@@ -23,7 +23,7 @@ class TestConfigServerCommand(clibase.BaseCLITest):
     """Tests for gerrit config server * commands."""
 
     def setUp(self):
-        super(TestConfigServerCommand, self).setUp()
+        super().setUp()
         fake_cache_info_list = fake_server.get_fake_caches_info(5)
         self.m_client.get_caches.return_value = fake_cache_info_list
         fake_cache_info = fake_server.get_fake_cache_info()

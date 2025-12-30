@@ -34,7 +34,5 @@ def get_fake_plugins(plugins_count):
 
     fake_plugins = {}
     for i in range(1, plugins_count + 1):
-        fake_plugins[f"fake-plugin-{i}"] = get_fake_plugin(
-            f"fake-plugin-{i}"
-        )
+        fake_plugins[f"fake-plugin-{i}"] = get_fake_plugin(f"fake-plugin-{i}")
     return fake_plugins

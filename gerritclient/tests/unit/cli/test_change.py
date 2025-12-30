@@ -24,7 +24,7 @@ class TestChangeCommand(clibase.BaseCLITest):
     """Tests for gerrit change * commands."""
 
     def setUp(self):
-        super(TestChangeCommand, self).setUp()
+        super().setUp()
 
     def test_change_list_w_single_query(self):
         query = ["status:open+is:watched"]
@@ -241,9 +241,7 @@ class TestChangeCommand(clibase.BaseCLITest):
         notify = "NONE"
         username = "jdoe"
         change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
-        args = (
-            f"change submit {change_id} --on-behalf-of {username} --notify {notify}"
-        )
+        args = f"change submit {change_id} --on-behalf-of {username} --notify {notify}"
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with("change", mock.ANY)
@@ -375,10 +373,7 @@ class TestChangeCommand(clibase.BaseCLITest):
 
     def test_change_robotcomments_list(self):
         change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
-        args = (
-            f"change comment list {change_id} --type robotcomments "
-            "--max-width 110"
-        )
+        args = f"change comment list {change_id} --type robotcomments --max-width 110"
         fake_comments = fake_comment.get_fake_comments_in_change(3)
         self.m_client.get_comments.return_value = fake_comments
         self.exec_command(args)

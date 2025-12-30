@@ -63,7 +63,7 @@ class APIClient:
     def is_authed(self):
         """Checks whether credentials were passed."""
 
-        return True if self._auth else False
+        return bool(self._auth)
 
     @staticmethod
     def _make_common_headers():

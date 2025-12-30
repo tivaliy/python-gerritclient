@@ -25,7 +25,7 @@ class TestProjectCommand(clibase.BaseCLITest):
     """Tests for gerrit project * commands."""
 
     def setUp(self):
-        super(TestProjectCommand, self).setUp()
+        super().setUp()
         self.m_client.get_all.return_value = fake_project.get_fake_projects(10)
         get_fake_project = fake_project.get_fake_project()
         self.m_client.get_by_name.return_value = get_fake_project
@@ -79,7 +79,7 @@ class TestProjectCommand(clibase.BaseCLITest):
 
     def test_project_list_all_wo_description_w_branches(self):
         branches = ["master", "fake_branch"]
-        args = "project list --all --branches {0}".format(" ".join(branches))
+        args = "project list --all --branches {}".format(" ".join(branches))
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with("project", mock.ANY)
@@ -144,7 +144,7 @@ class TestProjectCommand(clibase.BaseCLITest):
 
     def test_project_list_w_prefix(self):
         prefix = {"prefix": "fake"}
-        args = "project list --prefix {0}".format(prefix["prefix"])
+        args = "project list --prefix {}".format(prefix["prefix"])
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with("project", mock.ANY)
@@ -160,7 +160,7 @@ class TestProjectCommand(clibase.BaseCLITest):
 
     def test_project_list_w_match(self):
         match = {"match": "project"}
-        args = "project list --match {0}".format(match["match"])
+        args = "project list --match {}".format(match["match"])
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with("project", mock.ANY)
@@ -182,7 +182,7 @@ class TestProjectCommand(clibase.BaseCLITest):
 
     def test_project_list_w_regex(self):
         regex = {"regex": "fake*.*"}
-        args = "project list --regex {0}".format(regex["regex"])
+        args = "project list --regex {}".format(regex["regex"])
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with("project", mock.ANY)
@@ -413,7 +413,7 @@ class TestProjectCommand(clibase.BaseCLITest):
     def test_project_branch_delete(self):
         project_name = "fake/fake-project"
         branches = ["refs/heads/fake-branch", "refs/heads/fake-new-branch"]
-        args = "project branch delete {0} --branch {1}".format(
+        args = "project branch delete {} --branch {}".format(
             project_name, " ".join(branches)
         )
         self.exec_command(args)
@@ -541,7 +541,7 @@ Garbage collection completed successfully."""
     def test_project_tag_list_w_match(self):
         project_name = "fake/fake-project"
         dispatcher = {"match": "ref"}
-        args = "project tag list {0} --match {1}".format(
+        args = "project tag list {} --match {}".format(
             project_name, dispatcher["match"]
         )
         self.m_client.get_tags.return_value = fake_tag.get_fake_tags(3)
@@ -555,7 +555,7 @@ Garbage collection completed successfully."""
     def test_project_tag_list_w_regex(self):
         project_name = "fake/fake-project"
         dispatcher = {"regex": "refs*"}
-        args = "project tag list {0} --regex {1}".format(
+        args = "project tag list {} --regex {}".format(
             project_name, dispatcher["regex"]
         )
         self.m_client.get_tags.return_value = fake_tag.get_fake_tags(3)
@@ -599,7 +599,7 @@ Garbage collection completed successfully."""
     def test_project_tag_delete(self):
         project_name = "fake/fake-project"
         tags = ["refs/tags/9.2", "refs/tags/9.1"]
-        args = "project tag delete {0} --tag {1}".format(project_name, " ".join(tags))
+        args = "project tag delete {} --tag {}".format(project_name, " ".join(tags))
         self.exec_command(args)
 
         self.m_get_client.assert_called_once_with("project", mock.ANY)
