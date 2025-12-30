@@ -53,5 +53,11 @@ intersphinx_mapping = {
 
 # -- Options for LaTeX output ------------------------------------------------
 latex_documents = [
-    (master_doc, "python-gerritclient.tex", "python-gerritclient Documentation", author, "manual"),
+    (
+        master_doc,
+        "python-gerritclient.tex",
+        "python-gerritclient Documentation",
+        author,
+        "manual",
+    ),
 ]
