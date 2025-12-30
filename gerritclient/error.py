@@ -23,7 +23,7 @@ class GerritClientException(Exception):
     """
 
     def __init__(self, *args, **kwargs):
-        super(GerritClientException, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.message = args[0]
 
 

@@ -232,7 +232,7 @@ class ChangeClient(base.BaseV1Client):
         request_path = "{api_path}{change_id}/{comment_type}".format(
             api_path=self.api_path,
             change_id=requests_utils.quote(change_id, safe=""),
-            comment_type="comments" if not comment_type else comment_type,
+            comment_type=comment_type if comment_type else "comments",
         )
         return self.connection.get_request(request_path)
 

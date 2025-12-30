@@ -31,7 +31,7 @@ class ProjectMixIn:
         if "web_links" in data:
             data["web_links"] = "".join(
                 [
-                    "{0} ({1})".format(item["name"], item["url"])
+                    "{} ({})".format(item["name"], item["url"])
                     for item in data["web_links"]
                 ]
             )
@@ -48,7 +48,7 @@ class ProjectList(ProjectMixIn, base.BaseListCommand):
         return "".join(f"{k} ({v}); " for k, v in data["branches"].items())
 
     def get_parser(self, prog_name):
-        parser = super(ProjectList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "-a",
             "--all",
@@ -166,7 +166,7 @@ class ProjectDelete(ProjectMixIn, base.BaseCommand):
     """
 
     def get_parser(self, prog_name):
-        parser = super(ProjectDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-f",
@@ -195,7 +195,7 @@ class ProjectDescriptionShow(ProjectMixIn, base.BaseCommand):
     """Retrieves the description of a project."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectDescriptionShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         return parser
 
@@ -208,7 +208,7 @@ class ProjectDescriptionSet(ProjectMixIn, base.BaseCommand):
     """Retrieves the description of a project."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectDescriptionSet, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-d",
@@ -231,7 +231,7 @@ class ProjectDescriptionSet(ProjectMixIn, base.BaseCommand):
             description=parsed_args.description,
             commit_message=parsed_args.message,
         )
-        msg = "The description for the project '{0}' was {1}\n".format(
+        msg = "The description for the project '{}' was {}\n".format(
             parsed_args.name, f"set: {response}" if response else "deleted."
         )
         self.app.stdout.write(msg)
@@ -241,7 +241,7 @@ class ProjectParentShow(ProjectMixIn, base.BaseCommand):
     """Retrieves the name of a project\'s parent project."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectParentShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         return parser
 
@@ -254,7 +254,7 @@ class ProjectParentSet(ProjectMixIn, base.BaseCommand):
     """Sets the parent project for a project."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectParentSet, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-p", "--parent", required=True, help="The name of the parent project."
@@ -283,7 +283,7 @@ class ProjectHeadShow(ProjectMixIn, base.BaseCommand):
     """Retrieves for a project the name of the branch to which HEAD points."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectHeadShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         return parser
 
@@ -296,7 +296,7 @@ class ProjectHeadSet(ProjectMixIn, base.BaseCommand):
     """Sets HEAD for a project."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectHeadSet, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-b",
@@ -337,7 +337,7 @@ class ProjectBranchList(ProjectMixIn, base.BaseListCommand):
     columns = ("ref", "revision", "can_delete", "web_links")
 
     def get_parser(self, prog_name):
-        parser = super(ProjectBranchList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         return parser
 
@@ -353,7 +353,7 @@ class ProjectBranchShow(ProjectMixIn, base.BaseShowCommand):
     columns = ("ref", "revision", "can_delete", "web_links")
 
     def get_parser(self, app_name):
-        parser = super(ProjectBranchShow, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "-b",
             "--branch",
@@ -376,7 +376,7 @@ class ProjectBranchCreate(ProjectMixIn, base.BaseShowCommand):
     columns = ("ref", "revision", "can_delete", "web_links")
 
     def get_parser(self, app_name):
-        parser = super(ProjectBranchCreate, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "-b",
             "--branch",
@@ -405,7 +405,7 @@ class ProjectBranchDelete(ProjectMixIn, base.BaseCommand):
     """Deletes one or more branches."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectBranchDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-b",
@@ -418,7 +418,7 @@ class ProjectBranchDelete(ProjectMixIn, base.BaseCommand):
 
     def take_action(self, parsed_args):
         self.client.delete_branch(parsed_args.name, parsed_args.branch)
-        msg = "The following branches of the project '{0}' were deleted: {1}.\n".format(
+        msg = "The following branches of the project '{}' were deleted: {}.\n".format(
             parsed_args.name, ", ".join(parsed_args.branch)
         )
         self.app.stdout.write(msg)
@@ -433,7 +433,7 @@ class ProjectBranchReflogShow(ProjectMixIn, base.BaseListCommand):
     columns = ("old_id", "new_id", "who", "comment")
 
     def get_parser(self, prog_name):
-        parser = super(ProjectBranchReflogShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-b",
@@ -459,7 +459,7 @@ class ProjectChildList(ProjectMixIn, base.BaseListCommand):
     columns = ("id", "name", "parent", "description")
 
     def get_parser(self, prog_name):
-        parser = super(ProjectChildList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-r",
@@ -484,7 +484,7 @@ class ProjectGCRun(ProjectMixIn, base.BaseCommand):
     """
 
     def get_parser(self, prog_name):
-        parser = super(ProjectGCRun, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "--show-progress", action="store_true", help="Show progress information."
@@ -522,7 +522,7 @@ class ProjectTagList(ProjectMixIn, base.BaseListCommand):
     )
 
     def get_parser(self, prog_name):
-        parser = super(ProjectTagList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-l",
@@ -581,7 +581,7 @@ class ProjectTagShow(ProjectMixIn, base.BaseShowCommand):
     )
 
     def get_parser(self, prog_name):
-        parser = super(ProjectTagShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("tag", help="Name of the tag.")
         return parser
 
@@ -609,7 +609,7 @@ class ProjectTagCreate(ProjectMixIn, base.BaseShowCommand):
     )
 
     def get_parser(self, prog_name):
-        parser = super(ProjectTagCreate, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "-t",
             "--tag",
@@ -645,7 +645,7 @@ class ProjectTagDelete(ProjectMixIn, base.BaseCommand):
     """Deletes one or more tags of the project."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectTagDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "-t", "--tag", nargs="+", required=True, help="The tags to be deleted."
@@ -654,7 +654,7 @@ class ProjectTagDelete(ProjectMixIn, base.BaseCommand):
 
     def take_action(self, parsed_args):
         self.client.delete_tag(parsed_args.name, parsed_args.tag)
-        msg = "The following tags of the project '{0}' were deleted: {1}.\n".format(
+        msg = "The following tags of the project '{}' were deleted: {}.\n".format(
             parsed_args.name, ", ".join(parsed_args.tag)
         )
         self.app.stdout.write(msg)
@@ -669,7 +669,7 @@ class ProjectConfigDownload(ProjectMixIn, base.BaseDownloadCommand):
     """
 
     def get_parser(self, prog_name):
-        parser = super(ProjectConfigDownload, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         return parser
 
@@ -695,13 +695,11 @@ class ProjectConfigSet(ProjectMixIn, base.BaseCommand):
     @staticmethod
     def get_file_path(file_path):
         if not utils.file_exists(file_path):
-            raise argparse.ArgumentTypeError(
-                f"File '{file_path}' does not exist"
-            )
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
         return file_path
 
     def get_parser(self, prog_name):
-        parser = super(ProjectConfigSet, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument(
             "--file",
@@ -736,7 +734,7 @@ class ProjectCommitShow(ProjectMixIn, base.BaseShowCommand):
     columns = ("commit", "parents", "author", "committer", "subject", "message")
 
     def get_parser(self, prog_name):
-        parser = super(ProjectCommitShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("--commit", required=True, help="Commit ID.")
         return parser
 
@@ -752,7 +750,7 @@ class ProjectCommitIncludedIn(ProjectMixIn, base.BaseShowCommand):
     columns = ("branches", "tag", "external")
 
     def get_parser(self, prog_name):
-        parser = super(ProjectCommitIncludedIn, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("--commit", required=True, help="Commit ID.")
         return parser
 
@@ -768,7 +766,7 @@ class ProjectCommitFileContentShow(ProjectMixIn, base.BaseCommand):
     """Gets the content of a file from a certain commit."""
 
     def get_parser(self, prog_name):
-        parser = super(ProjectCommitFileContentShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("name", help="Name of the project.")
         parser.add_argument("--commit", required=True, help="Commit ID.")
         parser.add_argument("--file-id", required=True, help="The path to the file.")

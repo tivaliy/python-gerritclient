@@ -26,7 +26,7 @@ class BaseCLITest(oslo_base.BaseTestCase):
     """Base class for testing CLI."""
 
     def setUp(self):
-        super(BaseCLITest, self).setUp()
+        super().setUp()
 
         self._get_client_patcher = mock.patch.object(client, "get_client")
         self.m_get_client = self._get_client_patcher.start()
@@ -41,6 +41,6 @@ class BaseCLITest(oslo_base.BaseTestCase):
 
         argv = shlex.split(command)
         if "--debug" not in argv:
-            argv = argv + ["--debug"]
+            argv = [*argv, "--debug"]
 
         return main_mod.main(argv=argv)

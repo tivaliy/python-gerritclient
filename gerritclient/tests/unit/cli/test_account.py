@@ -24,7 +24,7 @@ class TestAccountCommand(clibase.BaseCLITest):
     """Tests for gerrit account * commands."""
 
     def setUp(self):
-        super(TestAccountCommand, self).setUp()
+        super().setUp()
         self.m_client.get_all.return_value = fake_account.get_fake_accounts(10)
         self.m_client.get_by_id.return_value = fake_account.get_fake_account()
 

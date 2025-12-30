@@ -29,7 +29,7 @@ class GerritClient(app.App):
     """
 
     def run(self, argv):
-        return super(GerritClient, self).run(argv)
+        return super().run(argv)
 
 
 def main(argv=sys.argv[1:]):
@@ -50,7 +50,7 @@ def debug(name, cmd_class, argv=None):
     if argv is None:
         argv = sys.argv[1:]
 
-    argv = [name] + argv + ["-v", "-v", "--debug"]
+    argv = [name, *argv, "-v", "-v", "--debug"]
     cmd_mgr = CommandManager("test_gerritclient", convert_underscores=True)
     cmd_mgr.add_command(name, cmd_class)
     return GerritClient(

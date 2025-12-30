@@ -96,7 +96,7 @@ class ServerCacheShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
     columns = ("name", "type", "entries", "average_get", "hit_ratio")
 
     def get_parser(self, app_name):
-        parser = super(ServerCacheShow, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument("name", help="Cache name.")
         return parser
 
@@ -110,7 +110,7 @@ class ServerCacheFlush(ServerMixIn, base.BaseCommand):
     """Flushes a cache."""
 
     def get_parser(self, prog_name):
-        parser = super(ServerCacheFlush, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument(
             "-a", "--all", action="store_true", help="All available caches."
@@ -132,7 +132,7 @@ class ServerStateSummaryList(ServerMixIn, base.BaseCommand, base.show.ShowOne):
     columns = ("task_summary", "mem_summary", "thread_summary")
 
     def get_parser(self, prog_name):
-        parser = super(ServerStateSummaryList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "--jvm", action="store_true", help="Includes a JVM summary."
         )
@@ -191,7 +191,7 @@ class ServerTaskShow(ServerMixIn, base.BaseCommand, base.show.ShowOne):
     )
 
     def get_parser(self, prog_name):
-        parser = super(ServerTaskShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "task_id",
             metavar="task-identifier",
@@ -212,7 +212,7 @@ class ServerTaskDelete(ServerMixIn, base.BaseCommand):
     """
 
     def get_parser(self, prog_name):
-        parser = super(ServerTaskDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "task_id",
             metavar="task-identifier",

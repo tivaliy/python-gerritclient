@@ -31,7 +31,7 @@ class AccountList(AccountMixIn, base.BaseListCommand):
     columns = ("_account_id",)
 
     def get_parser(self, app_name):
-        parser = super(AccountList, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument("query", help="Query string.")
         parser.add_argument(
             "--suggest", action="store_true", help="Get account suggestions."
@@ -86,7 +86,7 @@ class AccountShow(AccountMixIn, base.BaseShowCommand):
     columns = ("_account_id", "name", "email", "username", "status")
 
     def get_parser(self, prog_name):
-        parser = super(AccountShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "-a", "--all", action="store_true", help="Show more details about account."
         )
@@ -119,7 +119,7 @@ class BaseAccountSetCommand(AccountMixIn, base.BaseCommand, abc.ABC):
         pass
 
     def get_parser(self, prog_name):
-        parser = super(BaseAccountSetCommand, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "account_id", metavar="account-identifier", help="Account identifier."
         )
@@ -132,9 +132,7 @@ class BaseAccountSetCommand(AccountMixIn, base.BaseCommand, abc.ABC):
 
     def take_action(self, parsed_args):
         self.action(parsed_args.account_id, parsed_args.attribute)
-        msg = (
-            f"{self.attribute.capitalize()} for the account with identifier '{parsed_args.account_id}' was successfully set.\n"
-        )
+        msg = f"{self.attribute.capitalize()} for the account with identifier '{parsed_args.account_id}' was successfully set.\n"
         self.app.stdout.write(msg)
 
 
@@ -207,7 +205,7 @@ class AccountSetPassword(AccountMixIn, base.BaseShowCommand):
     columns = ("account_identifier", "http_password")
 
     def get_parser(self, prog_name):
-        parser = super(AccountSetPassword, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument(
             "--generate", action="store_true", help="Generate HTTP password."
@@ -232,7 +230,7 @@ class AccountDeletePassword(AccountMixIn, base.BaseCommand):
     """Deletes the HTTP password of an account in Gerrit."""
 
     def get_parser(self, prog_name):
-        parser = super(AccountDeletePassword, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "account_id", metavar="account-identifier", help="Account identifier."
         )
@@ -253,7 +251,7 @@ class AccountSSHKeyList(AccountMixIn, base.BaseListCommand):
     columns = ("seq", "ssh_public_key", "encoded_key", "algorithm", "comment", "valid")
 
     def get_parser(self, prog_name):
-        parser = super(AccountSSHKeyList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "account_id", metavar="account-identifier", help="Account identifier."
         )
@@ -272,7 +270,7 @@ class AccountSSHKeyShow(AccountMixIn, base.BaseShowCommand):
     columns = ("seq", "ssh_public_key", "encoded_key", "algorithm", "comment", "valid")
 
     def get_parser(self, app_name):
-        parser = super(AccountSSHKeyShow, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "-s",
             "--sequence-id",
@@ -298,13 +296,11 @@ class AccountSSHKeyAdd(AccountMixIn, base.BaseShowCommand):
     @staticmethod
     def get_file_path(file_path):
         if not utils.file_exists(file_path):
-            raise argparse.ArgumentTypeError(
-                f"File '{file_path}' does not exist"
-            )
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
         return file_path
 
     def get_parser(self, app_name):
-        parser = super(AccountSSHKeyAdd, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument("--ssh-key", help="The SSH public key.")
         group.add_argument(
@@ -334,7 +330,7 @@ class AccountSSHKeyDelete(AccountMixIn, base.BaseCommand):
     """Deletes an SSH key of a user in Gerrit."""
 
     def get_parser(self, prog_name):
-        parser = super(AccountSSHKeyDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "account_id", metavar="account-identifier", help="Account identifier."
         )
@@ -370,7 +366,7 @@ class AccountMembershipList(AccountMixIn, base.BaseListCommand):
     )
 
     def get_parser(self, prog_name):
-        parser = super(AccountMembershipList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "account_id", metavar="account-identifier", help="Account identifier."
         )
@@ -388,7 +384,7 @@ class AccountEmailAdd(AccountMixIn, base.BaseShowCommand):
     columns = ("email", "preferred", "pending_confirmation")
 
     def get_parser(self, app_name):
-        parser = super(AccountEmailAdd, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument("-e", "--email", required=True, help="Account email.")
         parser.add_argument(
             "--preferred", action="store_true", help="Set email address as preferred."
@@ -416,7 +412,7 @@ class AccountEmailDelete(AccountMixIn, base.BaseCommand):
     """Deletes an email address of an account in Gerrit."""
 
     def get_parser(self, prog_name):
-        parser = super(AccountEmailDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "account_id", metavar="account-identifier", help="Account identifier."
         )

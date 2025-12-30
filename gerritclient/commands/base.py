@@ -29,7 +29,7 @@ class BaseCommand(command.Command, abc.ABC):
     """Base Gerrit Code Review Client command."""
 
     def __init__(self, *args, **kwargs):
-        super(BaseCommand, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.client = client.get_client(self.entity_name, VERSION)
 
     @property
@@ -98,7 +98,7 @@ class BaseShowCommand(show.ShowOne, BaseCommand, abc.ABC):
         pass
 
     def get_parser(self, app_name):
-        parser = super(BaseShowCommand, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
 
         parser.add_argument(
             "entity_id",
@@ -122,13 +122,11 @@ class BaseCreateCommand(BaseShowCommand, abc.ABC):
     @staticmethod
     def get_file_path(file_path):
         if not utils.file_exists(file_path):
-            raise argparse.ArgumentTypeError(
-                f"File '{file_path}' does not exist"
-            )
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
         return file_path
 
     def get_parser(self, prog_name):
-        parser = super(BaseCreateCommand, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "--file", type=self.get_file_path, help="File with metadata to be uploaded."
         )
@@ -164,7 +162,7 @@ class BaseEntitySetState(BaseCommand, abc.ABC):
         pass
 
     def get_parser(self, prog_name):
-        parser = super(BaseEntitySetState, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "entity_id",
             metavar=f"{self.entity_name}-identifier",
@@ -181,7 +179,7 @@ class BaseEntitySetState(BaseCommand, abc.ABC):
 
 class BaseDownloadCommand(BaseCommand, abc.ABC):
     def get_parser(self, prog_name):
-        parser = super(BaseDownloadCommand, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "-f",
             "--format",

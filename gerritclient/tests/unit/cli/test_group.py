@@ -24,7 +24,7 @@ class TestGroupCommand(clibase.BaseCLITest):
     """Tests for gerrit group * commands."""
 
     def setUp(self):
-        super(TestGroupCommand, self).setUp()
+        super().setUp()
         self.m_client.get_all.return_value = fake_group.get_fake_groups(10)
         get_fake_group = fake_group.get_fake_group()
         self.m_client.get_by_id.return_value = get_fake_group

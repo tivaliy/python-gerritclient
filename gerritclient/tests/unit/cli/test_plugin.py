@@ -24,7 +24,7 @@ class TestPluginCommand(clibase.BaseCLITest):
     """Tests for gerrit plugin * commands."""
 
     def setUp(self):
-        super(TestPluginCommand, self).setUp()
+        super().setUp()
         self.m_client.get_all.return_value = fake_plugin.get_fake_plugins(10)
         get_fake_plugin = fake_plugin.get_fake_plugin(plugin_id="fake-plugin")
         self.m_client.get_by_id.return_value = get_fake_plugin

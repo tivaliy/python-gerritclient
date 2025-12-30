@@ -76,10 +76,12 @@ def safe_load(data_format, stream):
 
 
 def safe_dump(data_format, stream, data):
-    yaml_dumper = lambda data, stream: yaml.safe_dump(
-        data, stream, default_flow_style=False
-    )
-    json_dumper = lambda data, stream: json.dump(data, stream, indent=4)
+    def yaml_dumper(data, stream):
+        return yaml.safe_dump(data, stream, default_flow_style=False)
+
+    def json_dumper(data, stream):
+        return json.dump(data, stream, indent=4)
+
     dumpers = {"json": json_dumper, "yaml": yaml_dumper}
 
     if data_format not in dumpers:
@@ -118,9 +120,7 @@ def safe_deserialize(loader):
         try:
             return loader(data)
         except (ValueError, TypeError, yaml.error.YAMLError) as e:
-            raise error.BadDataException(
-                f"{e.__class__.__name__}: {e!s}"
-            )
+            raise error.BadDataException(f"{e.__class__.__name__}: {e!s}")
 
     return wrapper
 
@@ -140,7 +140,7 @@ def urljoin(*args):
     Trailing, but not leading slashes are stripped for each argument.
     """
 
-    return "/".join(map(lambda x: str(x).rstrip("/"), args))
+    return "/".join(str(x).rstrip("/") for x in args)
 
 
 def normalize(string, replacer="_"):

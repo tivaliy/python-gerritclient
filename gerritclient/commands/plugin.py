@@ -31,7 +31,7 @@ class PluginList(PluginsMixIn, base.BaseListCommand):
     columns = ("id", "name", "version", "index_url")
 
     def get_parser(self, app_name):
-        parser = super(PluginList, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         parser.add_argument(
             "-a",
             "--all",
@@ -86,13 +86,11 @@ class PluginInstall(PluginsMixIn, base.BaseShowCommand):
     @staticmethod
     def get_file_path(file_path):
         if not utils.file_exists(file_path):
-            raise argparse.ArgumentTypeError(
-                f"File '{file_path}' does not exist"
-            )
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
         return file_path
 
     def get_parser(self, app_name):
-        parser = super(PluginInstall, self).get_parser(app_name)
+        parser = super().get_parser(app_name)
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument("--url", help="URL to the plugin jar.")
         group.add_argument(
