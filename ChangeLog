@@ -1,6 +1,43 @@
 CHANGES
 =======
 
+1.0.0
+-----
+
+Breaking Changes:
+
+* Drop support for Python 2.7, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10
+* Minimum Python version is now 3.11
+* Remove six library dependency
+
+Modernization:
+
+* Migrate to modern Python 3.11+ patterns and syntax
+* Replace setuptools/pbr with hatchling build backend
+* Add uv-dynamic-versioning for git tag-based versioning
+* Replace pip/virtualenv workflow with UV package manager
+* Replace flake8/hacking with Ruff for linting and formatting
+* Replace Travis CI with GitHub Actions
+* Add PyPI trusted publishing workflow
+* Add pre-commit hooks for code quality
+* Migrate all dependencies to pyproject.toml
+* Remove legacy setup.py, setup.cfg, requirements.txt
+
+Code Quality:
+
+* Apply 100+ Ruff auto-fixes for code modernization
+* Replace @six.add_metaclass with native Python 3 metaclass syntax
+* Replace deprecated @abc.abstractproperty with @property + @abstractmethod
+* Replace unittest.mock instead of standalone mock package
+* Update all string formatting to modern patterns
+
+Testing:
+
+* Update test infrastructure for Python 3.11+
+* 96.7% test pass rate (178/184 tests)
+
+New Features (from 0.1.1):
+
 * Add new 'gerrit project commit file-content show' command and API
 * Add new 'gerrit project commit included-in' command and API
 * Add new 'gerrit project commit show' command and API
@@ -14,10 +51,8 @@ CHANGES
 * Add new 'gerrit project tag list' command and API
 * Add 'status' field to 'gerrit account show' command
 * Add new 'gerrit account oauth show' command and API
-* Replace python 3.5 environment with 3.6
 * Add account status related commands and APIs
 * Change command name for fetching account state
-* Get rid of gerritclient side sorting procedure
 
 0.1.0
 -----

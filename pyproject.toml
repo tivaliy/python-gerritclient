@@ -1,6 +1,6 @@
 [project]
 name = "python-gerritclient"
-version = "1.0.0"
+dynamic = ["version"]
 description = "CLI tool and Python API wrapper for Gerrit Code Review"
 authors = [
     {name = "Vitalii Kulanov", email = "vitaliy@kulanov.org.ua"}
@@ -158,8 +158,19 @@ Repository = "https://github.com/tivaliy/python-gerritclient"
 Issues = "https://github.com/tivaliy/python-gerritclient/issues"
 
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "uv-dynamic-versioning>=0.8.2"]
+build-backend = "hatchling.build"
+
+[tool.uv-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "pep440"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.hatch.build.targets.wheel]
+packages = ["gerritclient"]
 
 [tool.uv]
 dev-dependencies = [
@@ -167,6 +178,7 @@ dev-dependencies = [
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
     "mypy>=1.8.0",
+    "pre-commit>=4.0.0",
 ]
 
 [tool.ruff]
@@ -194,7 +206,6 @@ ignore = [
     "N818",  # exception naming (GerritClientException is established pattern)
     "B904",  # exception chaining (would change error behavior)
     "F401",  # unused imports in __init__.py (used for re-exports)
-    "SIM105", # contextlib.suppress (setup.py compatibility)
     "UP015", # unnecessary open mode argument (explicit is better for test compatibility)
 ]
 
