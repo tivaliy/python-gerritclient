@@ -46,6 +46,33 @@ Using pip::
 
     pip install python-gerritclient
 
+Configuration
+~~~~~~~~~~~~~
+
+Configuration is loaded from environment variables with the ``GERRIT_`` prefix.
+
+**Using environment variables** (recommended for CI/CD)::
+
+    export GERRIT_URL=https://review.example.com
+    export GERRIT_AUTH_TYPE=basic
+    export GERRIT_USERNAME=your-username
+    export GERRIT_PASSWORD=your-http-password
+
+**Using a .env file** (recommended for local development)::
+
+    # Create a .env file in your project directory
+    GERRIT_URL=https://review.example.com
+    GERRIT_AUTH_TYPE=basic
+    GERRIT_USERNAME=your-username
+    GERRIT_PASSWORD=your-http-password
+
+**Configuration options:**
+
+* ``GERRIT_URL`` (required): Gerrit server URL (e.g., ``https://review.openstack.org``)
+* ``GERRIT_AUTH_TYPE`` (optional): Authentication type - ``basic`` or ``digest``. Omit for anonymous access.
+* ``GERRIT_USERNAME`` (required if auth_type set): Your Gerrit username
+* ``GERRIT_PASSWORD`` (required if auth_type set): HTTP password from Gerrit (Settings -> HTTP Credentials)
+
 Basic Usage
 ~~~~~~~~~~~
 
@@ -59,13 +86,17 @@ Python API::
 
     from gerritclient import client
 
+    # Option 1: Use environment variables (automatic)
+    group_client = client.get_client('group')
+    members = group_client.get_group_members('core-team')
+
+    # Option 2: Explicit connection
     connection = client.connect(
-        "review.example.com",
+        "https://review.example.com",
         auth_type="digest",
         username="user",
         password="pass"
     )
-
     group_client = client.get_client('group', connection=connection)
     members = group_client.get_group_members('core-team')
 
