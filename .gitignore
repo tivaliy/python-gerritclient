@@ -5,6 +5,9 @@
 .tox
 .testrepository
 .stestr
+.pytest_cache
+.coverage
+htmlcov/
 
 docs/build
 /dist/
