@@ -27,17 +27,22 @@ CLI tool and Python API wrapper for Gerrit Code Review
    cd python-gerritclient
    ```
 
-3. Configure `settings.yaml` file (in `gerritclient/settings.yaml`):
-    ```yaml
-    url: http://review.example.com
-    auth_type: basic
-    username: admin
-    password: "1234567890aaWmmflSl+ZlOPs23Dffn"
+3. Configure environment variables (create a `.env` file or export directly):
+    ```bash
+    # Option A: Create a .env file
+    cp .env.example .env
+    # Edit .env with your settings
+
+    # Option B: Export directly
+    export GERRIT_URL=https://review.example.com
+    export GERRIT_AUTH_TYPE=basic
+    export GERRIT_USERNAME=admin
+    export GERRIT_PASSWORD="your-http-password"
     ```
 
-    * `url` - Gerrit server URL in format `<scheme>://<host>:<port>` (e.g., `https://review.openstack.org`)
-    * `auth_type` - HTTP authentication scheme (`basic` or `digest`), omit for anonymous access
-    * `username` and `password` - user credentials from Gerrit (Settings → HTTP Password)
+    * `GERRIT_URL` - Gerrit server URL (e.g., `https://review.openstack.org`)
+    * `GERRIT_AUTH_TYPE` - HTTP authentication scheme (`basic` or `digest`), omit for anonymous access
+    * `GERRIT_USERNAME` and `GERRIT_PASSWORD` - user credentials from Gerrit (Settings → HTTP Password)
 
 4. Install dependencies and run:
    ```bash
@@ -59,7 +64,7 @@ CLI tool and Python API wrapper for Gerrit Code Review
    cd python-gerritclient
    ```
 
-2. Configure `settings.yaml` (same as above)
+2. Configure environment variables (same as step 3 above)
 
 3. Install with pip:
    ```bash
