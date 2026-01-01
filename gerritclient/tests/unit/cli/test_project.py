@@ -233,7 +233,8 @@ class TestProjectCommand(clibase.BaseCLITest):
         self.m_client.create.assert_called_once_with(project_id, data=test_data)
 
     @mock.patch("gerritclient.common.utils.file_exists", mock.Mock(return_value=True))
-    def test_project_create_w_parameters_from_bad_file_format_fail(self):
+    @mock.patch("sys.stderr")
+    def test_project_create_w_parameters_from_bad_file_format_fail(self, mocked_stderr):
         project_id = "fakes/fake-project"
         test_data = {}
         expected_path = "/tmp/fakes/bad_file.format"
@@ -241,9 +242,12 @@ class TestProjectCommand(clibase.BaseCLITest):
 
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
-            self.assertRaisesRegex(
-                ValueError, "Unsupported data format", self.exec_command, args
+            result = self.exec_command(args)
+            self.assertEqual(1, result)
+            stderr_output = "".join(
+                call[0][0] for call in mocked_stderr.write.call_args_list
             )
+            self.assertIn("Unsupported data format", stderr_output)
 
     @mock.patch("sys.stderr")
     def test_project_create_fail(self, mocked_stderr):
@@ -651,7 +655,8 @@ Garbage collection completed successfully."""
         self.m_client.set_config.assert_called_once_with(project_name, data=test_data)
 
     @mock.patch("gerritclient.common.utils.file_exists", mock.Mock(return_value=True))
-    def test_project_configuration_set_from_bad_file_format_fail(self):
+    @mock.patch("sys.stderr")
+    def test_project_configuration_set_from_bad_file_format_fail(self, mocked_stderr):
         project_name = "fakes/fake-project"
         test_data = {}
         expected_path = "/tmp/fakes/bad_file.format"
@@ -659,9 +664,12 @@ Garbage collection completed successfully."""
 
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
-            self.assertRaisesRegex(
-                ValueError, "Unsupported data format", self.exec_command, args
+            result = self.exec_command(args)
+            self.assertEqual(1, result)
+            stderr_output = "".join(
+                call[0][0] for call in mocked_stderr.write.call_args_list
             )
+            self.assertIn("Unsupported data format", stderr_output)
 
     @mock.patch("sys.stderr")
     def test_project_configuration_set_fail(self, mocked_stderr):

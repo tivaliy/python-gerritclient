@@ -111,8 +111,9 @@ class TestPluginCommand(clibase.BaseCLITest):
         plugin_id = "bad-plugin-identifier"
         url = "http://url/path/to/plugin.jar"
         args = f"plugin install {plugin_id} --url {url}"
-        self.assertRaises(ValueError, self.exec_command, args)
-        self.assertIn(
-            'Plugin identifier must contain ".jar" prefix',
-            mocked_stderr.write.call_args_list[0][0][0],
+        result = self.exec_command(args)
+        self.assertEqual(1, result)
+        stderr_output = "".join(
+            call[0][0] for call in mocked_stderr.write.call_args_list
         )
+        self.assertIn('Plugin identifier must contain ".jar"', stderr_output)
