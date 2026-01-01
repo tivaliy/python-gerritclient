@@ -39,9 +39,6 @@ dev = [
 test = [
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
-    "fixtures>=4.0.0",
-    "oslotest>=5.0.0",
-    "testtools>=2.5.0",
 ]
 docs = [
     "sphinx>=1.6.2",

@@ -1,5 +1,9 @@
+"""Tests for gerrit account commands."""
+
 import json
 from unittest import mock
+
+import pytest
 
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_account, fake_sshkeyinfo
@@ -8,8 +12,9 @@ from gerritclient.tests.utils import fake_account, fake_sshkeyinfo
 class TestAccountCommand(clibase.BaseCLITest):
     """Tests for gerrit account * commands."""
 
-    def setUp(self):
-        super().setUp()
+    @pytest.fixture(autouse=True)
+    def setup_account_mocks(self, setup_client_mock):
+        """Set up account-specific mocks."""
         self.m_client.get_all.return_value = fake_account.get_fake_accounts(10)
         self.m_client.get_by_id.return_value = fake_account.get_fake_account()
 
@@ -74,10 +79,9 @@ class TestAccountCommand(clibase.BaseCLITest):
     @mock.patch("sys.stderr")
     def test_account_show_fail(self, mocked_stderr):
         args = "account show"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "account show: error:", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "account show: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_account_show_w_details(self):
         account_id = "john"
@@ -125,19 +129,18 @@ class TestAccountCommand(clibase.BaseCLITest):
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
             result = self.exec_command(args)
-            self.assertEqual(1, result)
+            assert result == 1
             stderr_output = "".join(
                 call[0][0] for call in mocked_stderr.write.call_args_list
             )
-            self.assertIn("Unsupported data format", stderr_output)
+            assert "Unsupported data format" in stderr_output
 
     @mock.patch("sys.stderr")
     def test_account_create_fail(self, mocked_stderr):
         args = "account create"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "account create: error:", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "account create: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_account_set_fullname(self):
         account_id = "69"
@@ -196,10 +199,11 @@ class TestAccountCommand(clibase.BaseCLITest):
     @mock.patch("sys.stderr")
     def test_account_status_show_fail(self, mocked_stderr):
         args = "account status show"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "run account status show: error:",
-            mocked_stderr.write.call_args_list[-1][0][0],
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert (
+            "account status show: error:"
+            in mocked_stderr.write.call_args_list[-1][0][0]
         )
 
     def test_account_status_set(self):
@@ -216,10 +220,11 @@ class TestAccountCommand(clibase.BaseCLITest):
     @mock.patch("sys.stderr")
     def test_account_status_set_fail(self, mocked_stderr):
         args = "account status set"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "run account status set: error:",
-            mocked_stderr.write.call_args_list[-1][0][0],
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert (
+            "account status set: error:"
+            in mocked_stderr.write.call_args_list[-1][0][0]
         )
 
     def test_account_set_password(self):
@@ -287,10 +292,9 @@ class TestAccountCommand(clibase.BaseCLITest):
     def test_account_ssh_key_show_fail(self, mocked_stderr):
         account_id = "69"
         args = f"account ssh-key show {account_id}"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "ssh-key show: error:", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "ssh-key show: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_account_ssh_key_add(self):
         account_id = "69"
@@ -337,8 +341,9 @@ class TestAccountCommand(clibase.BaseCLITest):
             "YImydZAw\u003d\u003d john.doe@example.com"
         )
         args = f'account ssh-key add {account_id} --ssh-key "{ssh_key}" --file {expected_path} '
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn("not allowed", mocked_stderr.write.call_args_list[-1][0][0])
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "not allowed" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_account_ssh_key_delete(self):
         account_id = "69"
@@ -403,7 +408,8 @@ class TestAccountCommand(clibase.BaseCLITest):
     @mock.patch("sys.stderr")
     def test_account_oauth_access_token_fail(self, mocked_stderr):
         args = "account oauth show"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "account oauth show: error:", mocked_stderr.write.call_args_list[-1][0][0]
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert (
+            "account oauth show: error:" in mocked_stderr.write.call_args_list[-1][0][0]
         )

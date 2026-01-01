@@ -1,6 +1,8 @@
 import json
 from unittest import mock
 
+import pytest
+
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_account, fake_group
 
@@ -8,8 +10,9 @@ from gerritclient.tests.utils import fake_account, fake_group
 class TestGroupCommand(clibase.BaseCLITest):
     """Tests for gerrit group * commands."""
 
-    def setUp(self):
-        super().setUp()
+    @pytest.fixture(autouse=True)
+    def setup_group_mocks(self, setup_client_mock):
+        """Set up group-specific mocks."""
         self.m_client.get_all.return_value = fake_group.get_fake_groups(10)
         get_fake_group = fake_group.get_fake_group()
         self.m_client.get_by_id.return_value = get_fake_group
@@ -94,19 +97,18 @@ class TestGroupCommand(clibase.BaseCLITest):
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
             result = self.exec_command(args)
-            self.assertEqual(1, result)
+            assert result == 1
             stderr_output = "".join(
                 call[0][0] for call in mocked_stderr.write.call_args_list
             )
-            self.assertIn("Unsupported data format", stderr_output)
+            assert "Unsupported data format" in stderr_output
 
     @mock.patch("sys.stderr")
     def test_group_project_fail(self, mocked_stderr):
         args = "group create"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "group create: error:", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "group create: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_group_rename(self):
         group_id = "69"
@@ -146,10 +148,9 @@ class TestGroupCommand(clibase.BaseCLITest):
     def test_group_set_options_fail(self, mocked_stderr):
         group_id = "69"
         args = f"group options set {group_id} --visible --no-visible"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "not allowed with argument", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "not allowed with argument" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_group_set_owner_group(self):
         group_id = "69"

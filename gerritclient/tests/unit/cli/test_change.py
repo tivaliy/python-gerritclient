@@ -1,15 +1,14 @@
 import json
 from unittest import mock
 
+import pytest
+
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_account, fake_change, fake_comment
 
 
 class TestChangeCommand(clibase.BaseCLITest):
     """Tests for gerrit change * commands."""
-
-    def setUp(self):
-        super().setUp()
 
     def test_change_list_w_single_query(self):
         query = ["status:open+is:watched"]
@@ -150,11 +149,11 @@ class TestChangeCommand(clibase.BaseCLITest):
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
             result = self.exec_command(args)
-            self.assertEqual(1, result)
+            assert result == 1
             stderr_output = "".join(
                 call[0][0] for call in mocked_stderr.write.call_args_list
             )
-            self.assertIn("Unsupported data format", stderr_output)
+            assert "Unsupported data format" in stderr_output
 
     def test_change_delete(self):
         change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
@@ -376,11 +375,9 @@ class TestChangeCommand(clibase.BaseCLITest):
     def test_change_comments_list_w_wrong_type_fail(self, mocked_stderr):
         change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
         args = f"change comment list {change_id} --type bad_comment"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "invalid choice: 'bad_comment'",
-            mocked_stderr.write.call_args_list[-1][0][0],
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "invalid choice: 'bad_comment'" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_change_consistency_check(self):
         change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
