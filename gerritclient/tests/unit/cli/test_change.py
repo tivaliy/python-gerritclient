@@ -141,16 +141,20 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.m_client.create.assert_called_once_with(test_data)
 
     @mock.patch("gerritclient.common.utils.file_exists", mock.Mock(return_value=True))
-    def test_change_create_bad_file_format_fail(self):
+    @mock.patch("sys.stderr")
+    def test_change_create_bad_file_format_fail(self, mocked_stderr):
         test_data = {}
         expected_path = "/tmp/fakes/bad_file.format"
         args = f"change create {expected_path}"
 
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
-            self.assertRaisesRegex(
-                ValueError, "Unsupported data format", self.exec_command, args
+            result = self.exec_command(args)
+            self.assertEqual(1, result)
+            stderr_output = "".join(
+                call[0][0] for call in mocked_stderr.write.call_args_list
             )
+            self.assertIn("Unsupported data format", stderr_output)
 
     def test_change_delete(self):
         change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"

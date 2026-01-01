@@ -84,7 +84,8 @@ class TestGroupCommand(clibase.BaseCLITest):
         self.m_client.create.assert_called_once_with(group_name, data=test_data)
 
     @mock.patch("gerritclient.common.utils.file_exists", mock.Mock(return_value=True))
-    def test_group_create_w_parameters_from_bad_file_format_fail(self):
+    @mock.patch("sys.stderr")
+    def test_group_create_w_parameters_from_bad_file_format_fail(self, mocked_stderr):
         group_name = "Fake-Group"
         test_data = {}
         expected_path = "/tmp/fakes/bad_file.format"
@@ -92,9 +93,12 @@ class TestGroupCommand(clibase.BaseCLITest):
 
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
-            self.assertRaisesRegex(
-                ValueError, "Unsupported data format", self.exec_command, args
+            result = self.exec_command(args)
+            self.assertEqual(1, result)
+            stderr_output = "".join(
+                call[0][0] for call in mocked_stderr.write.call_args_list
             )
+            self.assertIn("Unsupported data format", stderr_output)
 
     @mock.patch("sys.stderr")
     def test_group_project_fail(self, mocked_stderr):
