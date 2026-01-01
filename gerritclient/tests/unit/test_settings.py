@@ -1,13 +1,15 @@
+"""Tests for gerritclient.settings module."""
+
 import os
 from unittest import mock
 
-from oslotest import base as oslo_base
+import pytest
 from pydantic import ValidationError
 
 from gerritclient.settings import GerritSettings, get_settings
 
 
-class TestGerritSettings(oslo_base.BaseTestCase):
+class TestGerritSettings:
     """Test suite for Pydantic settings configuration."""
 
     def test_load_from_env_vars(self):
@@ -21,37 +23,38 @@ class TestGerritSettings(oslo_base.BaseTestCase):
         with mock.patch.dict(os.environ, env, clear=True):
             settings = GerritSettings()
 
-        self.assertEqual(settings.url, "https://review.example.com")
-        self.assertEqual(settings.auth_type, "basic")
-        self.assertEqual(settings.username, "admin")
-        self.assertEqual(settings.password, "secret")
+        assert settings.url == "https://review.example.com"
+        assert settings.auth_type == "basic"
+        assert settings.username == "admin"
+        assert settings.password == "secret"
 
     def test_url_validation_requires_scheme(self):
         """URL must start with http:// or https://."""
         env = {"GERRIT_URL": "review.example.com"}
         with mock.patch.dict(os.environ, env, clear=True):
-            self.assertRaises(ValidationError, GerritSettings)
+            with pytest.raises(ValidationError):
+                GerritSettings()
 
     def test_url_http_scheme_accepted(self):
         """HTTP URLs should be accepted."""
         env = {"GERRIT_URL": "http://review.example.com"}
         with mock.patch.dict(os.environ, env, clear=True):
             settings = GerritSettings()
-        self.assertEqual(settings.url, "http://review.example.com")
+        assert settings.url == "http://review.example.com"
 
     def test_url_https_scheme_accepted(self):
         """HTTPS URLs should be accepted."""
         env = {"GERRIT_URL": "https://review.example.com"}
         with mock.patch.dict(os.environ, env, clear=True):
             settings = GerritSettings()
-        self.assertEqual(settings.url, "https://review.example.com")
+        assert settings.url == "https://review.example.com"
 
     def test_url_trailing_slash_stripped(self):
         """Trailing slashes should be removed from URL."""
         env = {"GERRIT_URL": "https://review.example.com/"}
         with mock.patch.dict(os.environ, env, clear=True):
             settings = GerritSettings()
-        self.assertEqual(settings.url, "https://review.example.com")
+        assert settings.url == "https://review.example.com"
 
     def test_auth_type_basic_accepted(self):
         """Basic auth type should be accepted."""
@@ -63,7 +66,7 @@ class TestGerritSettings(oslo_base.BaseTestCase):
         }
         with mock.patch.dict(os.environ, env, clear=True):
             settings = GerritSettings()
-        self.assertEqual(settings.auth_type, "basic")
+        assert settings.auth_type == "basic"
 
     def test_auth_type_digest_accepted(self):
         """Digest auth type should be accepted."""
@@ -75,7 +78,7 @@ class TestGerritSettings(oslo_base.BaseTestCase):
         }
         with mock.patch.dict(os.environ, env, clear=True):
             settings = GerritSettings()
-        self.assertEqual(settings.auth_type, "digest")
+        assert settings.auth_type == "digest"
 
     def test_invalid_auth_type_rejected(self):
         """Only 'basic' and 'digest' auth types are valid."""
@@ -86,7 +89,8 @@ class TestGerritSettings(oslo_base.BaseTestCase):
             "GERRIT_PASSWORD": "pass",
         }
         with mock.patch.dict(os.environ, env, clear=True):
-            self.assertRaises(ValidationError, GerritSettings)
+            with pytest.raises(ValidationError):
+                GerritSettings()
 
     def test_auth_type_requires_username(self):
         """auth_type requires username."""
@@ -96,7 +100,8 @@ class TestGerritSettings(oslo_base.BaseTestCase):
             "GERRIT_PASSWORD": "pass",
         }
         with mock.patch.dict(os.environ, env, clear=True):
-            self.assertRaises(ValidationError, GerritSettings)
+            with pytest.raises(ValidationError):
+                GerritSettings()
 
     def test_auth_type_requires_password(self):
         """auth_type requires password."""
@@ -106,7 +111,8 @@ class TestGerritSettings(oslo_base.BaseTestCase):
             "GERRIT_USERNAME": "user",
         }
         with mock.patch.dict(os.environ, env, clear=True):
-            self.assertRaises(ValidationError, GerritSettings)
+            with pytest.raises(ValidationError):
+                GerritSettings()
 
     def test_auth_type_requires_both_credentials(self):
         """auth_type requires both username and password."""
@@ -115,7 +121,8 @@ class TestGerritSettings(oslo_base.BaseTestCase):
             "GERRIT_AUTH_TYPE": "basic",
         }
         with mock.patch.dict(os.environ, env, clear=True):
-            self.assertRaises(ValidationError, GerritSettings)
+            with pytest.raises(ValidationError):
+                GerritSettings()
 
     def test_anonymous_access_no_auth(self):
         """Anonymous access requires no credentials."""
@@ -123,9 +130,9 @@ class TestGerritSettings(oslo_base.BaseTestCase):
         with mock.patch.dict(os.environ, env, clear=True):
             settings = GerritSettings()
 
-        self.assertIsNone(settings.auth_type)
-        self.assertIsNone(settings.username)
-        self.assertIsNone(settings.password)
+        assert settings.auth_type is None
+        assert settings.username is None
+        assert settings.password is None
 
     def test_to_dict_returns_connect_compatible_dict(self):
         """to_dict() should return dict compatible with client.connect()."""
@@ -145,7 +152,7 @@ class TestGerritSettings(oslo_base.BaseTestCase):
             "username": "user",
             "password": "pass",
         }
-        self.assertEqual(result, expected)
+        assert result == expected
 
     def test_to_dict_anonymous_access(self):
         """to_dict() should work for anonymous access."""
@@ -160,15 +167,16 @@ class TestGerritSettings(oslo_base.BaseTestCase):
             "username": None,
             "password": None,
         }
-        self.assertEqual(result, expected)
+        assert result == expected
 
     def test_missing_url_raises_validation_error(self):
         """Missing URL should raise ValidationError."""
         with mock.patch.dict(os.environ, {}, clear=True):
-            self.assertRaises(ValidationError, GerritSettings)
+            with pytest.raises(ValidationError):
+                GerritSettings()
 
 
-class TestGetSettings(oslo_base.BaseTestCase):
+class TestGetSettings:
     """Test suite for get_settings() function."""
 
     def test_get_settings_returns_dict(self):
@@ -182,11 +190,11 @@ class TestGetSettings(oslo_base.BaseTestCase):
         with mock.patch.dict(os.environ, env, clear=True):
             result = get_settings()
 
-        self.assertIsInstance(result, dict)
-        self.assertEqual(result["url"], "https://review.example.com")
-        self.assertEqual(result["auth_type"], "basic")
-        self.assertEqual(result["username"], "admin")
-        self.assertEqual(result["password"], "secret")
+        assert isinstance(result, dict)
+        assert result["url"] == "https://review.example.com"
+        assert result["auth_type"] == "basic"
+        assert result["username"] == "admin"
+        assert result["password"] == "secret"
 
     def test_get_settings_anonymous(self):
         """get_settings() should work for anonymous access."""
@@ -194,10 +202,11 @@ class TestGetSettings(oslo_base.BaseTestCase):
         with mock.patch.dict(os.environ, env, clear=True):
             result = get_settings()
 
-        self.assertEqual(result["url"], "https://review.example.com")
-        self.assertIsNone(result["auth_type"])
+        assert result["url"] == "https://review.example.com"
+        assert result["auth_type"] is None
 
     def test_get_settings_missing_config_raises(self):
         """get_settings() should raise when no config available."""
         with mock.patch.dict(os.environ, {}, clear=True):
-            self.assertRaises(ValidationError, get_settings)
+            with pytest.raises(ValidationError):
+                get_settings()

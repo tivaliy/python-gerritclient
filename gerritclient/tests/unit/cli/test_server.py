@@ -1,5 +1,7 @@
 from unittest import mock
 
+import pytest
+
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_server
 
@@ -7,8 +9,9 @@ from gerritclient.tests.utils import fake_server
 class TestConfigServerCommand(clibase.BaseCLITest):
     """Tests for gerrit config server * commands."""
 
-    def setUp(self):
-        super().setUp()
+    @pytest.fixture(autouse=True)
+    def setup_server_mocks(self, setup_client_mock):
+        """Set up server-specific mocks."""
         fake_cache_info_list = fake_server.get_fake_caches_info(5)
         self.m_client.get_caches.return_value = fake_cache_info_list
         fake_cache_info = fake_server.get_fake_cache_info()
@@ -137,16 +140,16 @@ class TestConfigServerCommand(clibase.BaseCLITest):
     @mock.patch("sys.stderr")
     def test_server_cache_flush_w_mutually_exclusive_params_fail(self, m_stderr):
         args = "server cache flush --name fake_cache1 fake_cache_2 --all"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn("not allowed", m_stderr.write.call_args_list[-1][0][0])
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "not allowed" in m_stderr.write.call_args_list[-1][0][0]
 
     @mock.patch("sys.stderr")
     def test_server_cache_flush_wo_params_fail(self, m_stderr):
         args = "server cache flush"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "error: one of the arguments", m_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "error: one of the arguments" in m_stderr.write.call_args_list[-1][0][0]
 
     def test_server_get_summary_state_show(self):
         args = "server state show --max-width 110"

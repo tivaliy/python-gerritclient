@@ -1,6 +1,8 @@
 import json
 from unittest import mock
 
+import pytest
+
 from gerritclient.common import utils
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_commit, fake_project, fake_tag
@@ -9,8 +11,9 @@ from gerritclient.tests.utils import fake_commit, fake_project, fake_tag
 class TestProjectCommand(clibase.BaseCLITest):
     """Tests for gerrit project * commands."""
 
-    def setUp(self):
-        super().setUp()
+    @pytest.fixture(autouse=True)
+    def setup_project_mocks(self, setup_client_mock):
+        """Set up project-specific mocks."""
         self.m_client.get_all.return_value = fake_project.get_fake_projects(10)
         get_fake_project = fake_project.get_fake_project()
         self.m_client.get_by_name.return_value = get_fake_project
@@ -162,8 +165,9 @@ class TestProjectCommand(clibase.BaseCLITest):
     @mock.patch("sys.stderr")
     def test_project_list_with_mutually_exclusive_params(self, mocked_stderr):
         args = "project list --match some --prefix fake --regex fake*.*"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn("not allowed", mocked_stderr.write.call_args_list[-1][0][0])
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "not allowed" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_project_list_w_regex(self):
         regex = {"regex": "fake*.*"}
@@ -243,19 +247,18 @@ class TestProjectCommand(clibase.BaseCLITest):
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
             result = self.exec_command(args)
-            self.assertEqual(1, result)
+            assert result == 1
             stderr_output = "".join(
                 call[0][0] for call in mocked_stderr.write.call_args_list
             )
-            self.assertIn("Unsupported data format", stderr_output)
+            assert "Unsupported data format" in stderr_output
 
     @mock.patch("sys.stderr")
     def test_project_create_fail(self, mocked_stderr):
         args = "project create"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "project create: error:", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "project create: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_project_delete(self):
         project_name = "fake/fake-project"
@@ -558,8 +561,9 @@ Garbage collection completed successfully."""
     @mock.patch("sys.stderr")
     def test_project_tag_list_w_mutually_exclusive_params(self, mocked_stderr):
         args = "project list --match some --regex fake*.*"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn("not allowed", mocked_stderr.write.call_args_list[-1][0][0])
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "not allowed" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_project_tag_show(self):
         project_name = "fake/fake-project"
@@ -665,20 +669,18 @@ Garbage collection completed successfully."""
         m_open = mock.mock_open(read_data=json.dumps(test_data))
         with mock.patch("gerritclient.common.utils.open", m_open, create=True):
             result = self.exec_command(args)
-            self.assertEqual(1, result)
+            assert result == 1
             stderr_output = "".join(
                 call[0][0] for call in mocked_stderr.write.call_args_list
             )
-            self.assertIn("Unsupported data format", stderr_output)
+            assert "Unsupported data format" in stderr_output
 
     @mock.patch("sys.stderr")
     def test_project_configuration_set_fail(self, mocked_stderr):
         args = "project configuration set"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "project configuration set: error:",
-            mocked_stderr.write.call_args_list[-1][0][0],
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "project configuration set: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_project_commit_show(self):
         commit_id = "184ebe53805e102605d11f6b143486d15c23a09c"
@@ -695,10 +697,9 @@ Garbage collection completed successfully."""
     @mock.patch("sys.stderr")
     def test_project_commit_show_fail(self, mocked_stderr):
         args = "project commit show"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "project commit show: error:", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "project commit show: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_project_commit_affiliation_show(self):
         commit_id = "184ebe53805e102605d11f6b143486d15c23a09c"
@@ -716,11 +717,9 @@ Garbage collection completed successfully."""
     @mock.patch("sys.stderr")
     def test_project_commit_affiliation_show_fail(self, mocked_stderr):
         args = "project commit included-in"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "project commit included-in: error:",
-            mocked_stderr.write.call_args_list[-1][0][0],
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "project commit included-in: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_project_commit_file_content_show(self):
         commit_id = "184ebe53805e102605d11f6b143486d15c23a09c"
@@ -739,8 +738,6 @@ Garbage collection completed successfully."""
     @mock.patch("sys.stderr")
     def test_project_commit_file_content_show_fail(self, mocked_stderr):
         args = "project commit file-content show"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "project commit file-content show: error:",
-            mocked_stderr.write.call_args_list[-1][0][0],
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "project commit file-content show: error:" in mocked_stderr.write.call_args_list[-1][0][0]

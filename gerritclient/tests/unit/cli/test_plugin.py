@@ -1,6 +1,8 @@
 import os
 from unittest import mock
 
+import pytest
+
 from gerritclient.tests.unit.cli import clibase
 from gerritclient.tests.utils import fake_plugin
 
@@ -8,8 +10,9 @@ from gerritclient.tests.utils import fake_plugin
 class TestPluginCommand(clibase.BaseCLITest):
     """Tests for gerrit plugin * commands."""
 
-    def setUp(self):
-        super().setUp()
+    @pytest.fixture(autouse=True)
+    def setup_plugin_mocks(self, setup_client_mock):
+        """Set up plugin-specific mocks."""
         self.m_client.get_all.return_value = fake_plugin.get_fake_plugins(10)
         get_fake_plugin = fake_plugin.get_fake_plugin(plugin_id="fake-plugin")
         self.m_client.get_by_id.return_value = get_fake_plugin
@@ -55,18 +58,16 @@ class TestPluginCommand(clibase.BaseCLITest):
     @mock.patch("sys.stderr")
     def test_plugin_enable_fail(self, mocked_stderr):
         args = "plugin enable"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "plugin enable: error:", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "plugin enable: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     @mock.patch("sys.stderr")
     def test_plugin_disable_fail(self, mocked_stderr):
         args = "plugin disable"
-        self.assertRaises(SystemExit, self.exec_command, args)
-        self.assertIn(
-            "plugin disable: error:", mocked_stderr.write.call_args_list[-1][0][0]
-        )
+        with pytest.raises(SystemExit):
+            self.exec_command(args)
+        assert "plugin disable: error:" in mocked_stderr.write.call_args_list[-1][0][0]
 
     def test_plugin_reload(self):
         plugin_id = "fake-plugin"
@@ -112,8 +113,8 @@ class TestPluginCommand(clibase.BaseCLITest):
         url = "http://url/path/to/plugin.jar"
         args = f"plugin install {plugin_id} --url {url}"
         result = self.exec_command(args)
-        self.assertEqual(1, result)
+        assert result == 1
         stderr_output = "".join(
             call[0][0] for call in mocked_stderr.write.call_args_list
         )
-        self.assertIn('Plugin identifier must contain ".jar"', stderr_output)
+        assert 'Plugin identifier must contain ".jar"' in stderr_output
