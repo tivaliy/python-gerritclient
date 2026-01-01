@@ -1,6 +1,26 @@
 CHANGES
 =======
 
+1.1.0
+-----
+
+Breaking Changes:
+
+* Migrate configuration from YAML to Pydantic-settings
+* Remove settings.yaml - configuration now uses environment variables
+* Users must migrate to environment variables or .env files
+
+Configuration:
+
+* Add pydantic-settings>=2.0 dependency
+* Configuration loaded from GERRIT_URL, GERRIT_AUTH_TYPE, GERRIT_USERNAME, GERRIT_PASSWORD
+* Support for .env files in current directory
+* Add .env.example template
+
+Code Quality:
+
+* Remove license headers from source files (license in LICENSE file)
+
 1.0.0
 -----
 
