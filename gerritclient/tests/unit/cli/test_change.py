@@ -415,3 +415,350 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.m_client.fix_consistency.assert_called_once_with(
             change_id, is_delete=True, expect_merged_as=True
         )
+
+    # Reviewer tests
+
+    def test_change_reviewer_list(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change reviewer list {change_id} --max-width 110"
+        fake_reviewers = fake_account.get_fake_accounts(3)
+        self.m_client.get_reviewers.return_value = fake_reviewers
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_reviewers.assert_called_once_with(change_id)
+
+    def test_change_reviewer_show(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        account_id = "jdoe"
+        args = f"change reviewer show {change_id} --account {account_id}"
+        self.m_client.get_reviewer.return_value = fake_account.get_fake_account()
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_reviewer.assert_called_once_with(change_id, account_id)
+
+    def test_change_reviewer_add(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        reviewer = "jdoe"
+        args = f"change reviewer add {change_id} --reviewer {reviewer}"
+        self.m_client.add_reviewer.return_value = {"input": reviewer, "reviewers": []}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.add_reviewer.assert_called_once_with(
+            change_id, reviewer=reviewer, state="REVIEWER", confirmed=None, notify=None
+        )
+
+    def test_change_reviewer_add_as_cc(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        reviewer = "jdoe"
+        args = f"change reviewer add {change_id} --reviewer {reviewer} --state CC"
+        self.m_client.add_reviewer.return_value = {"input": reviewer, "ccs": []}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.add_reviewer.assert_called_once_with(
+            change_id, reviewer=reviewer, state="CC", confirmed=None, notify=None
+        )
+
+    def test_change_reviewer_add_w_confirmed(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        reviewer = "big-group"
+        args = f"change reviewer add {change_id} --reviewer {reviewer} --confirmed"
+        self.m_client.add_reviewer.return_value = {"input": reviewer, "reviewers": []}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.add_reviewer.assert_called_once_with(
+            change_id, reviewer=reviewer, state="REVIEWER", confirmed=True, notify=None
+        )
+
+    def test_change_reviewer_delete(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        account_id = "jdoe"
+        args = f"change reviewer delete {change_id} --account {account_id}"
+        self.m_client.delete_reviewer.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.delete_reviewer.assert_called_once_with(
+            change_id, account_id=account_id, notify=None
+        )
+
+    def test_change_reviewer_suggest(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        query = "john"
+        args = f"change reviewer suggest {change_id} --query {query}"
+        self.m_client.suggest_reviewers.return_value = [
+            {"account": fake_account.get_fake_account(), "count": 5}
+        ]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.suggest_reviewers.assert_called_once_with(
+            change_id, query=query, limit=None, exclude_groups=None
+        )
+
+    # Review (voting) tests
+
+    def test_change_review_w_message(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        message = "Looks good to me"
+        args = f'change review {change_id} --message "{message}"'
+        self.m_client.set_review.return_value = {"labels": {}}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_review.assert_called_once_with(
+            change_id,
+            revision_id="current",
+            message=message,
+            labels=None,
+            tag=None,
+            notify=None,
+            on_behalf_of=None,
+            ready=None,
+            work_in_progress=None,
+        )
+
+    def test_change_review_w_labels(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change review {change_id} --label Code-Review=+1 --label Verified=+1"
+        self.m_client.set_review.return_value = {"labels": {"Code-Review": 1, "Verified": 1}}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_review.assert_called_once_with(
+            change_id,
+            revision_id="current",
+            message=None,
+            labels={"Code-Review": 1, "Verified": 1},
+            tag=None,
+            notify=None,
+            on_behalf_of=None,
+            ready=None,
+            work_in_progress=None,
+        )
+
+    def test_change_review_w_revision(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        revision = "2"
+        args = f"change review {change_id} --revision {revision} --label Code-Review=-1"
+        self.m_client.set_review.return_value = {"labels": {"Code-Review": -1}}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_review.assert_called_once_with(
+            change_id,
+            revision_id=revision,
+            message=None,
+            labels={"Code-Review": -1},
+            tag=None,
+            notify=None,
+            on_behalf_of=None,
+            ready=None,
+            work_in_progress=None,
+        )
+
+    def test_change_review_w_ready(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change review {change_id} --ready"
+        self.m_client.set_review.return_value = {"ready": True}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_review.assert_called_once_with(
+            change_id,
+            revision_id="current",
+            message=None,
+            labels=None,
+            tag=None,
+            notify=None,
+            on_behalf_of=None,
+            ready=True,
+            work_in_progress=None,
+        )
+
+    # Attention Set tests
+
+    def test_change_attention_set_show(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change attention-set show {change_id}"
+        self.m_client.get_attention_set.return_value = {
+            "1000096": {"account": {"_account_id": 1000096}, "reason": "Reviewer"}
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_attention_set.assert_called_once_with(change_id)
+
+    def test_change_attention_set_add(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        account_id = "jdoe"
+        reason = "Please review"
+        args = f'change attention-set add {change_id} --account {account_id} --reason "{reason}"'
+        self.m_client.add_to_attention_set.return_value = fake_account.get_fake_account()
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.add_to_attention_set.assert_called_once_with(
+            change_id, account_id=account_id, reason=reason, notify=None
+        )
+
+    def test_change_attention_set_remove(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        account_id = "jdoe"
+        args = f"change attention-set remove {change_id} --account {account_id}"
+        self.m_client.remove_from_attention_set.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.remove_from_attention_set.assert_called_once_with(
+            change_id, account_id=account_id, reason=None, notify=None
+        )
+
+    # WIP / Ready tests
+
+    def test_change_wip(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change wip {change_id}"
+        self.m_client.set_work_in_progress.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_work_in_progress.assert_called_once_with(
+            change_id, message=None
+        )
+
+    def test_change_wip_w_message(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        message = "Still working on this"
+        args = f'change wip {change_id} --message "{message}"'
+        self.m_client.set_work_in_progress.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_work_in_progress.assert_called_once_with(
+            change_id, message=message
+        )
+
+    def test_change_ready(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change ready {change_id}"
+        self.m_client.set_ready_for_review.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_ready_for_review.assert_called_once_with(
+            change_id, message=None
+        )
+
+    def test_change_ready_w_message(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        message = "Ready for review now"
+        args = f'change ready {change_id} --message "{message}"'
+        self.m_client.set_ready_for_review.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_ready_for_review.assert_called_once_with(
+            change_id, message=message
+        )
+
+    # Hashtags tests
+
+    def test_change_hashtags_show(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change hashtags show {change_id}"
+        self.m_client.get_hashtags.return_value = ["bug", "urgent"]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_hashtags.assert_called_once_with(change_id)
+
+    def test_change_hashtags_set_add(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change hashtags set {change_id} --add feature --add urgent"
+        self.m_client.set_hashtags.return_value = ["feature", "urgent"]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_hashtags.assert_called_once_with(
+            change_id, add=["feature", "urgent"], remove=None
+        )
+
+    def test_change_hashtags_set_remove(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change hashtags set {change_id} --remove wip"
+        self.m_client.set_hashtags.return_value = []
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.set_hashtags.assert_called_once_with(
+            change_id, add=None, remove=["wip"]
+        )
+
+    # Change Messages tests
+
+    def test_change_message_list(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change message list {change_id} --max-width 110"
+        self.m_client.get_messages.return_value = [
+            {"id": "msg1", "message": "Uploaded patch set 1.", "date": "2024-01-01"}
+        ]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_messages.assert_called_once_with(change_id)
+
+    def test_change_message_show(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        message_id = "abc123"
+        args = f"change message show {change_id} --message-id {message_id}"
+        self.m_client.get_message.return_value = {
+            "id": message_id, "message": "Test message", "date": "2024-01-01"
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_message.assert_called_once_with(change_id, message_id)
+
+    def test_change_message_delete(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        message_id = "abc123"
+        reason = "Spam"
+        args = f'change message delete {change_id} --message-id {message_id} --reason "{reason}"'
+        self.m_client.delete_message.return_value = {
+            "id": message_id, "message": "Message deleted", "date": "2024-01-01"
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.delete_message.assert_called_once_with(
+            change_id, message_id, reason=reason
+        )
+
+    # Submitted Together tests
+
+    def test_change_submitted_together(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change submitted-together {change_id}"
+        self.m_client.get_submitted_together.return_value = {"changes": [], "non_visible_changes": 0}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_submitted_together.assert_called_once_with(
+            change_id, options=None
+        )
+
+    def test_change_submitted_together_w_options(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change submitted-together {change_id} --option NON_VISIBLE_CHANGES"
+        self.m_client.get_submitted_together.return_value = {"changes": [], "non_visible_changes": 2}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_submitted_together.assert_called_once_with(
+            change_id, options=["NON_VISIBLE_CHANGES"]
+        )

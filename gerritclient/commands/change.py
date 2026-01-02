@@ -541,6 +541,600 @@ class ChangeFix(ChangeMixIn, base.BaseShowCommand):
         return fetched_columns, data
 
 
+# Reviewer commands
+
+
+class ChangeReviewerMixIn:
+    entity_name = "change"
+
+    columns = (
+        "_account_id",
+        "name",
+        "email",
+        "username",
+        "approvals",
+    )
+
+
+class ChangeReviewerList(ChangeReviewerMixIn, base.BaseListCommand):
+    """Lists the reviewers of a change."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_reviewers(parsed_args.change_id)
+        fetched_columns = [c for c in self.columns if response and c in response[0]]
+        data = utils.get_display_data_multi(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangeReviewerShow(ChangeReviewerMixIn, base.BaseShowCommand):
+    """Retrieves a reviewer of a change."""
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-a",
+            "--account",
+            required=True,
+            help="The account identifier of the reviewer.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_reviewer(
+            parsed_args.entity_id, parsed_args.account
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangeReviewerAdd(ChangeReviewerMixIn, base.BaseCommand, base.show.ShowOne):
+    """Adds a reviewer to a change."""
+
+    columns = (
+        "input",
+        "reviewers",
+        "ccs",
+        "error",
+        "confirm",
+    )
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-r",
+            "--reviewer",
+            required=True,
+            help="The ID of one account or group to add as reviewer.",
+        )
+        parser.add_argument(
+            "-s",
+            "--state",
+            choices=["REVIEWER", "CC"],
+            default="REVIEWER",
+            help="The state in which to add the reviewer (default: REVIEWER).",
+        )
+        parser.add_argument(
+            "--confirmed",
+            action="store_true",
+            help="Confirm adding the reviewer even if there are warnings.",
+        )
+        parser.add_argument(
+            "--notify",
+            choices=["NONE", "OWNER", "OWNER_REVIEWERS", "ALL"],
+            help="Notify handling for adding the reviewer.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.add_reviewer(
+            parsed_args.change_id,
+            reviewer=parsed_args.reviewer,
+            state=parsed_args.state,
+            confirmed=parsed_args.confirmed if parsed_args.confirmed else None,
+            notify=parsed_args.notify,
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangeReviewerDelete(ChangeMixIn, base.BaseCommand):
+    """Removes a reviewer from a change."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-a",
+            "--account",
+            required=True,
+            help="The account identifier of the reviewer to remove.",
+        )
+        parser.add_argument(
+            "--notify",
+            choices=["NONE", "OWNER", "OWNER_REVIEWERS", "ALL"],
+            help="Notify handling for removing the reviewer.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_reviewer(
+            parsed_args.change_id,
+            account_id=parsed_args.account,
+            notify=parsed_args.notify,
+        )
+        self.app.stdout.write(
+            f"Reviewer '{parsed_args.account}' was removed from change "
+            f"'{parsed_args.change_id}'.\n"
+        )
+
+
+class ChangeReviewerSuggest(ChangeReviewerMixIn, base.BaseListCommand):
+    """Suggests reviewers for a change."""
+
+    columns = ("account", "group", "count")
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-q", "--query", required=True, help="Query string to match reviewers."
+        )
+        parser.add_argument(
+            "-l", "--limit", type=int, help="Maximum number of suggestions to return."
+        )
+        parser.add_argument(
+            "--exclude-groups",
+            action="store_true",
+            help="Exclude groups from suggestions.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.suggest_reviewers(
+            parsed_args.change_id,
+            query=parsed_args.query,
+            limit=parsed_args.limit,
+            exclude_groups=parsed_args.exclude_groups if parsed_args.exclude_groups else None,
+        )
+        fetched_columns = [c for c in self.columns if response and c in response[0]]
+        data = utils.get_display_data_multi(fetched_columns, response)
+        return fetched_columns, data
+
+
+# Review (voting) command
+
+
+class ChangeReview(ChangeMixIn, base.BaseCommand, base.show.ShowOne):
+    """Sets a review on a change (post votes and comments)."""
+
+    columns = ("labels", "reviewers", "ready")
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-r",
+            "--revision",
+            default="current",
+            help="Revision (patchset) identifier. Defaults to 'current'.",
+        )
+        parser.add_argument(
+            "-m", "--message", help="Review message to post."
+        )
+        parser.add_argument(
+            "-l",
+            "--label",
+            action="append",
+            metavar="LABEL=VALUE",
+            help="Label vote in format 'Label-Name=value' (e.g., 'Code-Review=+1'). "
+            "Can be specified multiple times.",
+        )
+        parser.add_argument(
+            "--tag", help="Tag for the review (e.g., 'autogenerated:ci')."
+        )
+        parser.add_argument(
+            "--notify",
+            choices=["NONE", "OWNER", "OWNER_REVIEWERS", "ALL"],
+            help="Notify handling for the review.",
+        )
+        parser.add_argument(
+            "--on-behalf-of", help="Account ID to post review on behalf of."
+        )
+        parser.add_argument(
+            "--ready",
+            action="store_true",
+            help="Mark the change as ready for review.",
+        )
+        parser.add_argument(
+            "--wip",
+            action="store_true",
+            help="Mark the change as work in progress.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        # Parse label arguments into a dict
+        labels = None
+        if parsed_args.label:
+            labels = {}
+            for label_arg in parsed_args.label:
+                if "=" not in label_arg:
+                    raise error.BadDataException(
+                        f"Invalid label format: '{label_arg}'. Expected 'Label-Name=value'."
+                    )
+                name, value = label_arg.split("=", 1)
+                try:
+                    labels[name] = int(value)
+                except ValueError:
+                    raise error.BadDataException(
+                        f"Invalid label value: '{value}'. Must be an integer."
+                    )
+
+        response = self.client.set_review(
+            parsed_args.change_id,
+            revision_id=parsed_args.revision,
+            message=parsed_args.message,
+            labels=labels,
+            tag=parsed_args.tag,
+            notify=parsed_args.notify,
+            on_behalf_of=parsed_args.on_behalf_of,
+            ready=parsed_args.ready if parsed_args.ready else None,
+            work_in_progress=parsed_args.wip if parsed_args.wip else None,
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+# Attention Set commands
+
+
+class AttentionSetMixIn:
+    entity_name = "change"
+
+    columns = (
+        "account",
+        "last_update",
+        "reason",
+    )
+
+
+class ChangeAttentionSetShow(AttentionSetMixIn, base.BaseListCommand):
+    """Gets the attention set of a change."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_attention_set(parsed_args.change_id)
+        # Response is a dict keyed by account ID, convert to list
+        data = []
+        if isinstance(response, dict):
+            for account_id, info in response.items():
+                info["account"] = account_id
+                data.append(info)
+        else:
+            data = response
+        fetched_columns = [c for c in self.columns if data and c in data[0]]
+        data = utils.get_display_data_multi(fetched_columns, data)
+        return fetched_columns, data
+
+
+class ChangeAttentionSetAdd(AttentionSetMixIn, base.BaseCommand, base.show.ShowOne):
+    """Adds a user to the attention set of a change."""
+
+    columns = ("_account_id", "name", "email", "username", "reason", "last_update")
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-a",
+            "--account",
+            required=True,
+            help="The account identifier to add to the attention set.",
+        )
+        parser.add_argument(
+            "-r",
+            "--reason",
+            help="Reason for adding the user to the attention set.",
+        )
+        parser.add_argument(
+            "--notify",
+            choices=["NONE", "OWNER", "OWNER_REVIEWERS", "ALL"],
+            help="Notify handling.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.add_to_attention_set(
+            parsed_args.change_id,
+            account_id=parsed_args.account,
+            reason=parsed_args.reason,
+            notify=parsed_args.notify,
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangeAttentionSetRemove(ChangeMixIn, base.BaseCommand):
+    """Removes a user from the attention set of a change."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-a",
+            "--account",
+            required=True,
+            help="The account identifier to remove from the attention set.",
+        )
+        parser.add_argument(
+            "-r",
+            "--reason",
+            help="Reason for removing the user from the attention set.",
+        )
+        parser.add_argument(
+            "--notify",
+            choices=["NONE", "OWNER", "OWNER_REVIEWERS", "ALL"],
+            help="Notify handling.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.remove_from_attention_set(
+            parsed_args.change_id,
+            account_id=parsed_args.account,
+            reason=parsed_args.reason,
+            notify=parsed_args.notify,
+        )
+        self.app.stdout.write(
+            f"User '{parsed_args.account}' was removed from the attention set "
+            f"of change '{parsed_args.change_id}'.\n"
+        )
+
+
+# Work-in-Progress / Ready-for-Review commands
+
+
+class ChangeWip(ChangeMixIn, base.BaseCommand):
+    """Marks a change as work in progress."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-m", "--message", help="Message to be added as review comment."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.set_work_in_progress(
+            parsed_args.change_id, message=parsed_args.message
+        )
+        self.app.stdout.write(
+            f"Change '{parsed_args.change_id}' was marked as work in progress.\n"
+        )
+
+
+class ChangeReady(ChangeMixIn, base.BaseCommand):
+    """Marks a change as ready for review."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-m", "--message", help="Message to be added as review comment."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.set_ready_for_review(
+            parsed_args.change_id, message=parsed_args.message
+        )
+        self.app.stdout.write(
+            f"Change '{parsed_args.change_id}' was marked as ready for review.\n"
+        )
+
+
+# Hashtags commands
+
+
+class ChangeHashtagsShow(ChangeMixIn, base.BaseCommand, base.lister.Lister):
+    """Gets the hashtags associated with a change."""
+
+    columns = ("hashtag",)
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_hashtags(parsed_args.change_id)
+        data = [[tag] for tag in response]
+        return self.columns, data
+
+
+class ChangeHashtagsSet(ChangeMixIn, base.BaseCommand, base.lister.Lister):
+    """Adds and/or removes hashtags from a change."""
+
+    columns = ("hashtag",)
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "--add",
+            action="append",
+            metavar="HASHTAG",
+            help="Hashtag to add. Can be specified multiple times.",
+        )
+        parser.add_argument(
+            "--remove",
+            action="append",
+            metavar="HASHTAG",
+            help="Hashtag to remove. Can be specified multiple times.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.set_hashtags(
+            parsed_args.change_id,
+            add=parsed_args.add,
+            remove=parsed_args.remove,
+        )
+        data = [[tag] for tag in response]
+        return self.columns, data
+
+
+# Change Messages commands
+
+
+class ChangeMessageMixIn:
+    entity_name = "change"
+
+    columns = (
+        "id",
+        "author",
+        "real_author",
+        "date",
+        "message",
+        "tag",
+        "_revision_number",
+    )
+
+
+class ChangeMessageList(ChangeMessageMixIn, base.BaseListCommand):
+    """Lists all the messages of a change."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_messages(parsed_args.change_id)
+        fetched_columns = [c for c in self.columns if response and c in response[0]]
+        data = utils.get_display_data_multi(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangeMessageShow(ChangeMessageMixIn, base.BaseShowCommand):
+    """Retrieves a change message."""
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-m",
+            "--message-id",
+            required=True,
+            help="The ID of the change message.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_message(
+            parsed_args.entity_id, parsed_args.message_id
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangeMessageDelete(ChangeMessageMixIn, base.BaseShowCommand):
+    """Deletes a change message (replaces content with deletion notice)."""
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-m",
+            "--message-id",
+            required=True,
+            help="The ID of the change message.",
+        )
+        parser.add_argument(
+            "-r",
+            "--reason",
+            help="Reason for deletion.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.delete_message(
+            parsed_args.entity_id,
+            parsed_args.message_id,
+            reason=parsed_args.reason,
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+# Submitted Together command
+
+
+class ChangeSubmittedTogether(ChangeMixIn, base.BaseShowCommand):
+    """Gets the list of changes that would be submitted together."""
+
+    columns = ("changes", "non_visible_changes")
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-o",
+            "--option",
+            nargs="+",
+            help="Additional options (e.g., 'NON_VISIBLE_CHANGES').",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_submitted_together(
+            parsed_args.entity_id, options=parsed_args.option
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 

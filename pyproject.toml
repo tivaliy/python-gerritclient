@@ -93,6 +93,30 @@ change_submit = "gerritclient.commands.change:ChangeSubmit"
 change_topic_delete = "gerritclient.commands.change:ChangeTopicDelete"
 change_topic_set = "gerritclient.commands.change:ChangeTopicSet"
 change_topic_show = "gerritclient.commands.change:ChangeTopicShow"
+# Reviewer commands
+change_reviewer_list = "gerritclient.commands.change:ChangeReviewerList"
+change_reviewer_show = "gerritclient.commands.change:ChangeReviewerShow"
+change_reviewer_add = "gerritclient.commands.change:ChangeReviewerAdd"
+change_reviewer_delete = "gerritclient.commands.change:ChangeReviewerDelete"
+change_reviewer_suggest = "gerritclient.commands.change:ChangeReviewerSuggest"
+# Review (voting) command
+change_review = "gerritclient.commands.change:ChangeReview"
+# Attention Set commands
+"change_attention-set_show" = "gerritclient.commands.change:ChangeAttentionSetShow"
+"change_attention-set_add" = "gerritclient.commands.change:ChangeAttentionSetAdd"
+"change_attention-set_remove" = "gerritclient.commands.change:ChangeAttentionSetRemove"
+# Work-in-Progress / Ready-for-Review commands
+change_wip = "gerritclient.commands.change:ChangeWip"
+change_ready = "gerritclient.commands.change:ChangeReady"
+# Hashtags commands
+change_hashtags_show = "gerritclient.commands.change:ChangeHashtagsShow"
+change_hashtags_set = "gerritclient.commands.change:ChangeHashtagsSet"
+# Change Messages commands
+change_message_list = "gerritclient.commands.change:ChangeMessageList"
+change_message_show = "gerritclient.commands.change:ChangeMessageShow"
+change_message_delete = "gerritclient.commands.change:ChangeMessageDelete"
+# Submitted Together command
+"change_submitted-together" = "gerritclient.commands.change:ChangeSubmittedTogether"
 group_create = "gerritclient.commands.group:GroupCreate"
 group_description_delete = "gerritclient.commands.group:GroupDeleteDescription"
 group_description_set = "gerritclient.commands.group:GroupSetDescription"

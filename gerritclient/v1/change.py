@@ -252,6 +252,342 @@ class ChangeClient(base.BaseV1Client):
         )
         return self.connection.post_request(request_path, json_data=data)
 
+    # Reviewer endpoints
+
+    def get_reviewers(self, change_id):
+        """List the reviewers of a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :return: A list of ReviewerInfo entries.
+        """
+
+        request_path = "{api_path}{change_id}/reviewers".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.get_request(request_path)
+
+    def get_reviewer(self, change_id, account_id):
+        """Retrieve a reviewer of a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param account_id: Identifier that uniquely identifies one account.
+        :return: A ReviewerInfo entity.
+        """
+
+        request_path = "{api_path}{change_id}/reviewers/{account_id}".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            account_id=requests_utils.quote(str(account_id), safe=""),
+        )
+        return self.connection.get_request(request_path)
+
+    def add_reviewer(self, change_id, reviewer, state=None, confirmed=None, notify=None):
+        """Add a reviewer to the change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param reviewer: The ID of one account that should be added as reviewer
+                         or the ID of one group for which all members should
+                         be added as reviewers.
+        :param state: Add reviewer in given state ('REVIEWER' or 'CC').
+                      Defaults to 'REVIEWER'.
+        :param confirmed: If True, reviewer addition is confirmed even if there
+                          are warnings.
+        :param notify: Notify handling ('NONE', 'OWNER', 'OWNER_REVIEWERS', 'ALL').
+        :return: An AddReviewerResult entity.
+        """
+
+        data = {
+            k: v
+            for k, v in (
+                ("reviewer", reviewer),
+                ("state", state),
+                ("confirmed", confirmed),
+                ("notify", notify),
+            )
+            if v is not None
+        }
+        request_path = "{api_path}{change_id}/reviewers".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.post_request(request_path, json_data=data)
+
+    def delete_reviewer(self, change_id, account_id, notify=None):
+        """Remove a reviewer from a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param account_id: Identifier that uniquely identifies one account.
+        :param notify: Notify handling ('NONE', 'OWNER', 'OWNER_REVIEWERS', 'ALL').
+        :return: Empty response.
+        """
+
+        data = {k: v for k, v in (("notify", notify),) if v is not None}
+        request_path = "{api_path}{change_id}/reviewers/{account_id}".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            account_id=requests_utils.quote(str(account_id), safe=""),
+        )
+        return self.connection.delete_request(request_path, data=data)
+
+    def suggest_reviewers(self, change_id, query, limit=None, exclude_groups=None):
+        """Suggest reviewers for a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param query: Query string to match potential reviewers.
+        :param limit: Maximum number of suggested reviewers to return.
+        :param exclude_groups: If True, exclude groups from suggestions.
+        :return: A list of SuggestedReviewerInfo entries.
+        """
+
+        params = {
+            k: v
+            for k, v in (
+                ("q", query),
+                ("n", limit),
+                ("exclude-groups", exclude_groups),
+            )
+            if v is not None
+        }
+        request_path = "{api_path}{change_id}/suggest_reviewers".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.get_request(request_path, params=params)
+
+    # Review (voting) endpoint
+
+    def set_review(
+        self,
+        change_id,
+        revision_id="current",
+        message=None,
+        labels=None,
+        comments=None,
+        tag=None,
+        notify=None,
+        on_behalf_of=None,
+        ready=None,
+        work_in_progress=None,
+    ):
+        """Set a review on a revision.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param revision_id: Identifier that uniquely identifies one revision
+                            (patchset). Defaults to 'current'.
+        :param message: Review message to post.
+        :param labels: Dict of label names to voting values
+                       (e.g., {'Code-Review': 1, 'Verified': -1}).
+        :param comments: Dict of file paths to lists of CommentInput entities.
+        :param tag: Tag for the review (e.g., 'autogenerated:ci').
+        :param notify: Notify handling ('NONE', 'OWNER', 'OWNER_REVIEWERS', 'ALL').
+        :param on_behalf_of: Account ID to post review on behalf of.
+        :param ready: If True, mark the change as ready for review.
+        :param work_in_progress: If True, mark the change as work in progress.
+        :return: A ReviewResult entity.
+        """
+
+        data = {
+            k: v
+            for k, v in (
+                ("message", message),
+                ("labels", labels),
+                ("comments", comments),
+                ("tag", tag),
+                ("notify", notify),
+                ("on_behalf_of", on_behalf_of),
+                ("ready", ready),
+                ("work_in_progress", work_in_progress),
+            )
+            if v is not None
+        }
+        request_path = "{api_path}{change_id}/revisions/{revision_id}/review".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            revision_id=requests_utils.quote(str(revision_id), safe=""),
+        )
+        return self.connection.post_request(request_path, json_data=data)
+
+    # Attention Set endpoints
+
+    def get_attention_set(self, change_id):
+        """Get the attention set of a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :return: A list of AttentionSetInfo entries.
+        """
+
+        request_path = "{api_path}{change_id}/attention".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.get_request(request_path)
+
+    def add_to_attention_set(self, change_id, account_id, reason=None, notify=None):
+        """Add a user to the attention set of a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param account_id: Identifier that uniquely identifies one account.
+        :param reason: Reason for adding the user to the attention set.
+        :param notify: Notify handling ('NONE', 'OWNER', 'OWNER_REVIEWERS', 'ALL').
+        :return: An AttentionSetInfo entity.
+        """
+
+        data = {
+            k: v
+            for k, v in (
+                ("user", account_id),
+                ("reason", reason),
+                ("notify", notify),
+            )
+            if v is not None
+        }
+        request_path = "{api_path}{change_id}/attention".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.post_request(request_path, json_data=data)
+
+    def remove_from_attention_set(self, change_id, account_id, reason=None, notify=None):
+        """Remove a user from the attention set of a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param account_id: Identifier that uniquely identifies one account.
+        :param reason: Reason for removing the user from the attention set.
+        :param notify: Notify handling ('NONE', 'OWNER', 'OWNER_REVIEWERS', 'ALL').
+        :return: Empty response.
+        """
+
+        data = {
+            k: v
+            for k, v in (("reason", reason), ("notify", notify))
+            if v is not None
+        }
+        request_path = "{api_path}{change_id}/attention/{account_id}".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            account_id=requests_utils.quote(str(account_id), safe=""),
+        )
+        return self.connection.delete_request(request_path, data=data)
+
+    # Work-in-Progress / Ready-for-Review endpoints
+
+    def set_work_in_progress(self, change_id, message=None):
+        """Mark a change as work in progress.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param message: Message to be added as review comment.
+        :return: Empty response on success.
+        """
+
+        data = {k: v for k, v in (("message", message),) if v is not None}
+        request_path = "{api_path}{change_id}/wip".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.post_request(request_path, json_data=data)
+
+    def set_ready_for_review(self, change_id, message=None):
+        """Mark a change as ready for review.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param message: Message to be added as review comment.
+        :return: Empty response on success.
+        """
+
+        data = {k: v for k, v in (("message", message),) if v is not None}
+        request_path = "{api_path}{change_id}/ready".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.post_request(request_path, json_data=data)
+
+    # Hashtags endpoints
+
+    def get_hashtags(self, change_id):
+        """Get the hashtags associated with a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :return: A list of hashtag strings.
+        """
+
+        request_path = "{api_path}{change_id}/hashtags".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.get_request(request_path)
+
+    def set_hashtags(self, change_id, add=None, remove=None):
+        """Add and/or remove hashtags from a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param add: List of hashtags to add.
+        :param remove: List of hashtags to remove.
+        :return: A list of the hashtags after the operation.
+        """
+
+        data = {
+            k: v for k, v in (("add", add), ("remove", remove)) if v is not None
+        }
+        request_path = "{api_path}{change_id}/hashtags".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.post_request(request_path, json_data=data)
+
+    # Change Messages endpoints
+
+    def get_messages(self, change_id):
+        """List all the messages of a change.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :return: A list of ChangeMessageInfo entries.
+        """
+
+        request_path = "{api_path}{change_id}/messages".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.get_request(request_path)
+
+    def get_message(self, change_id, message_id):
+        """Retrieve a change message.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param message_id: The ID of a change message.
+        :return: A ChangeMessageInfo entity.
+        """
+
+        request_path = "{api_path}{change_id}/messages/{message_id}".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            message_id=requests_utils.quote(str(message_id), safe=""),
+        )
+        return self.connection.get_request(request_path)
+
+    def delete_message(self, change_id, message_id, reason=None):
+        """Delete a change message.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param message_id: The ID of a change message.
+        :param reason: Reason for deletion.
+        :return: A ChangeMessageInfo entity (with message replaced).
+        """
+
+        data = {k: v for k, v in (("message", reason),) if v is not None}
+        request_path = "{api_path}{change_id}/messages/{message_id}".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            message_id=requests_utils.quote(str(message_id), safe=""),
+        )
+        return self.connection.delete_request(request_path, data=data)
+
+    # Submitted Together endpoint
+
+    def get_submitted_together(self, change_id, options=None):
+        """Get the list of changes that would be submitted together.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param options: List of additional options (e.g., 'NON_VISIBLE_CHANGES').
+        :return: A SubmittedTogetherInfo entity.
+        """
+
+        params = {"o": options} if options else None
+        request_path = "{api_path}{change_id}/submitted_together".format(
+            api_path=self.api_path, change_id=requests_utils.quote(change_id, safe="")
+        )
+        return self.connection.get_request(request_path, params=params)
+
 
 def get_client(connection):
     return ChangeClient(connection)
