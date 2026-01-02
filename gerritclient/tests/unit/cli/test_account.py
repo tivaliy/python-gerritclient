@@ -413,3 +413,100 @@ class TestAccountCommand(clibase.BaseCLITest):
         assert (
             "account oauth show: error:" in mocked_stderr.write.call_args_list[-1][0][0]
         )
+
+    # Preferences tests
+
+    def test_account_preferences_show(self):
+        account_id = "self"
+        args = f"account preferences show {account_id}"
+        self.m_client.get_preferences.return_value = {
+            "changes_per_page": 25,
+            "theme": "DARK",
+            "diff_view": "SIDE_BY_SIDE",
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("account", mock.ANY)
+        self.m_client.get_preferences.assert_called_once_with(account_id)
+
+    def test_account_diff_preferences_show(self):
+        account_id = "self"
+        args = f"account diff-preferences show {account_id}"
+        self.m_client.get_diff_preferences.return_value = {
+            "context": 10,
+            "tab_size": 4,
+            "line_length": 100,
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("account", mock.ANY)
+        self.m_client.get_diff_preferences.assert_called_once_with(account_id)
+
+    # Capabilities tests
+
+    def test_account_capabilities_show(self):
+        account_id = "self"
+        args = f"account capabilities show {account_id}"
+        self.m_client.get_capabilities.return_value = {
+            "administrateServer": True,
+            "createProject": True,
+            "queryLimit": {"min": 0, "max": 500},
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("account", mock.ANY)
+        self.m_client.get_capabilities.assert_called_once_with(
+            account_id, capabilities=None
+        )
+
+    def test_account_capabilities_show_w_filter(self):
+        account_id = "self"
+        args = f"account capabilities show {account_id} --query createProject"
+        self.m_client.get_capabilities.return_value = {"createProject": True}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("account", mock.ANY)
+        self.m_client.get_capabilities.assert_called_once_with(
+            account_id, capabilities=["createProject"]
+        )
+
+    # Starred Changes tests
+
+    def test_account_starred_change_list(self):
+        account_id = "self"
+        args = f"account starred-change list {account_id} --max-width 110"
+        self.m_client.get_starred_changes.return_value = [
+            {
+                "id": "myproject~master~I1234",
+                "project": "myproject",
+                "branch": "master",
+                "change_id": "I1234",
+                "subject": "Fix bug",
+                "status": "NEW",
+                "_number": 123,
+            }
+        ]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("account", mock.ANY)
+        self.m_client.get_starred_changes.assert_called_once_with(account_id)
+
+    def test_account_starred_change_add(self):
+        account_id = "self"
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"account starred-change add {account_id} --change-id {change_id}"
+        self.m_client.star_change.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("account", mock.ANY)
+        self.m_client.star_change.assert_called_once_with(account_id, change_id)
+
+    def test_account_starred_change_delete(self):
+        account_id = "self"
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"account starred-change delete {account_id} --change-id {change_id}"
+        self.m_client.unstar_change.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("account", mock.ANY)
+        self.m_client.unstar_change.assert_called_once_with(account_id, change_id)
