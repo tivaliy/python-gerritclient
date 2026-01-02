@@ -741,3 +741,136 @@ Garbage collection completed successfully."""
         with pytest.raises(SystemExit):
             self.exec_command(args)
         assert "project commit file-content show: error:" in mocked_stderr.write.call_args_list[-1][0][0]
+
+    # Access Rights tests
+
+    def test_project_access_show(self):
+        project_name = "fake/fake-project"
+        args = f"project access show {project_name}"
+        self.m_client.get_access.return_value = {
+            "revision": "abc123",
+            "inherits_from": {"id": "All-Projects"},
+            "local": {},
+            "is_owner": True,
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.get_access.assert_called_once_with(project_name)
+
+    # Labels tests
+
+    def test_project_label_list(self):
+        project_name = "fake/fake-project"
+        args = f"project label list {project_name} --max-width 110"
+        self.m_client.get_labels.return_value = [
+            {"name": "Code-Review", "function": "MaxWithBlock", "default_value": 0},
+            {"name": "Verified", "function": "MaxNoBlock", "default_value": 0},
+        ]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.get_labels.assert_called_once_with(project_name)
+
+    def test_project_label_show(self):
+        project_name = "fake/fake-project"
+        label_name = "Code-Review"
+        args = f"project label show {project_name} --label {label_name}"
+        self.m_client.get_label.return_value = {
+            "name": label_name,
+            "function": "MaxWithBlock",
+            "default_value": 0,
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.get_label.assert_called_once_with(project_name, label_name)
+
+    def test_project_label_delete(self):
+        project_name = "fake/fake-project"
+        label_name = "My-Label"
+        args = f"project label delete {project_name} --label {label_name}"
+        self.m_client.delete_label.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.delete_label.assert_called_once_with(
+            project_name, label_name, commit_message=None
+        )
+
+    # Submit Requirements tests
+
+    def test_project_submit_requirement_list(self):
+        project_name = "fake/fake-project"
+        args = f"project submit-requirement list {project_name} --max-width 110"
+        self.m_client.get_submit_requirements.return_value = [
+            {"name": "Code-Review", "submittability_expression": "label:Code-Review=MAX"},
+        ]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.get_submit_requirements.assert_called_once_with(project_name)
+
+    def test_project_submit_requirement_show(self):
+        project_name = "fake/fake-project"
+        sr_name = "Code-Review"
+        args = f"project submit-requirement show {project_name} --submit-requirement {sr_name}"
+        self.m_client.get_submit_requirement.return_value = {
+            "name": sr_name,
+            "submittability_expression": "label:Code-Review=MAX",
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.get_submit_requirement.assert_called_once_with(project_name, sr_name)
+
+    def test_project_submit_requirement_delete(self):
+        project_name = "fake/fake-project"
+        sr_name = "My-Requirement"
+        args = f"project submit-requirement delete {project_name} --submit-requirement {sr_name}"
+        self.m_client.delete_submit_requirement.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.delete_submit_requirement.assert_called_once_with(
+            project_name, sr_name, commit_message=None
+        )
+
+    # Dashboard tests
+
+    def test_project_dashboard_list(self):
+        project_name = "fake/fake-project"
+        args = f"project dashboard list {project_name} --max-width 110"
+        self.m_client.get_dashboards.return_value = [
+            {"id": "main:default", "path": "default", "ref": "refs/meta/dashboards/main"},
+        ]
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.get_dashboards.assert_called_once_with(project_name)
+
+    def test_project_dashboard_show(self):
+        project_name = "fake/fake-project"
+        dashboard_id = "main:default"
+        args = f"project dashboard show {project_name} --dashboard {dashboard_id}"
+        self.m_client.get_dashboard.return_value = {
+            "id": dashboard_id,
+            "path": "default",
+            "ref": "refs/meta/dashboards/main",
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.get_dashboard.assert_called_once_with(project_name, dashboard_id)
+
+    def test_project_dashboard_delete(self):
+        project_name = "fake/fake-project"
+        dashboard_id = "main:default"
+        args = f"project dashboard delete {project_name} --dashboard {dashboard_id}"
+        self.m_client.delete_dashboard.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("project", mock.ANY)
+        self.m_client.delete_dashboard.assert_called_once_with(
+            project_name, dashboard_id, commit_message=None
+        )

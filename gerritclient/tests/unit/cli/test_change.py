@@ -762,3 +762,145 @@ class TestChangeCommand(clibase.BaseCLITest):
         self.m_client.get_submitted_together.assert_called_once_with(
             change_id, options=["NON_VISIBLE_CHANGES"]
         )
+
+    # Revision file tests
+
+    def test_change_revision_file_list(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change revision file-list {change_id} --max-width 110"
+        self.m_client.get_revision_files.return_value = {
+            "/COMMIT_MSG": {"lines_inserted": 10},
+            "src/main.py": {"status": "M", "lines_inserted": 5, "lines_deleted": 2},
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_revision_files.assert_called_once_with(
+            change_id, revision_id="current", base=None, parent=None
+        )
+
+    def test_change_revision_file_list_w_revision(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        revision = "2"
+        args = f"change revision file-list {change_id} --revision {revision}"
+        self.m_client.get_revision_files.return_value = {}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_revision_files.assert_called_once_with(
+            change_id, revision_id=revision, base=None, parent=None
+        )
+
+    def test_change_file_diff(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        file_path = "src/main.py"
+        args = f"change file diff {change_id} --file {file_path}"
+        self.m_client.get_file_diff.return_value = {
+            "meta_a": {"name": file_path},
+            "meta_b": {"name": file_path},
+            "change_type": "MODIFIED",
+            "content": [],
+        }
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_file_diff.assert_called_once_with(
+            change_id,
+            file_path,
+            revision_id="current",
+            base=None,
+            parent=None,
+            context=None,
+            intraline=None,
+            whitespace=None,
+        )
+
+    def test_change_file_diff_w_options(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        file_path = "src/main.py"
+        args = f"change file diff {change_id} --file {file_path} --context 5 --intraline --whitespace IGNORE_ALL"
+        self.m_client.get_file_diff.return_value = {"content": []}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_file_diff.assert_called_once_with(
+            change_id,
+            file_path,
+            revision_id="current",
+            base=None,
+            parent=None,
+            context=5,
+            intraline=True,
+            whitespace="IGNORE_ALL",
+        )
+
+    def test_change_file_content(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        file_path = "src/main.py"
+        args = f"change file content {change_id} --file {file_path}"
+        self.m_client.get_file_content.return_value = "cHJpbnQoJ2hlbGxvJyk="
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_file_content.assert_called_once_with(
+            change_id, file_path, revision_id="current"
+        )
+
+    def test_change_related(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change related {change_id}"
+        self.m_client.get_related_changes.return_value = {"changes": []}
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_related_changes.assert_called_once_with(
+            change_id, revision_id="current"
+        )
+
+    def test_change_cherry_pick(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        destination = "stable-1.0"
+        args = f"change cherry-pick {change_id} --destination {destination}"
+        self.m_client.cherry_pick.return_value = fake_change.get_fake_change()
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.cherry_pick.assert_called_once_with(
+            change_id,
+            revision_id="current",
+            destination=destination,
+            message=None,
+            notify=None,
+            keep_reviewers=None,
+            allow_conflicts=None,
+        )
+
+    def test_change_cherry_pick_w_options(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        destination = "stable-1.0"
+        message = "Cherry-pick to stable"
+        args = f'change cherry-pick {change_id} --destination {destination} --message "{message}" --keep-reviewers'
+        self.m_client.cherry_pick.return_value = fake_change.get_fake_change()
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.cherry_pick.assert_called_once_with(
+            change_id,
+            revision_id="current",
+            destination=destination,
+            message=message,
+            notify=None,
+            keep_reviewers=True,
+            allow_conflicts=None,
+        )
+
+    def test_change_patch(self):
+        change_id = "I8473b95934b5732ac55d26311a706c9c2bde9940"
+        args = f"change patch {change_id}"
+        self.m_client.get_patch.return_value = "ZGlmZiAtLWdpdCBhL2Zvby5weSBiL2Zvby5weQ=="
+        self.exec_command(args)
+
+        self.m_get_client.assert_called_once_with("change", mock.ANY)
+        self.m_client.get_patch.assert_called_once_with(
+            change_id, revision_id="current", path=None
+        )
