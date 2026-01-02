@@ -227,6 +227,119 @@ class AccountClient(base.BaseV1ClientCreateEntity):
         request_path = f"{self.api_path}{account_id}/oauthtoken"
         return self.connection.get_request(request_path)
 
+    # Preferences endpoints
+
+    def get_preferences(self, account_id):
+        """Get the preferences of an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :return: A PreferencesInfo entity.
+        """
+
+        request_path = f"{self.api_path}{account_id}/preferences"
+        return self.connection.get_request(request_path)
+
+    def set_preferences(self, account_id, preferences):
+        """Set the preferences of an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :param preferences: Dict of preferences to set.
+        :return: A PreferencesInfo entity with the updated preferences.
+        """
+
+        request_path = f"{self.api_path}{account_id}/preferences"
+        return self.connection.put_request(request_path, json_data=preferences)
+
+    def get_diff_preferences(self, account_id):
+        """Get the diff preferences of an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :return: A DiffPreferencesInfo entity.
+        """
+
+        request_path = f"{self.api_path}{account_id}/preferences.diff"
+        return self.connection.get_request(request_path)
+
+    def set_diff_preferences(self, account_id, preferences):
+        """Set the diff preferences of an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :param preferences: Dict of diff preferences to set.
+        :return: A DiffPreferencesInfo entity with the updated preferences.
+        """
+
+        request_path = f"{self.api_path}{account_id}/preferences.diff"
+        return self.connection.put_request(request_path, json_data=preferences)
+
+    def get_edit_preferences(self, account_id):
+        """Get the edit preferences of an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :return: An EditPreferencesInfo entity.
+        """
+
+        request_path = f"{self.api_path}{account_id}/preferences.edit"
+        return self.connection.get_request(request_path)
+
+    def set_edit_preferences(self, account_id, preferences):
+        """Set the edit preferences of an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :param preferences: Dict of edit preferences to set.
+        :return: An EditPreferencesInfo entity with the updated preferences.
+        """
+
+        request_path = f"{self.api_path}{account_id}/preferences.edit"
+        return self.connection.put_request(request_path, json_data=preferences)
+
+    # Capabilities endpoint
+
+    def get_capabilities(self, account_id, capabilities=None):
+        """Get the capabilities of an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :param capabilities: List of capability names to filter results.
+        :return: A map of capability names to their values.
+        """
+
+        params = {"q": capabilities} if capabilities else None
+        request_path = f"{self.api_path}{account_id}/capabilities"
+        return self.connection.get_request(request_path, params=params)
+
+    # Starred Changes endpoints
+
+    def get_starred_changes(self, account_id):
+        """Get starred changes of an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :return: A list of ChangeInfo entries.
+        """
+
+        request_path = f"{self.api_path}{account_id}/starred.changes"
+        return self.connection.get_request(request_path)
+
+    def star_change(self, account_id, change_id):
+        """Star a change for an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :param change_id: Identifier that uniquely identifies one change.
+        :return: Empty response on success.
+        """
+
+        request_path = f"{self.api_path}{account_id}/starred.changes/{change_id}"
+        return self.connection.put_request(request_path, json_data={})
+
+    def unstar_change(self, account_id, change_id):
+        """Unstar a change for an account.
+
+        :param account_id: (account_ID|username|email|name) as a string value.
+        :param change_id: Identifier that uniquely identifies one change.
+        :return: Empty response on success.
+        """
+
+        request_path = f"{self.api_path}{account_id}/starred.changes/{change_id}"
+        return self.connection.delete_request(request_path, data={})
+
 
 def get_client(connection):
     return AccountClient(connection)
