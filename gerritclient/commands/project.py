@@ -764,6 +764,398 @@ class ProjectCommitFileContentShow(ProjectMixIn, base.BaseCommand):
         self.app.stdout.write(response)
 
 
+# Access Rights commands
+
+
+class ProjectAccessShow(ProjectMixIn, base.BaseShowCommand):
+    """Gets the access rights for a project."""
+
+    columns = (
+        "revision",
+        "inherits_from",
+        "local",
+        "is_owner",
+        "owner_of",
+        "can_upload",
+        "can_add",
+        "can_add_tags",
+        "config_visible",
+        "groups",
+    )
+
+    def take_action(self, parsed_args):
+        response = self.client.get_access(parsed_args.entity_id)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectAccessSet(ProjectMixIn, base.BaseShowCommand):
+    """Sets the access rights for a project."""
+
+    columns = ("revision", "inherits_from", "local")
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
+        return file_path
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "--file",
+            type=self.get_file_path,
+            required=True,
+            help="File with access rights definition (JSON/YAML).",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            access_data = utils.read_from_file(file_path)
+        except OSError:
+            msg = f"Could not read access rights at {file_path}"
+            raise error.InvalidFileException(msg)
+
+        response = self.client.set_access(
+            parsed_args.entity_id,
+            add=access_data.get("add"),
+            remove=access_data.get("remove"),
+            message=access_data.get("message"),
+            parent=access_data.get("parent"),
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+# Labels commands
+
+
+class ProjectLabelList(ProjectMixIn, base.BaseListCommand):
+    """Lists the labels for a project."""
+
+    columns = (
+        "name",
+        "function",
+        "default_value",
+        "values",
+        "can_override",
+        "copy_any_score",
+        "copy_min_score",
+        "copy_max_score",
+        "copy_all_scores_if_no_change",
+        "allow_post_submit",
+    )
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument("name", help="Name of the project.")
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_labels(parsed_args.name)
+        fetched_columns = [c for c in self.columns if response and c in response[0]]
+        data = utils.get_display_data_multi(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectLabelShow(ProjectMixIn, base.BaseShowCommand):
+    """Gets a specific label for a project."""
+
+    columns = (
+        "name",
+        "function",
+        "default_value",
+        "values",
+        "can_override",
+        "copy_any_score",
+        "copy_min_score",
+        "copy_max_score",
+        "copy_all_scores_if_no_change",
+        "allow_post_submit",
+    )
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-l", "--label", required=True, help="Name of the label."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_label(parsed_args.entity_id, parsed_args.label)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectLabelCreate(ProjectMixIn, base.BaseShowCommand):
+    """Creates a new label for a project."""
+
+    columns = ("name", "function", "values")
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
+        return file_path
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-l", "--label", required=True, help="Name of the label."
+        )
+        parser.add_argument(
+            "--file",
+            type=self.get_file_path,
+            required=True,
+            help="File with label definition (JSON/YAML).",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            label_data = utils.read_from_file(file_path)
+        except OSError:
+            msg = f"Could not read label definition at {file_path}"
+            raise error.InvalidFileException(msg)
+
+        response = self.client.create_label(
+            parsed_args.entity_id, parsed_args.label, label_data
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectLabelDelete(ProjectMixIn, base.BaseCommand):
+    """Deletes a label from a project."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument("name", help="Name of the project.")
+        parser.add_argument(
+            "-l", "--label", required=True, help="Name of the label."
+        )
+        parser.add_argument(
+            "-m", "--message", help="Commit message for the deletion."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_label(
+            parsed_args.name, parsed_args.label, commit_message=parsed_args.message
+        )
+        self.app.stdout.write(
+            f"Label '{parsed_args.label}' was deleted from project '{parsed_args.name}'.\n"
+        )
+
+
+# Submit Requirements commands
+
+
+class ProjectSubmitRequirementList(ProjectMixIn, base.BaseListCommand):
+    """Lists the submit requirements for a project."""
+
+    columns = (
+        "name",
+        "description",
+        "applicability_expression",
+        "submittability_expression",
+        "override_expression",
+        "allow_override_in_child_projects",
+    )
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument("name", help="Name of the project.")
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_submit_requirements(parsed_args.name)
+        fetched_columns = [c for c in self.columns if response and c in response[0]]
+        data = utils.get_display_data_multi(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectSubmitRequirementShow(ProjectMixIn, base.BaseShowCommand):
+    """Gets a specific submit requirement for a project."""
+
+    columns = (
+        "name",
+        "description",
+        "applicability_expression",
+        "submittability_expression",
+        "override_expression",
+        "allow_override_in_child_projects",
+    )
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-s", "--submit-requirement", required=True, help="Name of the submit requirement."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_submit_requirement(
+            parsed_args.entity_id, parsed_args.submit_requirement
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectSubmitRequirementCreate(ProjectMixIn, base.BaseShowCommand):
+    """Creates a new submit requirement for a project."""
+
+    columns = ("name", "submittability_expression")
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
+        return file_path
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-s", "--submit-requirement", required=True, help="Name of the submit requirement."
+        )
+        parser.add_argument(
+            "--file",
+            type=self.get_file_path,
+            required=True,
+            help="File with submit requirement definition (JSON/YAML).",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            sr_data = utils.read_from_file(file_path)
+        except OSError:
+            msg = f"Could not read submit requirement definition at {file_path}"
+            raise error.InvalidFileException(msg)
+
+        response = self.client.create_submit_requirement(
+            parsed_args.entity_id, parsed_args.submit_requirement, sr_data
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectSubmitRequirementDelete(ProjectMixIn, base.BaseCommand):
+    """Deletes a submit requirement from a project."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument("name", help="Name of the project.")
+        parser.add_argument(
+            "-s", "--submit-requirement", required=True, help="Name of the submit requirement."
+        )
+        parser.add_argument(
+            "-m", "--message", help="Commit message for the deletion."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_submit_requirement(
+            parsed_args.name,
+            parsed_args.submit_requirement,
+            commit_message=parsed_args.message,
+        )
+        self.app.stdout.write(
+            f"Submit requirement '{parsed_args.submit_requirement}' was deleted "
+            f"from project '{parsed_args.name}'.\n"
+        )
+
+
+# Dashboard commands
+
+
+class ProjectDashboardList(ProjectMixIn, base.BaseListCommand):
+    """Lists the dashboards for a project."""
+
+    columns = (
+        "id",
+        "path",
+        "ref",
+        "description",
+        "url",
+        "is_default",
+        "title",
+        "sections",
+    )
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument("name", help="Name of the project.")
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_dashboards(parsed_args.name)
+        fetched_columns = [c for c in self.columns if response and c in response[0]]
+        data = utils.get_display_data_multi(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectDashboardShow(ProjectMixIn, base.BaseShowCommand):
+    """Gets a specific dashboard for a project."""
+
+    columns = (
+        "id",
+        "path",
+        "ref",
+        "description",
+        "url",
+        "is_default",
+        "title",
+        "sections",
+    )
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-d", "--dashboard", required=True, help="ID of the dashboard."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_dashboard(parsed_args.entity_id, parsed_args.dashboard)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ProjectDashboardDelete(ProjectMixIn, base.BaseCommand):
+    """Deletes a dashboard from a project."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument("name", help="Name of the project.")
+        parser.add_argument(
+            "-d", "--dashboard", required=True, help="ID of the dashboard."
+        )
+        parser.add_argument(
+            "-m", "--message", help="Commit message for the deletion."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.delete_dashboard(
+            parsed_args.name, parsed_args.dashboard, commit_message=parsed_args.message
+        )
+        self.app.stdout.write(
+            f"Dashboard '{parsed_args.dashboard}' was deleted from project '{parsed_args.name}'.\n"
+        )
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
