@@ -572,6 +572,151 @@ class ChangeClient(base.BaseV1Client):
         )
         return self.connection.delete_request(request_path, data=data)
 
+    # Revision endpoints
+
+    def get_revision_files(self, change_id, revision_id="current", base=None, parent=None):
+        """List the files that were modified, added or deleted in a revision.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param revision_id: Identifier that uniquely identifies one revision.
+        :param base: Patchset number to compare against (for diffs).
+        :param parent: For merge commits, the parent number to compare against.
+        :return: A map of file paths to FileInfo entries.
+        """
+
+        params = {
+            k: v for k, v in (("base", base), ("parent", parent)) if v is not None
+        }
+        request_path = "{api_path}{change_id}/revisions/{revision_id}/files".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            revision_id=requests_utils.quote(str(revision_id), safe=""),
+        )
+        return self.connection.get_request(request_path, params=params or None)
+
+    def get_file_diff(
+        self, change_id, file_path, revision_id="current", base=None, parent=None,
+        context=None, intraline=None, whitespace=None
+    ):
+        """Get the diff of a file from a revision.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param file_path: Path of the file.
+        :param revision_id: Identifier that uniquely identifies one revision.
+        :param base: Patchset number to compare against.
+        :param parent: For merge commits, the parent number to compare against.
+        :param context: Number of context lines to include.
+        :param intraline: If True, include intraline differences.
+        :param whitespace: Whitespace handling ('IGNORE_NONE', 'IGNORE_TRAILING',
+                          'IGNORE_LEADING_AND_TRAILING', 'IGNORE_ALL').
+        :return: A DiffInfo entity.
+        """
+
+        params = {
+            k: v
+            for k, v in (
+                ("base", base),
+                ("parent", parent),
+                ("context", context),
+                ("intraline", intraline),
+                ("whitespace", whitespace),
+            )
+            if v is not None
+        }
+        request_path = "{api_path}{change_id}/revisions/{revision_id}/files/{file_path}/diff".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            revision_id=requests_utils.quote(str(revision_id), safe=""),
+            file_path=requests_utils.quote(file_path, safe=""),
+        )
+        return self.connection.get_request(request_path, params=params or None)
+
+    def get_file_content(self, change_id, file_path, revision_id="current"):
+        """Get the content of a file from a revision.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param file_path: Path of the file.
+        :param revision_id: Identifier that uniquely identifies one revision.
+        :return: The file content as base64 encoded string.
+        """
+
+        request_path = "{api_path}{change_id}/revisions/{revision_id}/files/{file_path}/content".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            revision_id=requests_utils.quote(str(revision_id), safe=""),
+            file_path=requests_utils.quote(file_path, safe=""),
+        )
+        return self.connection.get_request(request_path)
+
+    def get_related_changes(self, change_id, revision_id="current"):
+        """Get related changes of a revision.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param revision_id: Identifier that uniquely identifies one revision.
+        :return: A RelatedChangesInfo entity.
+        """
+
+        request_path = "{api_path}{change_id}/revisions/{revision_id}/related".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            revision_id=requests_utils.quote(str(revision_id), safe=""),
+        )
+        return self.connection.get_request(request_path)
+
+    def cherry_pick(
+        self, change_id, revision_id, destination, message=None, notify=None,
+        keep_reviewers=None, allow_conflicts=None
+    ):
+        """Cherry pick a revision to a destination branch.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param revision_id: Identifier that uniquely identifies one revision.
+        :param destination: The destination branch.
+        :param message: The commit message for the cherry-pick.
+        :param notify: Notify handling ('NONE', 'OWNER', 'OWNER_REVIEWERS', 'ALL').
+        :param keep_reviewers: If True, keep the original reviewers.
+        :param allow_conflicts: If True, allow cherry-picking with conflicts.
+        :return: A ChangeInfo entity for the new change.
+        """
+
+        data = {
+            k: v
+            for k, v in (
+                ("destination", destination),
+                ("message", message),
+                ("notify", notify),
+                ("keep_reviewers", keep_reviewers),
+                ("allow_conflicts", allow_conflicts),
+            )
+            if v is not None
+        }
+        request_path = "{api_path}{change_id}/revisions/{revision_id}/cherrypick".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            revision_id=requests_utils.quote(str(revision_id), safe=""),
+        )
+        return self.connection.post_request(request_path, json_data=data)
+
+    def get_patch(self, change_id, revision_id="current", download=False, path=None):
+        """Get the formatted patch for a revision.
+
+        :param change_id: Identifier that uniquely identifies one change.
+        :param revision_id: Identifier that uniquely identifies one revision.
+        :param download: If True, add Content-Disposition header for download.
+        :param path: If set, only return the patch for the specified file.
+        :return: The patch content as base64 encoded string.
+        """
+
+        params = {
+            k: v for k, v in (("download", download), ("path", path)) if v
+        }
+        request_path = "{api_path}{change_id}/revisions/{revision_id}/patch".format(
+            api_path=self.api_path,
+            change_id=requests_utils.quote(change_id, safe=""),
+            revision_id=requests_utils.quote(str(revision_id), safe=""),
+        )
+        return self.connection.get_request(request_path, params=params or None)
+
     # Submitted Together endpoint
 
     def get_submitted_together(self, change_id, options=None):

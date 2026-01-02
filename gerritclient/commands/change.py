@@ -1108,6 +1108,259 @@ class ChangeMessageDelete(ChangeMessageMixIn, base.BaseShowCommand):
         return fetched_columns, data
 
 
+# Revision endpoints
+
+
+class RevisionFileMixIn:
+    entity_name = "change"
+
+    columns = (
+        "path",
+        "status",
+        "lines_inserted",
+        "lines_deleted",
+        "size_delta",
+        "size",
+    )
+
+
+class ChangeRevisionFileList(RevisionFileMixIn, base.BaseListCommand):
+    """Lists files modified in a revision."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-r",
+            "--revision",
+            default="current",
+            help="Revision (patchset) identifier. Defaults to 'current'.",
+        )
+        parser.add_argument(
+            "--base", type=int, help="Patchset number to compare against."
+        )
+        parser.add_argument(
+            "--parent",
+            type=int,
+            help="For merge commits, the parent number to compare against.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_revision_files(
+            parsed_args.change_id,
+            revision_id=parsed_args.revision,
+            base=parsed_args.base,
+            parent=parsed_args.parent,
+        )
+        # Response is a dict of file paths to FileInfo, convert to list
+        data = []
+        if isinstance(response, dict):
+            for file_path, info in response.items():
+                info["path"] = file_path
+                data.append(info)
+        fetched_columns = [c for c in self.columns if data and c in data[0]]
+        data = utils.get_display_data_multi(fetched_columns, data)
+        return fetched_columns, data
+
+
+class ChangeFileDiff(ChangeMixIn, base.BaseShowCommand):
+    """Gets the diff of a file from a revision."""
+
+    columns = (
+        "meta_a",
+        "meta_b",
+        "change_type",
+        "intraline_status",
+        "diff_header",
+        "content",
+        "binary",
+    )
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "--file", required=True, help="Path of the file."
+        )
+        parser.add_argument(
+            "-r",
+            "--revision",
+            default="current",
+            help="Revision (patchset) identifier. Defaults to 'current'.",
+        )
+        parser.add_argument(
+            "--base", type=int, help="Patchset number to compare against."
+        )
+        parser.add_argument(
+            "--parent",
+            type=int,
+            help="For merge commits, the parent number to compare against.",
+        )
+        parser.add_argument(
+            "--context", type=int, help="Number of context lines to include."
+        )
+        parser.add_argument(
+            "--intraline",
+            action="store_true",
+            help="Include intraline differences.",
+        )
+        parser.add_argument(
+            "--whitespace",
+            choices=["IGNORE_NONE", "IGNORE_TRAILING", "IGNORE_LEADING_AND_TRAILING", "IGNORE_ALL"],
+            help="Whitespace handling.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_file_diff(
+            parsed_args.entity_id,
+            parsed_args.file,
+            revision_id=parsed_args.revision,
+            base=parsed_args.base,
+            parent=parsed_args.parent,
+            context=parsed_args.context,
+            intraline=parsed_args.intraline if parsed_args.intraline else None,
+            whitespace=parsed_args.whitespace,
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangeFileContent(ChangeMixIn, base.BaseCommand):
+    """Gets the content of a file from a revision."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "--file", required=True, help="Path of the file."
+        )
+        parser.add_argument(
+            "-r",
+            "--revision",
+            default="current",
+            help="Revision (patchset) identifier. Defaults to 'current'.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_file_content(
+            parsed_args.change_id,
+            parsed_args.file,
+            revision_id=parsed_args.revision,
+        )
+        self.app.stdout.write(str(response))
+
+
+class ChangeRelated(ChangeMixIn, base.BaseShowCommand):
+    """Gets related changes of a revision."""
+
+    columns = ("changes",)
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-r",
+            "--revision",
+            default="current",
+            help="Revision (patchset) identifier. Defaults to 'current'.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_related_changes(
+            parsed_args.entity_id, revision_id=parsed_args.revision
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangeCherryPick(ChangeMixIn, base.BaseShowCommand):
+    """Cherry picks a revision to a destination branch."""
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-r",
+            "--revision",
+            default="current",
+            help="Revision (patchset) identifier. Defaults to 'current'.",
+        )
+        parser.add_argument(
+            "-d",
+            "--destination",
+            required=True,
+            help="The destination branch.",
+        )
+        parser.add_argument(
+            "-m", "--message", help="The commit message for the cherry-pick."
+        )
+        parser.add_argument(
+            "--notify",
+            choices=["NONE", "OWNER", "OWNER_REVIEWERS", "ALL"],
+            help="Notify handling.",
+        )
+        parser.add_argument(
+            "--keep-reviewers",
+            action="store_true",
+            help="Keep the original reviewers.",
+        )
+        parser.add_argument(
+            "--allow-conflicts",
+            action="store_true",
+            help="Allow cherry-picking with conflicts.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.cherry_pick(
+            parsed_args.entity_id,
+            revision_id=parsed_args.revision,
+            destination=parsed_args.destination,
+            message=parsed_args.message,
+            notify=parsed_args.notify,
+            keep_reviewers=parsed_args.keep_reviewers if parsed_args.keep_reviewers else None,
+            allow_conflicts=parsed_args.allow_conflicts if parsed_args.allow_conflicts else None,
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class ChangePatch(ChangeMixIn, base.BaseCommand):
+    """Gets the formatted patch for a revision."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "change_id", metavar="change-identifier", help="Change identifier."
+        )
+        parser.add_argument(
+            "-r",
+            "--revision",
+            default="current",
+            help="Revision (patchset) identifier. Defaults to 'current'.",
+        )
+        parser.add_argument(
+            "-p", "--path", help="Only return the patch for the specified file."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_patch(
+            parsed_args.change_id,
+            revision_id=parsed_args.revision,
+            path=parsed_args.path,
+        )
+        self.app.stdout.write(str(response))
+
+
 # Submitted Together command
 
 
