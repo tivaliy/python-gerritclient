@@ -314,6 +314,251 @@ class ProjectClient(base.BaseV1ClientCreateEntity):
         )
         return self.connection.get_request(request_path)
 
+    # Access Rights endpoints
+
+    def get_access(self, name):
+        """Get the access rights for a project.
+
+        :param name: Name of the project.
+        :return: A ProjectAccessInfo entity.
+        """
+
+        request_path = "{api_path}{name}/access".format(
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
+        return self.connection.get_request(request_path)
+
+    def set_access(self, name, add=None, remove=None, message=None, parent=None):
+        """Set the access rights for a project.
+
+        :param name: Name of the project.
+        :param add: Dict of access sections to add.
+        :param remove: Dict of access sections to remove.
+        :param message: Commit message for the access change.
+        :param parent: New parent project.
+        :return: A ProjectAccessInfo entity.
+        """
+
+        data = {
+            k: v
+            for k, v in (
+                ("add", add),
+                ("remove", remove),
+                ("message", message),
+                ("parent", parent),
+            )
+            if v is not None
+        }
+        request_path = "{api_path}{name}/access".format(
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
+        return self.connection.post_request(request_path, json_data=data)
+
+    # Labels endpoints
+
+    def get_labels(self, name):
+        """Get the labels for a project.
+
+        :param name: Name of the project.
+        :return: A list of LabelDefinitionInfo entities.
+        """
+
+        request_path = "{api_path}{name}/labels".format(
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
+        return self.connection.get_request(request_path)
+
+    def get_label(self, name, label_name):
+        """Get a specific label for a project.
+
+        :param name: Name of the project.
+        :param label_name: Name of the label.
+        :return: A LabelDefinitionInfo entity.
+        """
+
+        request_path = "{api_path}{name}/labels/{label_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            label_name=requests_utils.quote(label_name, safe=""),
+        )
+        return self.connection.get_request(request_path)
+
+    def create_label(self, name, label_name, label_data):
+        """Create a new label for a project.
+
+        :param name: Name of the project.
+        :param label_name: Name of the label.
+        :param label_data: Dict containing label definition.
+        :return: A LabelDefinitionInfo entity.
+        """
+
+        request_path = "{api_path}{name}/labels/{label_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            label_name=requests_utils.quote(label_name, safe=""),
+        )
+        return self.connection.put_request(request_path, json_data=label_data)
+
+    def set_label(self, name, label_name, label_data, commit_message=None):
+        """Update a label for a project.
+
+        :param name: Name of the project.
+        :param label_name: Name of the label.
+        :param label_data: Dict containing label definition updates.
+        :param commit_message: Optional commit message.
+        :return: A LabelDefinitionInfo entity.
+        """
+
+        if commit_message:
+            label_data["commit_message"] = commit_message
+        request_path = "{api_path}{name}/labels/{label_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            label_name=requests_utils.quote(label_name, safe=""),
+        )
+        return self.connection.put_request(request_path, json_data=label_data)
+
+    def delete_label(self, name, label_name, commit_message=None):
+        """Delete a label from a project.
+
+        :param name: Name of the project.
+        :param label_name: Name of the label.
+        :param commit_message: Optional commit message.
+        :return: Empty response on success.
+        """
+
+        data = {"commit_message": commit_message} if commit_message else {}
+        request_path = "{api_path}{name}/labels/{label_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            label_name=requests_utils.quote(label_name, safe=""),
+        )
+        return self.connection.delete_request(request_path, data=data)
+
+    # Submit Requirements endpoints
+
+    def get_submit_requirements(self, name):
+        """Get the submit requirements for a project.
+
+        :param name: Name of the project.
+        :return: A list of SubmitRequirementInfo entities.
+        """
+
+        request_path = "{api_path}{name}/submit_requirements".format(
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
+        return self.connection.get_request(request_path)
+
+    def get_submit_requirement(self, name, sr_name):
+        """Get a specific submit requirement for a project.
+
+        :param name: Name of the project.
+        :param sr_name: Name of the submit requirement.
+        :return: A SubmitRequirementInfo entity.
+        """
+
+        request_path = "{api_path}{name}/submit_requirements/{sr_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            sr_name=requests_utils.quote(sr_name, safe=""),
+        )
+        return self.connection.get_request(request_path)
+
+    def create_submit_requirement(self, name, sr_name, sr_data):
+        """Create a new submit requirement for a project.
+
+        :param name: Name of the project.
+        :param sr_name: Name of the submit requirement.
+        :param sr_data: Dict containing submit requirement definition.
+        :return: A SubmitRequirementInfo entity.
+        """
+
+        request_path = "{api_path}{name}/submit_requirements/{sr_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            sr_name=requests_utils.quote(sr_name, safe=""),
+        )
+        return self.connection.put_request(request_path, json_data=sr_data)
+
+    def delete_submit_requirement(self, name, sr_name, commit_message=None):
+        """Delete a submit requirement from a project.
+
+        :param name: Name of the project.
+        :param sr_name: Name of the submit requirement.
+        :param commit_message: Optional commit message.
+        :return: Empty response on success.
+        """
+
+        data = {"commit_message": commit_message} if commit_message else {}
+        request_path = "{api_path}{name}/submit_requirements/{sr_name}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            sr_name=requests_utils.quote(sr_name, safe=""),
+        )
+        return self.connection.delete_request(request_path, data=data)
+
+    # Dashboard endpoints
+
+    def get_dashboards(self, name):
+        """Get the dashboards for a project.
+
+        :param name: Name of the project.
+        :return: A list of DashboardInfo entities.
+        """
+
+        request_path = "{api_path}{name}/dashboards".format(
+            api_path=self.api_path, name=requests_utils.quote(name, safe="")
+        )
+        return self.connection.get_request(request_path)
+
+    def get_dashboard(self, name, dashboard_id):
+        """Get a specific dashboard for a project.
+
+        :param name: Name of the project.
+        :param dashboard_id: ID of the dashboard (path-encoded, e.g., 'main:dashboard').
+        :return: A DashboardInfo entity.
+        """
+
+        request_path = "{api_path}{name}/dashboards/{dashboard_id}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            dashboard_id=requests_utils.quote(dashboard_id, safe=""),
+        )
+        return self.connection.get_request(request_path)
+
+    def set_dashboard(self, name, dashboard_id, dashboard_data):
+        """Create or update a dashboard for a project.
+
+        :param name: Name of the project.
+        :param dashboard_id: ID of the dashboard.
+        :param dashboard_data: Dict containing dashboard definition.
+        :return: A DashboardInfo entity.
+        """
+
+        request_path = "{api_path}{name}/dashboards/{dashboard_id}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            dashboard_id=requests_utils.quote(dashboard_id, safe=""),
+        )
+        return self.connection.put_request(request_path, json_data=dashboard_data)
+
+    def delete_dashboard(self, name, dashboard_id, commit_message=None):
+        """Delete a dashboard from a project.
+
+        :param name: Name of the project.
+        :param dashboard_id: ID of the dashboard.
+        :param commit_message: Optional commit message.
+        :return: Empty response on success.
+        """
+
+        data = {"commit_message": commit_message} if commit_message else {}
+        request_path = "{api_path}{name}/dashboards/{dashboard_id}".format(
+            api_path=self.api_path,
+            name=requests_utils.quote(name, safe=""),
+            dashboard_id=requests_utils.quote(dashboard_id, safe=""),
+        )
+        return self.connection.delete_request(request_path, data=data)
+
 
 def get_client(connection):
     return ProjectClient(connection)
