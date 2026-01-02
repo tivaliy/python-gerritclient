@@ -445,6 +445,255 @@ class AccountOAuthShow(AccountMixIn, base.BaseShowCommand):
         return self.columns, data
 
 
+# Preferences commands
+
+
+class AccountPreferencesShow(AccountMixIn, base.BaseShowCommand):
+    """Gets the preferences of an account."""
+
+    columns = (
+        "changes_per_page",
+        "theme",
+        "date_format",
+        "time_format",
+        "diff_view",
+        "expand_inline_diffs",
+        "relative_date_in_change_table",
+        "size_bar_in_change_table",
+        "publish_comments_on_push",
+        "work_in_progress_by_default",
+    )
+
+    def take_action(self, parsed_args):
+        response = self.client.get_preferences(parsed_args.entity_id)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class AccountPreferencesSet(AccountMixIn, base.BaseShowCommand):
+    """Sets the preferences of an account."""
+
+    columns = (
+        "changes_per_page",
+        "theme",
+        "diff_view",
+    )
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
+        return file_path
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "--file",
+            type=self.get_file_path,
+            required=True,
+            help="File with preferences JSON/YAML.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            preferences = utils.read_from_file(file_path)
+        except OSError:
+            msg = f"Could not read preferences at {file_path}"
+            raise error.InvalidFileException(msg)
+
+        response = self.client.set_preferences(parsed_args.entity_id, preferences)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class AccountDiffPreferencesShow(AccountMixIn, base.BaseShowCommand):
+    """Gets the diff preferences of an account."""
+
+    columns = (
+        "context",
+        "tab_size",
+        "line_length",
+        "cursor_blink_rate",
+        "expand_all_comments",
+        "ignore_whitespace",
+        "intraline_difference",
+        "show_line_endings",
+        "show_tabs",
+        "show_whitespace_errors",
+        "syntax_highlighting",
+        "hide_top_menu",
+        "auto_hide_diff_table_header",
+        "hide_line_numbers",
+        "render_entire_file",
+        "hide_empty_pane",
+        "match_brackets",
+        "line_wrapping",
+    )
+
+    def take_action(self, parsed_args):
+        response = self.client.get_diff_preferences(parsed_args.entity_id)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+class AccountDiffPreferencesSet(AccountMixIn, base.BaseShowCommand):
+    """Sets the diff preferences of an account."""
+
+    columns = ("context", "tab_size", "line_length", "ignore_whitespace")
+
+    @staticmethod
+    def get_file_path(file_path):
+        if not utils.file_exists(file_path):
+            raise argparse.ArgumentTypeError(f"File '{file_path}' does not exist")
+        return file_path
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "--file",
+            type=self.get_file_path,
+            required=True,
+            help="File with diff preferences JSON/YAML.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        file_path = parsed_args.file
+        try:
+            preferences = utils.read_from_file(file_path)
+        except OSError:
+            msg = f"Could not read preferences at {file_path}"
+            raise error.InvalidFileException(msg)
+
+        response = self.client.set_diff_preferences(parsed_args.entity_id, preferences)
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+# Capabilities commands
+
+
+class AccountCapabilitiesShow(AccountMixIn, base.BaseShowCommand):
+    """Gets the capabilities of an account."""
+
+    columns = (
+        "accessDatabase",
+        "administrateServer",
+        "createAccount",
+        "createGroup",
+        "createProject",
+        "emailReviewers",
+        "flushCaches",
+        "killTask",
+        "maintainServer",
+        "modifyAccount",
+        "priority",
+        "queryLimit",
+        "runAs",
+        "runGC",
+        "streamEvents",
+        "viewAllAccounts",
+        "viewCaches",
+        "viewConnections",
+        "viewPlugins",
+        "viewQueue",
+    )
+
+    def get_parser(self, app_name):
+        parser = super().get_parser(app_name)
+        parser.add_argument(
+            "-q",
+            "--query",
+            nargs="+",
+            help="Filter to specific capabilities.",
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_capabilities(
+            parsed_args.entity_id, capabilities=parsed_args.query
+        )
+        fetched_columns = [c for c in self.columns if c in response]
+        data = utils.get_display_data_single(fetched_columns, response)
+        return fetched_columns, data
+
+
+# Starred Changes commands
+
+
+class AccountStarredChangeList(AccountMixIn, base.BaseListCommand):
+    """Lists the starred changes of an account."""
+
+    columns = (
+        "id",
+        "project",
+        "branch",
+        "change_id",
+        "subject",
+        "status",
+        "_number",
+    )
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "account_id", metavar="account-identifier", help="Account identifier."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        response = self.client.get_starred_changes(parsed_args.account_id)
+        fetched_columns = [c for c in self.columns if response and c in response[0]]
+        data = utils.get_display_data_multi(fetched_columns, response)
+        return fetched_columns, data
+
+
+class AccountStarredChangeAdd(AccountMixIn, base.BaseCommand):
+    """Stars a change for an account."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "account_id", metavar="account-identifier", help="Account identifier."
+        )
+        parser.add_argument(
+            "-c", "--change-id", required=True, help="Change identifier to star."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.star_change(parsed_args.account_id, parsed_args.change_id)
+        self.app.stdout.write(
+            f"Change '{parsed_args.change_id}' was starred for account '{parsed_args.account_id}'.\n"
+        )
+
+
+class AccountStarredChangeDelete(AccountMixIn, base.BaseCommand):
+    """Unstars a change for an account."""
+
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser.add_argument(
+            "account_id", metavar="account-identifier", help="Account identifier."
+        )
+        parser.add_argument(
+            "-c", "--change-id", required=True, help="Change identifier to unstar."
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.client.unstar_change(parsed_args.account_id, parsed_args.change_id)
+        self.app.stdout.write(
+            f"Change '{parsed_args.change_id}' was unstarred for account '{parsed_args.account_id}'.\n"
+        )
+
+
 def debug(argv=None):
     """Helper to debug the required command."""
 
